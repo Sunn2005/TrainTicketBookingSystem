@@ -1,0 +1,9 @@
+package dao;
+
+import entity.Schedule;
+
+public class ScheduleDAO extends BaseDAO<Schedule, String> {
+    public ScheduleDAO() {
+        super(Schedule.class);
+    }
+}

@@ -1,0 +1,27 @@
+package entity;
+
+import entity.enums.CustomerType;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@Table(name = "customers")
+public class Customer {
+
+    @Id
+    @Column(name = "customer_id", unique = true)
+    private String customerID;
+
+    @Column(name = "full_name")
+    private String fullName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "customer_type")
+    private CustomerType customerType;
+}
