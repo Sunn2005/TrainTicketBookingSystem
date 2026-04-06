@@ -1,6 +1,6 @@
-package entity;
+package model.entity;
 
-import entity.enums.TicketStatus;
+import model.entity.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

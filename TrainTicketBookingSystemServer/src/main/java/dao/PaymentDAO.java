@@ -1,6 +1,6 @@
 package dao;
 
-import entity.Payment;
+import model.entity.Payment;
 
 public class PaymentDAO extends BaseDAO<Payment, String> {
     public PaymentDAO() {

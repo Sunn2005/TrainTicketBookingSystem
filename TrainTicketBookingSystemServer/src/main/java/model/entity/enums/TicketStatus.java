@@ -1,4 +1,4 @@
-package entity.enums;
+package model.entity.enums;
 
 public enum TicketStatus {
     PENDING,     //(đang giữ chỗ, chưa thanh toán)

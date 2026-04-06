@@ -1,6 +1,6 @@
 package dto;
 
-import entity.enums.CustomerType;
+import model.entity.enums.CustomerType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

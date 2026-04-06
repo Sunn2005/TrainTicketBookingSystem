@@ -1,16 +1,16 @@
 package service;
 
-import db.JPAUtil;
-import entity.Customer;
-import entity.Payment;
-import entity.Schedule;
-import entity.Seat;
-import entity.Ticket;
-import entity.User;
-import entity.enums.CustomerType;
-import entity.enums.PaymentStatus;
-import entity.enums.TicketStatus;
-import entity.enums.UserStatus;
+import util.JPAUtil;
+import model.entity.Customer;
+import model.entity.Payment;
+import model.entity.Schedule;
+import model.entity.Seat;
+import model.entity.Ticket;
+import model.entity.User;
+import model.entity.enums.CustomerType;
+import model.entity.enums.PaymentStatus;
+import model.entity.enums.TicketStatus;
+import model.entity.enums.UserStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;

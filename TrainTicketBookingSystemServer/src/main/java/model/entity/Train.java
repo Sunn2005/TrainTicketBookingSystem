@@ -1,4 +1,4 @@
-package entity;
+package model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(name = "trains")
+public class Train {
     @Id
-    @Column(name = "role_id")
-    private String roleID;
+    @Column(name = "train_id")
+    private String trainID;
 
-    @Column(name = "role_name")
-    private String roleName;
+    @Column(name = "train_name")
+    private String trainName;
 }

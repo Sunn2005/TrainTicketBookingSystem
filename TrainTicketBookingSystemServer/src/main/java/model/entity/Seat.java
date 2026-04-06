@@ -1,7 +1,10 @@
-package entity;
+package model.entity;
 
+import model.entity.enums.SeatType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -10,29 +13,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "schedules")
-public class Schedule {
+@Table(name = "seats")
+public class Seat {
     @Id
-    @Column(name = "schedule_id")
-    private String scheduleID;
+    @Column(name = "seat_id")
+    private String seatID;
 
     @ManyToOne
     @JoinColumn(name = "train_id")
     private Train train;
 
-    @ManyToOne
-    @JoinColumn(name = "route_id")
-    private Route route;
+    @Column(name = "seat_number")
+    private String seatNumber;
 
-    @Column(name = "departure_time")
-    private LocalDateTime departureTime;
-
-    @Column(name = "arrival_time")
-    private LocalDateTime arrivalTime;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "seat_type")
+    private SeatType seatType;
 }

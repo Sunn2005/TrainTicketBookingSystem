@@ -1,6 +1,6 @@
 package dao;
 
-import entity.Station;
+import model.entity.Station;
 
 public class StationDAO extends BaseDAO<Station, String> {
     public StationDAO() {

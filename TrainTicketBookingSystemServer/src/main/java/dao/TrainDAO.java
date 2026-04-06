@@ -1,6 +1,6 @@
 package dao;
 
-import entity.Train;
+import model.entity.Train;
 
 public class TrainDAO extends BaseDAO<Train, String> {
     public TrainDAO() {

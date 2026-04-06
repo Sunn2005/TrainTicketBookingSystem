@@ -1,6 +1,6 @@
 package dao;
 
-import entity.Customer;
+import model.entity.Customer;
 
 public class CustomerDAO extends BaseDAO<Customer, String> {
     public CustomerDAO() {

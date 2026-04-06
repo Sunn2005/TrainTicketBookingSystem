@@ -1,6 +1,6 @@
 package dao;
 
-import db.JPAUtil;
+import util.JPAUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 

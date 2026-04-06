@@ -1,7 +1,7 @@
 package controller;
 
-import entity.Schedule;
-import entity.Seat;
+import model.entity.Schedule;
+import model.entity.Seat;
 import service.TicketService;
 import dto.ScheduleInfoResponse;
 

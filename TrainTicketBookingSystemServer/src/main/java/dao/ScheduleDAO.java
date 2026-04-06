@@ -1,6 +1,6 @@
 package dao;
 
-import entity.Schedule;
+import model.entity.Schedule;
 
 public class ScheduleDAO extends BaseDAO<Schedule, String> {
     public ScheduleDAO() {

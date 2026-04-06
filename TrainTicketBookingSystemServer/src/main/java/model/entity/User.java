@@ -1,6 +1,6 @@
-package entity;
+package model.entity;
 
-import entity.enums.UserStatus;
+import model.entity.enums.UserStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,6 +1,6 @@
 package dao;
 
-import entity.Seat;
+import model.entity.Seat;
 
 public class SeatDAO extends BaseDAO<Seat, String> {
     public SeatDAO() {

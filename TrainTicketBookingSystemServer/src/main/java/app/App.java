@@ -1,11 +1,9 @@
 package app;
 
 import controller.TicketController;
-import db.JPAUtil;
-import entity.Schedule;
-import entity.Seat;
-import entity.enums.CustomerType;
-import jakarta.persistence.EntityManager;
+import util.JPAUtil;
+import model.entity.Seat;
+import model.entity.enums.CustomerType;
 import service.TicketService;
 import dto.ScheduleInfoResponse;
 

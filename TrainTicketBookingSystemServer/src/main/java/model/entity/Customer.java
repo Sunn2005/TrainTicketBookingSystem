@@ -1,6 +1,6 @@
-package entity;
+package model.entity;
 
-import entity.enums.CustomerType;
+import model.entity.enums.CustomerType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,10 +1,9 @@
-package app;
+package util;
 
-import db.JPAUtil;
-import entity.*;
-import entity.enums.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import model.entity.*;
+import model.entity.enums.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

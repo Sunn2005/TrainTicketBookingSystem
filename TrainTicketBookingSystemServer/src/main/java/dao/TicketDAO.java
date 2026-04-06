@@ -1,6 +1,6 @@
 package dao;
 
-import entity.Ticket;
+import model.entity.Ticket;
 
 public class TicketDAO extends BaseDAO<Ticket, String> {
     public TicketDAO() {
