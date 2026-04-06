@@ -8,6 +8,8 @@ import jakarta.persistence.EntityTransaction;
 import util.JPAUtil;
 
 import java.util.UUID;
+import dao.UserDAO;
+import dao.RoleDAO;
 
 public class UserService {
 
@@ -37,6 +39,9 @@ public class UserService {
         }
     }
 
+    private final UserDAO userDAO = new UserDAO();
+    private final RoleDAO roleDAO = new RoleDAO();
+
     public UserService() {
     }
 
@@ -46,10 +51,7 @@ public class UserService {
         try {
             tx.begin();
             // Check if username already exists
-            Long count = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.userName = :userName", Long.class)
-                    .setParameter("userName", userName)
-                    .getSingleResult();
-            if (count > 0) {
+            if (userDAO.existsByUserName(userName)) {
                 return ActionResponse.fail("Tên đăng nhập đã tồn tại.");
             }
 
@@ -146,8 +148,41 @@ public class UserService {
         }
     }
 
+    public ActionResponse changeUserRole(String adminId, String targetUserId, String newRoleName) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            // Validate admin
+            User admin = em.find(User.class, adminId);
+            if (admin == null || admin.getRole() == null || !"ADMIN".equalsIgnoreCase(admin.getRole().getRoleName())) {
+                return ActionResponse.fail("Chỉ có ADMIN mới được quyền đổi chức vụ người dùng.");
+            }
+
+            User targetUser = em.find(User.class, targetUserId);
+            if (targetUser == null) {
+                return ActionResponse.fail("Không tìm thấy người dùng cần đổi quyền.");
+            }
+
+            model.entity.Role newRole = roleDAO.findByRoleName(newRoleName).orElse(null);
+            if (newRole == null) {
+                return ActionResponse.fail("Vai trò không hợp lệ: " + newRoleName);
+            }
+
+            targetUser.setRole(newRole);
+            em.merge(targetUser);
+
+            tx.commit();
+            return ActionResponse.success("Thay đổi chức vụ thành công thành: " + newRoleName);
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            return ActionResponse.fail("Lỗi khi thay đổi chức vụ: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
     private String generateId(String prefix) {
         return prefix + "-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
     }
 }
-

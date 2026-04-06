@@ -16,6 +16,8 @@
         <class>model.entity.Ticket</class>
         <class>model.entity.Train</class>
         <class>model.entity.User</class>
+        <class>model.entity.Carriage</class>
+
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver"

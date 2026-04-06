@@ -25,6 +25,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import dto.ScheduleInfoResponse;
+import dao.TicketDAO;
+import dao.PaymentDAO;
+import dao.ScheduleDAO;
+import dao.SeatDAO;
 
 public class TicketService {
     public static class SellTicketRequest {
@@ -211,6 +215,11 @@ public class TicketService {
         }
     }
 
+    private final TicketDAO ticketDAO = new TicketDAO();
+    private final PaymentDAO paymentDAO = new PaymentDAO();
+    private final ScheduleDAO scheduleDAO = new ScheduleDAO();
+    private final SeatDAO seatDAO = new SeatDAO();
+
     public TicketService() {
     }
 
@@ -265,21 +274,11 @@ public class TicketService {
                 throw new IllegalArgumentException("Seat not found: " + request.getSeatId());
             }
 
-            if (!seat.getTrain().getTrainID().equals(schedule.getTrain().getTrainID())) {
+            if (!seat.getCarriage().getTrain().getTrainID().equals(schedule.getTrain().getTrainID())) {
                 throw new IllegalArgumentException("Seat does not belong to schedule's train.");
             }
 
-            Long bookedCount = em.createQuery(
-                            "SELECT COUNT(t) FROM Ticket t "
-                                    + "WHERE t.schedule.scheduleID = :scheduleId "
-                                    + "AND t.seat.seatID = :seatId "
-                                    + "AND t.ticketStatus <> :cancelledStatus", Long.class)
-                    .setParameter("scheduleId", request.getScheduleId())
-                    .setParameter("seatId", request.getSeatId())
-                    .setParameter("cancelledStatus", TicketStatus.CANCELLED)
-                    .getSingleResult();
-
-            if (bookedCount != null && bookedCount > 0) {
+            if (ticketDAO.isSeatBooked(request.getScheduleId(), request.getSeatId())) {
                 throw new IllegalStateException("Seat is already booked for this schedule.");
             }
 
@@ -414,9 +413,7 @@ public class TicketService {
             em.merge(ticket);
 
             // Cập nhật trạng thái thanh toán sang REFUNDED (hoàn tiền)
-            List<Payment> payments = em.createQuery("SELECT p FROM Payment p WHERE p.ticket.ticketID = :ticketId", Payment.class)
-                    .setParameter("ticketId", ticketId)
-                    .getResultList();
+            List<Payment> payments = paymentDAO.findPaymentsByTicketId(ticketId);
             for (Payment p : payments) {
                 if (p.getPaymentStatus() == PaymentStatus.SUCCESS || p.getPaymentStatus() == PaymentStatus.PENDING) {
                     p.setPaymentStatus(PaymentStatus.REFUNDED);
@@ -485,21 +482,11 @@ public class TicketService {
                 return ActionResponse.fail("Không tìm thấy thông tin ghế mới: " + newSeatId);
             }
 
-            if (!newSeat.getTrain().getTrainID().equals(newSchedule.getTrain().getTrainID())) {
+            if (!newSeat.getCarriage().getTrain().getTrainID().equals(newSchedule.getTrain().getTrainID())) {
                 return ActionResponse.fail("Ghế đổi không nằm trên tàu của chuyến đi mới.");
             }
 
-            Long bookedCount = em.createQuery(
-                            "SELECT COUNT(t) FROM Ticket t "
-                                    + "WHERE t.schedule.scheduleID = :scheduleId "
-                                    + "AND t.seat.seatID = :seatId "
-                                    + "AND t.ticketStatus <> :cancelledStatus", Long.class)
-                    .setParameter("scheduleId", newScheduleId)
-                    .setParameter("seatId", newSeatId)
-                    .setParameter("cancelledStatus", TicketStatus.CANCELLED)
-                    .getSingleResult();
-
-            if (bookedCount != null && bookedCount > 0) {
+            if (ticketDAO.isSeatBooked(newScheduleId, newSeatId)) {
                 return ActionResponse.fail("Ghế mới đã có người đặt, vui lòng chọn ghế trống khác.");
             }
 
@@ -527,26 +514,7 @@ public class TicketService {
             throw new IllegalArgumentException("travelDate is required.");
         }
 
-        LocalDateTime from = travelDate.atStartOfDay();
-        LocalDateTime to = travelDate.plusDays(1).atStartOfDay();
-
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            return em.createQuery(
-                            "SELECT s FROM Schedule s "
-                                    + "WHERE s.route.departureStation.stationID = :departureId "
-                                    + "AND s.route.arrivalStation.stationID = :arrivalId "
-                                    + "AND s.departureTime >= :fromTime "
-                                    + "AND s.departureTime < :toTime "
-                                    + "ORDER BY s.departureTime", Schedule.class)
-                    .setParameter("departureId", departureStationId)
-                    .setParameter("arrivalId", arrivalStationId)
-                    .setParameter("fromTime", from)
-                    .setParameter("toTime", to)
-                    .getResultList();
-        } finally {
-            em.close();
-        }
+        return scheduleDAO.searchSchedules(departureStationId, arrivalStationId, travelDate);
     }
 
     public List<ScheduleInfoResponse> getSchedulesWithAvailableSeats(String departureStationId, String arrivalStationId, LocalDate travelDate) {
@@ -581,18 +549,8 @@ public class TicketService {
                 throw new IllegalArgumentException("Schedule not found: " + scheduleId);
             }
 
-            List<Seat> allSeats = em.createQuery(
-                            "SELECT s FROM Seat s WHERE s.train.trainID = :trainId ORDER BY s.seatNumber", Seat.class)
-                    .setParameter("trainId", schedule.getTrain().getTrainID())
-                    .getResultList();
-
-            List<String> bookedSeatIds = em.createQuery(
-                            "SELECT t.seat.seatID FROM Ticket t "
-                                    + "WHERE t.schedule.scheduleID = :scheduleId "
-                                    + "AND t.ticketStatus <> :cancelledStatus", String.class)
-                    .setParameter("scheduleId", scheduleId)
-                    .setParameter("cancelledStatus", TicketStatus.CANCELLED)
-                    .getResultList();
+            List<Seat> allSeats = seatDAO.findByTrainId(schedule.getTrain().getTrainID());
+            List<String> bookedSeatIds = ticketDAO.getBookedSeatIds(scheduleId);
 
             Set<String> bookedSet = new HashSet<>(bookedSeatIds);
             return allSeats.stream()

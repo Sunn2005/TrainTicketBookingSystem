@@ -5,35 +5,35 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "schedules")
-public class Schedule {
+@Table(name = "carriages")
+public class Carriage {
+
     @Id
-    @Column(name = "schedule_id", nullable = false)
-    private String scheduleID;
+    @Column(name = "carriage_id", nullable = false)
+    private String carriageID;
 
     @ManyToOne
     @JoinColumn(name = "train_id", nullable = false)
     private Train train;
 
-    @ManyToOne
-    @JoinColumn(name = "route_id", nullable = false)
-    private Route route;
+    @Column(name = "carriage_number", nullable = false)
+    private int carriageNumber;
 
-    @Column(name = "departure_time", nullable = false)
-    private LocalDateTime departureTime;
-
-    @Column(name = "arrival_time", nullable = false)
-    private LocalDateTime arrivalTime;
-
+    @OneToMany(mappedBy = "carriage")
+    @ToString.Exclude
+    private List<Seat> seats;
 }
+

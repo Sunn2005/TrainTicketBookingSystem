@@ -17,24 +17,23 @@ import java.time.LocalDateTime;
 @Table(name = "payments")
 public class Payment {
     @Id
-    @Column(name = "payment_id")
+    @Column(name = "payment_id", nullable = false)
     private String paymentID;
 
     @OneToOne
-    @JoinColumn(name = "ticket_id", referencedColumnName = "ticket_id", unique = true)
+    @JoinColumn(name = "ticket_id", referencedColumnName = "ticket_id", unique = true, nullable = false)
     private Ticket ticket;
 
-    @Column(name = "payment_method")
+    @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
 
-    @Column(name = "amount", precision = 15, scale = 2)
+    @Column(name = "amount", precision = 15, scale = 2, nullable = false)
     private BigDecimal amount;
 
-    @Column(name = "payment_time")
+    @Column(name = "payment_time", nullable = false)
     private LocalDateTime paymentTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_status")
+    @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
-
 }

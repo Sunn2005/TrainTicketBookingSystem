@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "stations")
 public class Station {
     @Id
-    @Column(name = "station_id")
+    @Column(name = "station_id", nullable = false)
     private String stationID;
 
-    @Column(name = "station_name")
+    @Column(name = "station_name", nullable = false)
     private String stationName;
 
-    @Column(name = "location")
+    @Column(name = "location", nullable = false)
     private String location;
 }

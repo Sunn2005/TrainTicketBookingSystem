@@ -42,5 +42,11 @@ public class UserController {
     public UserService.ActionResponse changeFullName(String userId, String newFullName) {
         return userService.changeFullName(userId, newFullName);
     }
-}
 
+    /**
+     * API Thay đổi chức vụ User (Chỉ ADMIN)
+     */
+    public UserService.ActionResponse changeUserRole(String adminId, String targetUserId, String newRoleName) {
+        return userService.changeUserRole(adminId, targetUserId, newRoleName);
+    }
+}

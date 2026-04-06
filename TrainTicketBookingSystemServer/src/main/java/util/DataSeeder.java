@@ -2,17 +2,23 @@ package util;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import model.entity.*;
-import model.entity.enums.*;
+import model.entity.Role;
+import model.entity.Route;
+import model.entity.Schedule;
+import model.entity.Station;
+import model.entity.Train;
+import model.entity.User;
+import model.entity.enums.UserStatus;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import dto.CreateTrainRequest;
+import service.TrainService;
 
 public class DataSeeder {
     public static void main(String[] args) {
+        System.out.println("Starting Data Seeder...");
         EntityManager em = JPAUtil.getEntityManager();
         EntityTransaction tx = em.getTransaction();
 
@@ -20,118 +26,106 @@ public class DataSeeder {
             tx.begin();
 
             // 1. Roles
-            Role adminRole = new Role("ADMIN", "Quản trị viên");
-            Role employeeRole = new Role("EMPLOYEE", "Nhân viên bán vé");
+            Role adminRole = new Role("ADMIN", "Administrator");
+            Role managerRole = new Role("MANAGER", "Manager");
+            Role sellerRole = new Role("EMPLOYEE", "Ticket Seller");
             em.persist(adminRole);
-            em.persist(employeeRole);
+            em.persist(managerRole);
+            em.persist(sellerRole);
 
-            // 2. Stations (Ga tàu thực tế ở Việt Nam)
-            List<Station> stations = Arrays.asList(
-                    new Station("SGO", "Ga Sài Gòn", "Quận 3, TP. Hồ Chí Minh"),
-                    new Station("NTR", "Ga Nha Trang", "Nha Trang, Khánh Hòa"),
-                    new Station("DAN", "Ga Đà Nẵng", "Hải Châu, Đà Nẵng"),
-                    new Station("HUE", "Ga Huế", "TP. Huế, Thừa Thiên Huế"),
-                    new Station("HNO", "Ga Hà Nội", "Đống Đa, Hà Nội")
-            );
-            for (Station st : stations) em.persist(st);
+            // 2. Users
+            User admin = new User("ADMIN_01", "admin", "admin123", "System Admin", "SYSTEM", LocalDateTime.now(), adminRole, UserStatus.ACTIVE);
+            User manager = new User("MANAGER_01", "admin", "admin123", "System Admin", "ADMIN_01", LocalDateTime.now(), managerRole, UserStatus.ACTIVE);
+            User seller = new User("EMPLOYEE_01", "seller", "seller123", "Ticket Seller 1", "ADMIN_01", LocalDateTime.now(), sellerRole, UserStatus.ACTIVE);
+            em.persist(admin);
+            em.persist(manager);
+            em.persist(seller);
 
-            // 3. Trains (Các mác tàu phổ biến)
-            List<Train> trains = Arrays.asList(
-                    new Train("SE1", "Tàu Khách Bắc Nam SE1"),
-                    new Train("SE2", "Tàu Khách Bắc Nam SE2"),
-                    new Train("SE3", "Tàu Khách Bắc Nam SE3"),
-                    new Train("SE4", "Tàu Khách Bắc Nam SE4"),
-                    new Train("SNT1", "Tàu Sài Gòn - Nha Trang")
-            );
-            for (Train t : trains) em.persist(t);
+            // 3. Stations
+            Station sgo = new Station("SGO", "Sài Gòn", "TP. Hồ Chí Minh");
+            Station ntr = new Station("NTR", "Nha Trang", "Khánh Hòa");
+            Station dan = new Station("DAN", "Đà Nẵng", "Đà Nẵng");
+            Station hno = new Station("HNO", "Hà Nội", "Hà Nội");
+            em.persist(sgo);
+            em.persist(ntr);
+            em.persist(dan);
+            em.persist(hno);
 
-            // 4. Customers (CCCD thực tế 12 số, Tên tiếng Việt)
-            List<Customer> customers = Arrays.asList(
-                    new Customer("079099001111", "Nguyễn Văn An", CustomerType.ADULT),
-                    new Customer("001090002222", "Trần Thị Bình", CustomerType.CHILD),
-                    new Customer("048095003333", "Lê Hoàng Châu", CustomerType.ELDERLY),
-                    new Customer("075088004444", "Phạm Khắc Duy", CustomerType.STUDENT),
-                    new Customer("001085005555", "Hoàng Ngọc Ánh", CustomerType.ADULT)
-            );
-            for (Customer c : customers) em.persist(c);
-
-            // 5. Users (Tài khoản nhân viên bán vé)
-            List<User> users = Arrays.asList(
-                    new User("NV_001", "nguyenvana", "NV001@", "Nguyễn Văn A", employeeRole, UserStatus.ACTIVE),
-                    new User("NV_002", "tranthib", "NV002@", "Trần Thị B", employeeRole, UserStatus.ACTIVE),
-                    new User("NV_003", "lehoangc", "NV003@", "Lê Hoàng C", employeeRole, UserStatus.ACTIVE),
-                    new User("NV_004", "phamkhacd", "NV004@", "Phạm Khắc D", employeeRole, UserStatus.ACTIVE),
-                    new User("ADMIN_01", "admin", "ADMIN01@", "Quản Trị Viên", adminRole, UserStatus.ACTIVE)
-            );
-            for (User u : users) em.persist(u);
-
-            // 6. Routes (Tuyến đường giữa các ga)
-            List<Route> routes = Arrays.asList(
-                    new Route("ROUTE_SGO_NTR", stations.get(0), stations.get(1), 411.0), // Sài Gòn - Nha Trang
-                    new Route("ROUTE_NTR_DAN", stations.get(1), stations.get(2), 524.0), // Nha Trang - Đà Nẵng
-                    new Route("ROUTE_DAN_HUE", stations.get(2), stations.get(3), 103.0), // Đà Nẵng - Huế
-                    new Route("ROUTE_HUE_HNO", stations.get(3), stations.get(4), 688.0), // Huế - Hà Nội
-                    new Route("ROUTE_HNO_SGO", stations.get(4), stations.get(0), 1726.0) // Hà Nội - Sài Gòn
-            );
-            for (Route r : routes) em.persist(r);
-
-            // 7. Seats (Số ghế thực tế tương ứng với vị trí toa, ví dụ Toa 1 Ghế 10)
-            List<Seat> seats = Arrays.asList(
-                    new Seat("SEAT_SE1_T1G10", trains.get(0), "Toa 1 - Ghế 10", SeatType.SOFT_SEAT),
-                    new Seat("SEAT_SE2_T2G15", trains.get(1), "Toa 2 - Ghế 15", SeatType.SOFT_SEAT),
-                    new Seat("SEAT_SE3_T3G20", trains.get(2), "Toa 3 - Ghế 20", SeatType.SOFT_SLEEPER),
-                    new Seat("SEAT_SE4_T4G25", trains.get(3), "Toa 4 - Ghế 25", SeatType.SOFT_SLEEPER),
-                    new Seat("SEAT_SNT_T5G30", trains.get(4), "Toa 5 - Ghế 30", SeatType.SOFT_SLEEPER)
-            );
-            for (Seat s : seats) em.persist(s);
-
-            // 8. Schedules (Lịch trình khởi hành vào những ngày tới)
-            List<Schedule> schedules = new ArrayList<>();
-            for (int i = 0; i < 5; i++) {
-                LocalDateTime departureTime = LocalDateTime.now().plusDays(i + 1).withHour(19).withMinute(30).withSecond(0);
-                LocalDateTime arrivalTime = departureTime.plusHours(8 + i); // Đi từ 8 đến 12 tiếng tùy tuyến dài ngắn
-                Schedule s = new Schedule("SCH_2026_" + (i+1), trains.get(i), routes.get(i), departureTime, arrivalTime);
-                em.persist(s);
-                schedules.add(s);
-            }
-
-            // 9. Tickets (Vé tàu với giá tiền thật)
-            double[] basePrices = {450000.0, 520000.0, 150000.0, 750000.0, 1800000.0};
-            List<Ticket> tickets = new ArrayList<>();
-            for (int i = 0; i < 5; i++) {
-                Ticket t = new Ticket();
-                t.setTicketID("TK_" + String.format("%06d", i + 1));
-                t.setUser(users.get(i % users.size()));
-                t.setCustomer(customers.get(i));
-                t.setSchedule(schedules.get(i));
-                t.setSeat(seats.get(i));
-                t.setDiscount("0%");    // Có thể set 10% nếu là Sinh viên/Trẻ em
-                t.setPrice(basePrices[i]);
-                t.setFinalPrice(basePrices[i]);
-                t.setTicketStatus(TicketStatus.PAID);
-                em.persist(t);
-                tickets.add(t);
-            }
-
-//            // 10. Payments & QR Payments (Thanh toán qua mã QR Momo/ZaloPay/VNPAY)
-            for (int i = 0; i < 5; i++) {
-                Payment p = new Payment();
-                p.setPaymentID("PAY_" + String.format("%06d", i + 1));
-                p.setTicket(tickets.get(i));
-                p.setPaymentMethod("VNPAY-QR");
-                p.setAmount(BigDecimal.valueOf(tickets.get(i).getFinalPrice()));
-                p.setPaymentTime(LocalDateTime.now().minusHours(1));
-                p.setPaymentStatus(PaymentStatus.SUCCESS);
-                em.persist(p);
-            }
+            // 4. Routes
+            Route r1 = new Route("ROUTE_SGO_NTR", sgo, ntr, 411.0);
+            Route r2 = new Route("ROUTE_NTR_DAN", ntr, dan, 524.0);
+            Route r3 = new Route("ROUTE_DAN_HNO", dan, hno, 791.0);
+            Route r4 = new Route("ROUTE_SGO_HNO", sgo, hno, 1726.0);
+            em.persist(r1);
+            em.persist(r2);
+            em.persist(r3);
+            em.persist(r4);
 
             tx.commit();
-            System.out.println("Successfully seeded 5 realistic records for all tables.");
+            System.out.println("Basic data seeded successfully.");
         } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
+            }
             e.printStackTrace();
         } finally {
             em.close();
         }
+
+        // 5. Trains using TrainService
+        System.out.println("Seeding Trains using TrainService...");
+        try {
+            TrainService trainService = new TrainService();
+            // Train 1
+            Map<Integer, String> t1Detail = new HashMap<>();
+            t1Detail.put(1, "10-SOFT_SEAT");
+            t1Detail.put(2, "20-SOFT_SLEEPER");
+            trainService.createTrain(new CreateTrainRequest(t1Detail, "SE1"));
+
+            // Train 2
+            Map<Integer, String> t2Detail = new HashMap<>();
+            t2Detail.put(1, "20-SOFT_SEAT");
+            trainService.createTrain(new CreateTrainRequest(t2Detail, "SE2"));
+
+            System.out.println("Trains seeded successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 6. Schedules
+        System.out.println("Seeding Schedules...");
+        em = JPAUtil.getEntityManager();
+        tx = em.getTransaction();
+        try {
+            tx.begin();
+
+            // Get data back
+            Train se1 = em.createQuery("SELECT t FROM Train t WHERE t.trainName = 'SE1'", Train.class).setMaxResults(1).getSingleResult();
+            Train se2 = em.createQuery("SELECT t FROM Train t WHERE t.trainName = 'SE2'", Train.class).setMaxResults(1).getSingleResult();
+            Route routeSgoHno = em.find(Route.class, "ROUTE_SGO_HNO");
+            Route routeSgoNtr = em.find(Route.class, "ROUTE_SGO_NTR");
+
+            // Tomorrow schedules
+            LocalDateTime tomorrow1930 = LocalDateTime.now().plusDays(1).withHour(19).withMinute(30).withSecond(0).withNano(0);
+            LocalDateTime arrTomorrow1930 = tomorrow1930.plusHours(33); // approx time to HN
+
+            Schedule sch1 = new Schedule("SCH_1", se1, routeSgoHno, tomorrow1930, arrTomorrow1930);
+            Schedule sch2 = new Schedule("SCH_2", se2, routeSgoNtr, tomorrow1930, tomorrow1930.plusHours(8));
+
+            em.persist(sch1);
+            em.persist(sch2);
+
+            tx.commit();
+            System.out.println("Schedules seeded successfully.");
+        } catch (Exception e) {
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+
+        System.out.println("Data Seeder completed!");
     }
 }

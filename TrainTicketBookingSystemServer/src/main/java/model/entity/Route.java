@@ -17,17 +17,17 @@ import lombok.NoArgsConstructor;
 @Table(name = "routes")
 public class Route {
     @Id
-    @Column(name = "route_id")
+    @Column(name = "route_id", nullable = false)
     private String routeID;
 
     @ManyToOne
-    @JoinColumn(name = "departure_station_id", referencedColumnName = "station_id")
+    @JoinColumn(name = "departure_station_id", referencedColumnName = "station_id", nullable = false)
     private Station departureStation;
 
     @ManyToOne
-    @JoinColumn(name = "arrival_station_id", referencedColumnName = "station_id")
+    @JoinColumn(name = "arrival_station_id", referencedColumnName = "station_id", nullable = false)
     private Station arrivalStation;
 
-    @Column(name = "distance")
+    @Column(name = "distance", nullable = false)
     private double distance;
 }

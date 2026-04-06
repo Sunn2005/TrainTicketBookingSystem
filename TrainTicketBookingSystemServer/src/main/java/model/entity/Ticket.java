@@ -18,35 +18,35 @@ import lombok.NoArgsConstructor;
 )
 public class Ticket {
     @Id
-    @Column(name = "ticket_id")
+    @Column(name = "ticket_id", nullable = false)
     private String ticketID;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "schedule_id")
+    @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
     @ManyToOne
-    @JoinColumn(name = "seat_id")
+    @JoinColumn(name = "seat_id", nullable = false)
     private Seat seat;
 
     @Column(name = "discount")
     private String discount;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private double price;
 
-    @Column(name = "final_price")
+    @Column(name = "final_price", nullable = false)
     private double finalPrice;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ticket_status")
+    @Column(name = "ticket_status", nullable = false)
     private TicketStatus ticketStatus;
 }

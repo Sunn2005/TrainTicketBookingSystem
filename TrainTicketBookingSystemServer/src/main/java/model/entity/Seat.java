@@ -19,18 +19,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "seats")
 public class Seat {
+
     @Id
-    @Column(name = "seat_id")
+    @Column(name = "seat_id", nullable = false)
     private String seatID;
 
     @ManyToOne
-    @JoinColumn(name = "train_id")
-    private Train train;
+    @JoinColumn(name = "carriage_id", nullable = false)
+    private Carriage carriage;
 
-    @Column(name = "seat_number")
-    private String seatNumber;
+    @Column(name = "seat_number", nullable = false)
+    private int seatNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "seat_type")
+    @Column(name = "seat_type", nullable = false)
     private SeatType seatType;
 }
