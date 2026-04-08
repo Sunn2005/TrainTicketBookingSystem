@@ -10,6 +10,8 @@ import util.JPAUtil;
 import java.util.UUID;
 import dao.UserDAO;
 import dao.RoleDAO;
+import java.util.List;
+import dto.TransactionDTO;
 
 public class UserService {
 
@@ -184,5 +186,149 @@ public class UserService {
 
     private String generateId(String prefix) {
         return prefix + "-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
+    }
+
+    public List<TransactionDTO> getTransactionHistory(String userId) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            User user = em.find(User.class, userId);
+            if (user == null) {
+                return java.util.Collections.emptyList();
+            }
+
+            String roleName = user.getRole() != null ? user.getRole().getRoleName() : "";
+            List<model.entity.Ticket> tickets = new java.util.ArrayList<>();
+
+            if ("MANAGER".equalsIgnoreCase(roleName) || "ADMIN".equalsIgnoreCase(roleName)) {
+                tickets = em.createQuery("SELECT t FROM Ticket t ORDER BY t.createAt DESC", model.entity.Ticket.class).getResultList();
+            } else if ("EMPLOYEE".equalsIgnoreCase(roleName)) {
+                tickets = em.createQuery("SELECT t FROM Ticket t WHERE t.user.userID = :userId ORDER BY t.createAt DESC", model.entity.Ticket.class)
+                        .setParameter("userId", userId)
+                        .getResultList();
+            } else {
+                return java.util.Collections.emptyList();
+            }
+
+            List<TransactionDTO> result = new java.util.ArrayList<>();
+            for (model.entity.Ticket t : tickets) {
+                TransactionDTO dto = new TransactionDTO();
+                dto.setTicketId(t.getTicketID());
+                dto.setEmployeeName(t.getUser() != null ? t.getUser().getFullName() : null);
+                dto.setCreatedAt(t.getCreateAt());
+
+                if (t.getCustomer() != null) {
+                    dto.setCustomerName(t.getCustomer().getFullName());
+                    dto.setCustomerCccd(t.getCustomer().getCustomerID());
+                }
+
+                dto.setPrice(t.getFinalPrice());
+                dto.setDiscount(t.getDiscount());
+
+                if (t.getSchedule() != null && t.getSchedule().getTrain() != null && t.getSchedule().getRoute() != null) {
+                    model.entity.Train train = t.getSchedule().getTrain();
+                    model.entity.Route route = t.getSchedule().getRoute();
+                    dto.setTrainName(train.getTrainName());
+                    dto.setDepartureStation(route.getDepartureStation().getStationName());
+                    dto.setArrivalStation(route.getArrivalStation().getStationName());
+                    dto.setDepartureTime(t.getSchedule().getDepartureTime());
+                    dto.setArrivalTime(t.getSchedule().getArrivalTime());
+                }
+
+                if (t.getSeat() != null) {
+                    dto.setSeatNumber(t.getSeat().getSeatNumber());
+                    if (t.getSeat().getCarriage() != null) {
+                        dto.setCarriageNumber(t.getSeat().getCarriage().getCarriageNumber());
+                    }
+                }
+
+                List<model.entity.Payment> payments = em.createQuery("SELECT p FROM Payment p WHERE p.ticket.ticketID = :ticketId", model.entity.Payment.class)
+                        .setParameter("ticketId", t.getTicketID())
+                        .getResultList();
+                if (!payments.isEmpty()) {
+                    dto.setPaymentMethod(payments.get(0).getPaymentMethod());
+                } else {
+                    dto.setPaymentMethod("N/A");
+                }
+
+                dto.setStatus(t.getTicketStatus());
+                result.add(dto);
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return java.util.Collections.emptyList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public dto.RevenueStatisticsResponse revenueStatistics(dto.RevenueStatisticsRequest request) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            User user = em.find(User.class, request.getManagerID());
+            if (user == null || user.getRole() == null || !"MANAGER".equalsIgnoreCase(user.getRole().getRoleName())) {
+                return new dto.RevenueStatisticsResponse(java.util.Collections.emptyMap());
+            }
+
+            String jpql = "SELECT t FROM Ticket t WHERE t.ticketStatus IN (model.entity.enums.TicketStatus.PAID, model.entity.enums.TicketStatus.USED)";
+
+            java.time.LocalDateTime startOfDay = null;
+            if (request.getStartDate() != null) {
+                startOfDay = request.getStartDate().atStartOfDay();
+                jpql += " AND t.createAt >= :startDate";
+            }
+
+            java.time.LocalDateTime endOfDay = null;
+            if (request.getEndDate() != null) {
+                endOfDay = request.getEndDate().atTime(23, 59, 59);
+                jpql += " AND t.createAt <= :endDate";
+            }
+
+            jakarta.persistence.TypedQuery<model.entity.Ticket> query = em.createQuery(jpql, model.entity.Ticket.class);
+            if (startOfDay != null) {
+                query.setParameter("startDate", startOfDay);
+            }
+            if (endOfDay != null) {
+                query.setParameter("endDate", endOfDay);
+            }
+
+            java.util.List<model.entity.Ticket> tickets = query.getResultList();
+
+            java.util.Map<java.time.LocalDate, Double> statsMap = new java.util.TreeMap<>();
+
+            for (model.entity.Ticket t : tickets) {
+                java.time.LocalDate date = t.getCreateAt().toLocalDate();
+                java.time.LocalDate keyDate = date;
+
+                if (request.getStatisticType() != null) {
+                    switch (request.getStatisticType()) {
+                        case DAY:
+                            keyDate = date;
+                            break;
+                        case MONTH:
+                            keyDate = java.time.LocalDate.of(date.getYear(), date.getMonth(), 1);
+                            break;
+                        case YEAR:
+                            keyDate = java.time.LocalDate.of(date.getYear(), 1, 1);
+                            break;
+                        case SEASON:
+                            int month = date.getMonthValue();
+                            int firstMonthOfSeason = ((month - 1) / 3) * 3 + 1;
+                            keyDate = java.time.LocalDate.of(date.getYear(), firstMonthOfSeason, 1);
+                            break;
+                    }
+                }
+
+                statsMap.put(keyDate, statsMap.getOrDefault(keyDate, 0.0) + t.getFinalPrice());
+            }
+
+            return new dto.RevenueStatisticsResponse(statsMap);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new dto.RevenueStatisticsResponse(java.util.Collections.emptyMap());
+        } finally {
+            em.close();
+        }
     }
 }

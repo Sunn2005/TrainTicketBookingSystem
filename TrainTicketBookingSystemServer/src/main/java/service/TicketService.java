@@ -30,6 +30,7 @@ import dao.PaymentDAO;
 import dao.ScheduleDAO;
 import dao.SeatDAO;
 
+
 public class TicketService {
     public static class SellTicketRequest {
         private String sellerUserId;
@@ -45,6 +46,8 @@ public class TicketService {
         private BigDecimal paymentAmount;
         private boolean paymentConfirmed;
         private String qrCode;
+
+
 
         public String getSellerUserId() {
             return sellerUserId;
@@ -221,28 +224,6 @@ public class TicketService {
     private final SeatDAO seatDAO = new SeatDAO();
 
     public TicketService() {
-    }
-
-    public boolean createNewTicket(Ticket ticket) {
-        if (ticket == null) {
-            return false;
-        }
-
-        EntityManager em = JPAUtil.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            em.merge(ticket);
-            tx.commit();
-            return true;
-        } catch (Exception e) {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-            return false;
-        } finally {
-            em.close();
-        }
     }
 
     public SellTicketResponse sellTicket(SellTicketRequest request) {

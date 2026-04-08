@@ -2,6 +2,8 @@ package controller;
 
 import model.entity.enums.UserStatus;
 import service.UserService;
+import dto.TransactionDTO;
+import java.util.List;
 
 public class UserController {
 
@@ -48,5 +50,19 @@ public class UserController {
      */
     public UserService.ActionResponse changeUserRole(String adminId, String targetUserId, String newRoleName) {
         return userService.changeUserRole(adminId, targetUserId, newRoleName);
+    }
+
+    /**
+     * API Lấy lịch sử giao dịch (Toàn bộ nếu là MANAGER, hoặc của chính User nếu là EMPLOYEE)
+     */
+    public List<TransactionDTO> getTransactionHistory(String userID) {
+        return userService.getTransactionHistory(userID);
+    }
+
+    /**
+     * API Thống kê doanh thu theo ngày, tháng, năm, quý (Dành cho MANAGER)
+     */
+    public dto.RevenueStatisticsResponse revenueStatistics(dto.RevenueStatisticsRequest request) {
+        return userService.revenueStatistics(request);
     }
 }

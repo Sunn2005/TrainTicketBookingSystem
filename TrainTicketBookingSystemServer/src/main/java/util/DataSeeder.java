@@ -51,6 +51,11 @@ public class DataSeeder {
             em.persist(dan);
             em.persist(hno);
 
+            for (int i = 5; i <= 50; i++) {
+                Station st = new Station("ST" + i, "Station " + i, "City " + i);
+                em.persist(st);
+            }
+
             // 4. Routes
             Route r1 = new Route("ROUTE_SGO_NTR", sgo, ntr, 411.0);
             Route r2 = new Route("ROUTE_NTR_DAN", ntr, dan, 524.0);
@@ -60,6 +65,11 @@ public class DataSeeder {
             em.persist(r2);
             em.persist(r3);
             em.persist(r4);
+
+            for (int i = 5; i <= 50; i++) {
+                Route r = new Route("ROUTE_" + i, sgo, hno, 100.0 + (i * 10));
+                em.persist(r);
+            }
 
             tx.commit();
             System.out.println("Basic data seeded successfully.");
@@ -86,6 +96,13 @@ public class DataSeeder {
             Map<Integer, String> t2Detail = new HashMap<>();
             t2Detail.put(1, "20-SOFT_SEAT");
             trainService.createTrain(new CreateTrainRequest(t2Detail, "SE2"));
+
+            for (int i = 3; i <= 50; i++) {
+                Map<Integer, String> tDetail = new HashMap<>();
+                tDetail.put(1, "30-SOFT_SEAT");
+                tDetail.put(2, "40-SOFT_SLEEPER");
+                trainService.createTrain(new CreateTrainRequest(tDetail, "TRN" + i));
+            }
 
             System.out.println("Trains seeded successfully.");
         } catch (Exception e) {
@@ -114,6 +131,14 @@ public class DataSeeder {
 
             em.persist(sch1);
             em.persist(sch2);
+
+            for (int i = 3; i <= 50; i++) {
+                Route r = em.find(Route.class, "ROUTE_" + i);
+                if (r == null) r = routeSgoHno;
+                Train t = em.createQuery("SELECT t FROM Train t WHERE t.trainName = 'TRN" + i + "'", Train.class).setMaxResults(1).getResultStream().findFirst().orElse(se1);
+                Schedule sch = new Schedule("SCH_" + i, t, r, tomorrow1930.plusHours(i), tomorrow1930.plusHours(i + 10));
+                em.persist(sch);
+            }
 
             tx.commit();
             System.out.println("Schedules seeded successfully.");

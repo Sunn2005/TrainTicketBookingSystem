@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,6 +47,9 @@ public class Ticket {
 
     @Column(name = "final_price", nullable = false)
     private double finalPrice;
+
+    @Column(name = "create_at", nullable = false)
+    private LocalDateTime createAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ticket_status", nullable = false)
