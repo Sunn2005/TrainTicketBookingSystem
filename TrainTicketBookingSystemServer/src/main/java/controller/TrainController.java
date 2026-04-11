@@ -1,6 +1,7 @@
 package controller;
 
 import dto.CreateTrainRequest;
+import dto.UpdateTrainRequest;
 import service.TrainService;
 
 public class TrainController {
@@ -12,5 +13,13 @@ public class TrainController {
 
     public void createTrain(CreateTrainRequest request) {
         trainService.createTrain(request);
+    }
+
+    public void updateTrain(UpdateTrainRequest request) {
+        trainService.updateTrain(request);
+    }
+
+    public void deleteTrain(String trainID) {
+        trainService.deleteTrain(trainID);
     }
 }

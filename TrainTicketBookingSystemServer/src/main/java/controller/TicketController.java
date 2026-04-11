@@ -1,7 +1,10 @@
 package controller;
 
+import dto.ActionResponse;
+import dto.SellTicketRequest;
 import model.entity.Schedule;
 import model.entity.Seat;
+import model.entity.enums.PaymentStatus;
 import service.TicketService;
 import dto.ScheduleInfoResponse;
 
@@ -19,9 +22,9 @@ public class TicketController {
         this.ticketService = ticketService;
     }
 
-    public List<Schedule> searchSchedules(String departureStationId, String arrivalStationId, LocalDate travelDate) {
-        return ticketService.searchSchedules(departureStationId, arrivalStationId, travelDate);
-    }
+//    public List<Schedule> searchSchedules(String departureStationId, String arrivalStationId, LocalDate travelDate) {
+//        return ticketService.searchSchedules(departureStationId, arrivalStationId, travelDate);
+//    }
 
     public List<ScheduleInfoResponse> getSchedulesWithAvailableSeats(String departureStationId, String arrivalStationId, LocalDate travelDate) {
         return ticketService.getSchedulesWithAvailableSeats(departureStationId, arrivalStationId, travelDate);
@@ -31,15 +34,19 @@ public class TicketController {
         return ticketService.findAvailableSeats(scheduleId);
     }
 
-    public TicketService.SellTicketResponse sellTicket(TicketService.SellTicketRequest request) {
+    public ActionResponse sellTicket(SellTicketRequest request) {
         return ticketService.sellTicket(request);
     }
 
-    public TicketService.ActionResponse cancelTicket(String ticketId, String cccd) {
+    public ActionResponse cancelTicket(String ticketId, String cccd) {
         return ticketService.cancelTicket(ticketId, cccd);
     }
 
-    public TicketService.ActionResponse exchangeTicket(String ticketId, String newScheduleId, String newSeatId) {
+    public ActionResponse exchangeTicket(String ticketId, String newScheduleId, String newSeatId) {
         return ticketService.exchangeTicket(ticketId, newScheduleId, newSeatId);
+    }
+
+    public ActionResponse updatePaymentStatus(String paymentId, PaymentStatus status) {
+        return ticketService.updatePaymentStatus(paymentId, status);
     }
 }

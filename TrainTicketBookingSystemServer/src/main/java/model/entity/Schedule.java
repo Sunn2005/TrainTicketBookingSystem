@@ -35,5 +35,5 @@ public class Schedule {
 
     @Column(name = "arrival_time", nullable = false)
     private LocalDateTime arrivalTime;
-
+ 
 }

@@ -1,8 +1,9 @@
 package controller;
 
+import dto.*;
 import model.entity.enums.UserStatus;
 import service.UserService;
-import dto.TransactionDTO;
+
 import java.util.List;
 
 public class UserController {
@@ -20,35 +21,35 @@ public class UserController {
     /**
      * API Tạo mới User
      */
-    public UserService.ActionResponse createUser(String userName, String password, String fullName, String roleId) {
+    public ActionResponse createUser(String userName, String password, String fullName, String roleId) {
         return userService.createUser(userName, password, fullName, roleId);
     }
 
     /**
      * API Đổi mật khẩu
      */
-    public UserService.ActionResponse changePassword(String userId, String oldPassword, String newPassword) {
+    public ActionResponse changePassword(String userId, String oldPassword, String newPassword) {
         return userService.changePassword(userId, oldPassword, newPassword);
     }
 
     /**
      * API Đổi trạng thái (UserStatus)
      */
-    public UserService.ActionResponse changeStatus(String userId, UserStatus status) {
+    public ActionResponse changeStatus(String userId, UserStatus status) {
         return userService.changeStatus(userId, status);
     }
 
     /**
      * API Thay đổi Tên đầy đủ
      */
-    public UserService.ActionResponse changeFullName(String userId, String newFullName) {
+    public ActionResponse changeFullName(String userId, String newFullName) {
         return userService.changeFullName(userId, newFullName);
     }
 
     /**
      * API Thay đổi chức vụ User (Chỉ ADMIN)
      */
-    public UserService.ActionResponse changeUserRole(String adminId, String targetUserId, String newRoleName) {
+    public ActionResponse changeUserRole(String adminId, String targetUserId, String newRoleName) {
         return userService.changeUserRole(adminId, targetUserId, newRoleName);
     }
 
@@ -62,7 +63,22 @@ public class UserController {
     /**
      * API Thống kê doanh thu theo ngày, tháng, năm, quý (Dành cho MANAGER)
      */
-    public dto.RevenueStatisticsResponse revenueStatistics(dto.RevenueStatisticsRequest request) {
+    public RevenueStatisticsResponse revenueStatistics(RevenueStatisticsRequest request) {
         return userService.revenueStatistics(request);
     }
+
+    /**
+     * API Thống kê doanh thu theo loại vé (ghế mềm, giường mềm) (Dành cho MANAGER)
+     */
+    public SeatTypeRevenueResponse seatTypeRevenue(SeatTypeRevenueRequest request) {
+        return userService.seatTypeRevenue(request);
+    }
+
+    /**
+     * API Thống kê doanh thu theo lịch trình tàu (Dành cho MANAGER)
+     */
+    public ScheduleStatisticsResponse scheduleStatistics(ScheduleStatisticsRequest request) {
+        return userService.scheduleStatistics(request);
+    }
+
 }

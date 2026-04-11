@@ -1,5 +1,8 @@
 package service;
 
+import dto.ActionResponse;
+import dto.RevenueStatisticsRequest;
+import dto.SeatTypeRevenueRequest;
 import model.entity.Role;
 import model.entity.User;
 import model.entity.enums.UserStatus;
@@ -14,33 +17,6 @@ import java.util.List;
 import dto.TransactionDTO;
 
 public class UserService {
-
-    public static class ActionResponse {
-        private boolean success;
-        private String message;
-
-        public ActionResponse(boolean success, String message) {
-            this.success = success;
-            this.message = message;
-        }
-
-        public static ActionResponse success(String message) {
-            return new ActionResponse(true, message);
-        }
-
-        public static ActionResponse fail(String message) {
-            return new ActionResponse(false, message);
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
-
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
 
@@ -262,7 +238,7 @@ public class UserService {
         }
     }
 
-    public dto.RevenueStatisticsResponse revenueStatistics(dto.RevenueStatisticsRequest request) {
+    public dto.RevenueStatisticsResponse revenueStatistics(RevenueStatisticsRequest request) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             User user = em.find(User.class, request.getManagerID());
@@ -327,6 +303,99 @@ public class UserService {
         } catch (Exception e) {
             e.printStackTrace();
             return new dto.RevenueStatisticsResponse(java.util.Collections.emptyMap());
+        } finally {
+            em.close();
+        }
+    }
+
+    public dto.SeatTypeRevenueResponse seatTypeRevenue(SeatTypeRevenueRequest request) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            User user = em.find(User.class, request.getManagerID());
+            if (user == null || user.getRole() == null || !"MANAGER".equalsIgnoreCase(user.getRole().getRoleName())) {
+                return new dto.SeatTypeRevenueResponse(java.util.Collections.emptyList(), 0.0);
+            }
+
+            String jpql = "SELECT t.seat.seatType, COUNT(t), SUM(t.finalPrice) FROM Ticket t " +
+                          "WHERE t.ticketStatus IN (model.entity.enums.TicketStatus.PAID, model.entity.enums.TicketStatus.USED) " +
+                          "GROUP BY t.seat.seatType";
+
+            java.util.List<Object[]> results = em.createQuery(jpql, Object[].class).getResultList();
+
+            java.util.List<dto.SeatTypeRevenueResponse.SeatTypeRevenueDetail> details = new java.util.ArrayList<>();
+            double totalRevenue = 0.0;
+
+            for (Object[] row : results) {
+                if (row[0] == null) continue;
+                model.entity.enums.SeatType type = (model.entity.enums.SeatType) row[0];
+                long seatNum = ((Number) row[1]).longValue();
+                double rev = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+
+                details.add(new dto.SeatTypeRevenueResponse.SeatTypeRevenueDetail(type, seatNum, rev));
+                totalRevenue += rev;
+            }
+
+            return new dto.SeatTypeRevenueResponse(details, totalRevenue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new dto.SeatTypeRevenueResponse(java.util.Collections.emptyList(), 0.0);
+        } finally {
+            em.close();
+        }
+    }
+
+    public dto.ScheduleStatisticsResponse scheduleStatistics(dto.ScheduleStatisticsRequest request) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            User user = em.find(User.class, request.getManagerID());
+            if (user == null || user.getRole() == null || !"MANAGER".equalsIgnoreCase(user.getRole().getRoleName())) {
+                return new dto.ScheduleStatisticsResponse(java.util.Collections.emptyList());
+            }
+
+            java.util.List<model.entity.Schedule> schedules = em.createQuery("SELECT s FROM Schedule s", model.entity.Schedule.class).getResultList();
+            java.util.List<dto.ScheduleStatisticsResponse.ScheduleStatisticDetail> details = new java.util.ArrayList<>();
+
+            for (model.entity.Schedule s : schedules) {
+                // Calculate total seats
+                Long totalSeats = em.createQuery("SELECT COUNT(st) FROM Seat st WHERE st.carriage.train = :train", Long.class)
+                                    .setParameter("train", s.getTrain())
+                                    .getSingleResult();
+                if (totalSeats == null) totalSeats = 0L;
+
+                // Calculate total tickets and revenue for the schedule
+                Object[] stats = (Object[]) em.createQuery("SELECT COUNT(t), SUM(t.finalPrice) FROM Ticket t WHERE t.schedule = :schedule AND t.ticketStatus IN (model.entity.enums.TicketStatus.PAID, model.entity.enums.TicketStatus.USED)", Object[].class)
+                                              .setParameter("schedule", s)
+                                              .getSingleResult();
+
+                long totalTickets = (stats[0] != null) ? ((Number) stats[0]).longValue() : 0L;
+                double totalRevenue = (stats[1] != null) ? ((Number) stats[1]).doubleValue() : 0.0;
+                long availableSeats = totalSeats - totalTickets;
+                if (availableSeats < 0) availableSeats = 0; // Safety guard
+
+                double loadFactor = 0.0;
+                if (totalSeats > 0) {
+                    loadFactor = (double) totalTickets / totalSeats * 100.0;
+                }
+
+                String routeName = s.getRoute() != null && s.getRoute().getDepartureStation() != null && s.getRoute().getArrivalStation() != null
+                    ? s.getRoute().getDepartureStation().getStationName() + " → " + s.getRoute().getArrivalStation().getStationName()
+                    : "Unknown Route";
+
+                details.add(new dto.ScheduleStatisticsResponse.ScheduleStatisticDetail(
+                    s.getScheduleID(),
+                    routeName,
+                    totalTickets,
+                    totalSeats,
+                    availableSeats,
+                    totalRevenue,
+                    loadFactor
+                ));
+            }
+
+            return new dto.ScheduleStatisticsResponse(details);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new dto.ScheduleStatisticsResponse(java.util.Collections.emptyList());
         } finally {
             em.close();
         }

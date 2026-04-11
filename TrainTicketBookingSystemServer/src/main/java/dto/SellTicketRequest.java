@@ -19,14 +19,7 @@ public class SellTicketRequest {
     private String customerCccd;
     private CustomerType customerType;
 
-    private String discount;
-    private double price;
-    private Double finalPrice;
+    private boolean isQRPaymentMethod;
 
-    private String paymentMethod;
-    private BigDecimal paymentAmount;
-    private boolean paymentConfirmed;
-
-    private String qrCode;
 }
 

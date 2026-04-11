@@ -1,12 +1,10 @@
 package service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dto.ActionResponse;
+import dto.SellTicketRequest;
+import model.entity.*;
 import util.JPAUtil;
-import model.entity.Customer;
-import model.entity.Payment;
-import model.entity.Schedule;
-import model.entity.Seat;
-import model.entity.Ticket;
-import model.entity.User;
 import model.entity.enums.CustomerType;
 import model.entity.enums.PaymentStatus;
 import model.entity.enums.TicketStatus;
@@ -15,6 +13,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,204 +31,34 @@ import dao.ScheduleDAO;
 import dao.SeatDAO;
 
 
+
+
 public class TicketService {
-    public static class SellTicketRequest {
-        private String sellerUserId;
-        private String scheduleId;
-        private String seatId;
-        private String customerName;
-        private String customerCccd;
-        private CustomerType customerType;
-        private String discount;
-        private double price;
-        private Double finalPrice;
-        private String paymentMethod;
-        private BigDecimal paymentAmount;
-        private boolean paymentConfirmed;
-        private String qrCode;
-
-
-
-        public String getSellerUserId() {
-            return sellerUserId;
-        }
-
-        public void setSellerUserId(String sellerUserId) {
-            this.sellerUserId = sellerUserId;
-        }
-
-        public String getScheduleId() {
-            return scheduleId;
-        }
-
-        public void setScheduleId(String scheduleId) {
-            this.scheduleId = scheduleId;
-        }
-
-        public String getSeatId() {
-            return seatId;
-        }
-
-        public void setSeatId(String seatId) {
-            this.seatId = seatId;
-        }
-
-        public String getCustomerName() {
-            return customerName;
-        }
-
-        public void setCustomerName(String customerName) {
-            this.customerName = customerName;
-        }
-
-        public String getCustomerCccd() {
-            return customerCccd;
-        }
-
-        public void setCustomerCccd(String customerCccd) {
-            this.customerCccd = customerCccd;
-        }
-
-        public CustomerType getCustomerType() {
-            return customerType;
-        }
-
-        public void setCustomerType(CustomerType customerType) {
-            this.customerType = customerType;
-        }
-
-        public String getDiscount() {
-            return discount;
-        }
-
-        public void setDiscount(String discount) {
-            this.discount = discount;
-        }
-
-        public double getPrice() {
-            return price;
-        }
-
-        public void setPrice(double price) {
-            this.price = price;
-        }
-
-        public Double getFinalPrice() {
-            return finalPrice;
-        }
-
-        public void setFinalPrice(Double finalPrice) {
-            this.finalPrice = finalPrice;
-        }
-
-        public String getPaymentMethod() {
-            return paymentMethod;
-        }
-
-        public void setPaymentMethod(String paymentMethod) {
-            this.paymentMethod = paymentMethod;
-        }
-
-        public BigDecimal getPaymentAmount() {
-            return paymentAmount;
-        }
-
-        public void setPaymentAmount(BigDecimal paymentAmount) {
-            this.paymentAmount = paymentAmount;
-        }
-
-        public boolean isPaymentConfirmed() {
-            return paymentConfirmed;
-        }
-
-        public void setPaymentConfirmed(boolean paymentConfirmed) {
-            this.paymentConfirmed = paymentConfirmed;
-        }
-
-        public String getQrCode() {
-            return qrCode;
-        }
-
-        public void setQrCode(String qrCode) {
-            this.qrCode = qrCode;
-        }
-    }
-
-    public static class SellTicketResponse {
-        private boolean success;
-        private String message;
-        private String ticketId;
-        private String paymentId;
-
-        public SellTicketResponse(boolean success, String message, String ticketId, String paymentId) {
-            this.success = success;
-            this.message = message;
-            this.ticketId = ticketId;
-            this.paymentId = paymentId;
-        }
-
-        public static SellTicketResponse success(String ticketId, String paymentId) {
-            return new SellTicketResponse(true, "Sell ticket successfully.", ticketId, paymentId);
-        }
-
-        public static SellTicketResponse fail(String message) {
-            return new SellTicketResponse(false, message, null, null);
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public String getTicketId() {
-            return ticketId;
-        }
-
-        public String getPaymentId() {
-            return paymentId;
-        }
-    }
-
-    public static class ActionResponse {
-        private boolean success;
-        private String message;
-
-        public ActionResponse(boolean success, String message) {
-            this.success = success;
-            this.message = message;
-        }
-
-        public static ActionResponse success(String message) {
-            return new ActionResponse(true, message);
-        }
-
-        public static ActionResponse fail(String message) {
-            return new ActionResponse(false, message);
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
-
     private final TicketDAO ticketDAO = new TicketDAO();
     private final PaymentDAO paymentDAO = new PaymentDAO();
     private final ScheduleDAO scheduleDAO = new ScheduleDAO();
     private final SeatDAO seatDAO = new SeatDAO();
 
+    private static final String FILE_PATH = "json/basePrice.json";
+    private final ObjectMapper mapper = new ObjectMapper();
+    private BasePrice basePrice;
+
+
+
+
     public TicketService() {
+        {
+            try {
+                basePrice = mapper.readValue(new File(FILE_PATH), BasePrice.class);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
-    public SellTicketResponse sellTicket(SellTicketRequest request) {
+    public ActionResponse sellTicket(SellTicketRequest request) {
         if (request == null) {
-            return SellTicketResponse.fail("Request is required.");
+            return ActionResponse.fail("Request is required.");
         }
 
         EntityManager em = JPAUtil.getEntityManager();
@@ -274,31 +104,34 @@ public class TicketService {
             customer.setCustomerType(cType);
             customer = em.merge(customer);
 
-            // Xử lý logic Giảm giá theo đối tượng (Dựa theo nghiệp vụ)
-            // - Trẻ em (Dưới 6 tuổi: không mua vé ngồi chung, 6-10 tuổi: Giảm 25%)
-            // - Sinh viên: Giảm 10%
-            // - Người cao tuổi (>= 60 tuổi): Giảm 15%
-            // - Người lớn: Giá gốc
-            double basePrice = request.getPrice();
-            double calculatedFinalPrice = basePrice;
+            double distance = schedule.getRoute().getDistance();
+            double seatFee = 0;
+            if (seat.getSeatType() == model.entity.enums.SeatType.SOFT_SEAT) {
+                seatFee = this.basePrice.getSoftSeatFee();
+            } else if (seat.getSeatType() == model.entity.enums.SeatType.SOFT_SLEEPER) {
+                seatFee = this.basePrice.getSoftSleeperFee();
+            }
+            double basePriceVal = distance * this.basePrice.getPricePerDistance() + seatFee;
+
+            double calculatedFinalPrice = basePriceVal;
             String computedDiscount = "0%";
 
             switch (cType) {
                 case CHILD:
-                    calculatedFinalPrice = basePrice * 0.75; // Giảm 25%
-                    computedDiscount = "25%";
+                    calculatedFinalPrice = basePriceVal * this.basePrice.getChildDiscount();
+                    computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getChildDiscount()) * 100);
                     break;
                 case STUDENT:
-                    calculatedFinalPrice = basePrice * 0.90; // Giảm 10%
-                    computedDiscount = "10%";
+                    calculatedFinalPrice = basePriceVal * this.basePrice.getStudentDiscount();
+                    computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getStudentDiscount()) * 100);
                     break;
                 case ELDERLY:
-                    calculatedFinalPrice = basePrice * 0.85; // Giảm 15%
-                    computedDiscount = "15%";
+                    calculatedFinalPrice = basePriceVal * this.basePrice.getElderlyDiscount();
+                    computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getElderlyDiscount()) * 100);
                     break;
                 case ADULT:
                 default:
-                    calculatedFinalPrice = basePrice;
+                    calculatedFinalPrice = basePriceVal;
                     computedDiscount = "0%";
                     break;
             }
@@ -310,38 +143,45 @@ public class TicketService {
             ticket.setSchedule(schedule);
             ticket.setSeat(seat);
             ticket.setDiscount(computedDiscount);
-            ticket.setPrice(basePrice);
+            ticket.setPrice(basePriceVal);
             ticket.setFinalPrice(calculatedFinalPrice);
-            ticket.setTicketStatus(request.isPaymentConfirmed() ? TicketStatus.PAID : TicketStatus.PENDING);
+            ticket.setCreateAt(LocalDateTime.now());
+            ticket.setTicketStatus(TicketStatus.PENDING); // qr payment or cash
             em.persist(ticket);
 
             Payment payment = new Payment();
             payment.setPaymentID(generateId("PAY"));
             payment.setTicket(ticket);
-            payment.setPaymentMethod(request.getPaymentMethod());
-            // Ép buộc số tiền thanh toán phải bằng với giá đã tính phần trăm từ máy chủ
+            payment.setPaymentMethod(request.isQRPaymentMethod() ? "QR_CODE" : "CASH");
             payment.setAmount(BigDecimal.valueOf(calculatedFinalPrice));
             payment.setPaymentTime(LocalDateTime.now());
-            payment.setPaymentStatus(request.isPaymentConfirmed() ? PaymentStatus.SUCCESS : PaymentStatus.PENDING);
+            payment.setPaymentStatus(PaymentStatus.PENDING); // QR or cash defaults to pending until confirmed, or maybe CASH is instant?
             em.persist(payment);
 
             tx.commit();
-            return SellTicketResponse.success(ticket.getTicketID(), payment.getPaymentID());
+
+            if (request.isQRPaymentMethod()) {
+                String dummyQrUrl = "https://dummy-qr-url.com/pay/" + payment.getPaymentID();
+                return ActionResponse.success(ticket.getTicketID() + "-" + dummyQrUrl);
+            } else {
+                return ActionResponse.success(ticket.getTicketID());
+            }
+
         } catch (IllegalArgumentException | IllegalStateException e) {
             if (tx.isActive()) {
                 tx.rollback();
             }
-            return SellTicketResponse.fail(e.getMessage());
+            return ActionResponse.fail(e.getMessage());
         } catch (PersistenceException e) {
             if (tx.isActive()) {
                 tx.rollback();
             }
-            return SellTicketResponse.fail("Cannot create ticket. Data constraint was violated.");
+            return ActionResponse.fail("Cannot create ticket. Data constraint was violated.");
         } catch (Exception e) {
             if (tx.isActive()) {
                 tx.rollback();
             }
-            return SellTicketResponse.fail("Unexpected error while selling ticket.");
+            return ActionResponse.fail("Unexpected error while selling ticket.");
         } finally {
             em.close();
         }
@@ -490,6 +330,40 @@ public class TicketService {
         }
     }
 
+    public ActionResponse updatePaymentStatus(String paymentId, PaymentStatus status) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            Payment payment = em.find(Payment.class, paymentId);
+            if (payment == null) {
+                return ActionResponse.fail("Không tìm thấy giao dịch (Payment): " + paymentId);
+            }
+
+            payment.setPaymentStatus(status);
+            em.merge(payment);
+
+            Ticket ticket = payment.getTicket();
+            if (ticket != null) {
+                if (status == PaymentStatus.SUCCESS && ticket.getTicketStatus() == TicketStatus.PENDING) {
+                    ticket.setTicketStatus(TicketStatus.PAID);
+                    em.merge(ticket);
+                } else if (status == PaymentStatus.FAILED && ticket.getTicketStatus() == TicketStatus.PENDING) {
+                    ticket.setTicketStatus(TicketStatus.CANCELLED);
+                    em.merge(ticket);
+                }
+            }
+
+            tx.commit();
+            return ActionResponse.success("Cập nhật trạng thái thanh toán thành công: " + status);
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            return ActionResponse.fail("Lỗi khi cập nhật trạng thái thanh toán: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
     public List<Schedule> searchSchedules(String departureStationId, String arrivalStationId, LocalDate travelDate) {
         if (travelDate == null) {
             throw new IllegalArgumentException("travelDate is required.");
@@ -540,22 +414,6 @@ public class TicketService {
         } finally {
             em.close();
         }
-    }
-
-    private double resolveFinalPrice(SellTicketRequest request) {
-        if (request.getFinalPrice() != null) {
-            return request.getFinalPrice();
-        }
-
-        return request.getPrice();
-    }
-
-    private BigDecimal resolveAmount(SellTicketRequest request, Ticket ticket) {
-        if (request.getPaymentAmount() != null) {
-            return request.getPaymentAmount();
-        }
-
-        return BigDecimal.valueOf(ticket.getFinalPrice());
     }
 
     private String generateId(String prefix) {

@@ -1,6 +1,7 @@
 package controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dto.BasePrice;
+import model.entity.BasePrice;
+
 import java.io.File;
 import java.io.IOException;
 public class PriceController {
