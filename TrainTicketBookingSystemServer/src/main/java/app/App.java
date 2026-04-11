@@ -1,16 +1,16 @@
 package app;
 
-import controller.TicketController;
-import jakarta.persistence.EntityManager;
-import util.JPAUtil;
-import model.entity.Seat;
-import model.entity.enums.CustomerType;
-import service.TicketService;
-import dto.ScheduleInfoResponse;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-
 public class App {
+    public static void main(String[] args) {
+        int port = SocketServer.DEFAULT_PORT;
+        if (args.length > 0) {
+            try {
+                port = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid port. Use default port " + SocketServer.DEFAULT_PORT);
+            }
+        }
+
+        new SocketServer().start(port);
+    }
 }

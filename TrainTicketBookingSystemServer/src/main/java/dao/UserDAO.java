@@ -1,6 +1,7 @@
 package dao;
 
 import model.entity.User;
+import java.util.Optional;
 
 public class UserDAO extends BaseDAO<User, String> {
     public UserDAO() {
@@ -14,6 +15,18 @@ public class UserDAO extends BaseDAO<User, String> {
                     .setParameter("userName", userName)
                     .getSingleResult();
             return count > 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Optional<User> findByUserName(String userName) {
+        jakarta.persistence.EntityManager em = util.JPAUtil.getEntityManager();
+        try {
+            return em.createQuery("SELECT u FROM User u WHERE u.userName = :userName", User.class)
+                    .setParameter("userName", userName)
+                    .getResultStream()
+                    .findFirst();
         } finally {
             em.close();
         }

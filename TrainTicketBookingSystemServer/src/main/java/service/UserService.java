@@ -15,12 +15,34 @@ import dao.UserDAO;
 import dao.RoleDAO;
 import java.util.List;
 import dto.TransactionDTO;
+import dto.LoginResponse;
 
 public class UserService {
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
 
     public UserService() {
+    }
+
+    public LoginResponse login(String userName, String password) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            User user = userDAO.findByUserName(userName).orElse(null);
+            if (user == null) {
+                return LoginResponse.fail("Tên đăng nhập không tồn tại.");
+            }
+            if (!user.getPassword().equals(password)) {
+                return LoginResponse.fail("Mật khẩu không chính xác.");
+            }
+            if (user.getUserStatus() == UserStatus.INACTIVE) {
+                return LoginResponse.fail("Tài khoản đã vô hiệu hoá.");
+            }
+            return LoginResponse.success(user.getUserID(), user.getFullName(), user.getRole().getRoleName());
+        } catch (Exception e) {
+            return LoginResponse.fail("Lỗi đăng nhập: " + e.getMessage());
+        } finally {
+            em.close();
+        }
     }
 
     public ActionResponse createUser(String userName, String password, String fullName, String roleId) {

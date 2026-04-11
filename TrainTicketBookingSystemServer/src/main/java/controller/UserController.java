@@ -19,6 +19,13 @@ public class UserController {
     }
 
     /**
+     * API Đăng nhập
+     */
+    public LoginResponse login(String userName, String password) {
+        return userService.login(userName, password);
+    }
+
+    /**
      * API Tạo mới User
      */
     public ActionResponse createUser(String userName, String password, String fullName, String roleId) {
