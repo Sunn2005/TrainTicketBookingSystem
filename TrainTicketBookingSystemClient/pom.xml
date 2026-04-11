@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>iuh.fit</groupId>
-    <artifactId>TrainTicketBookingSystemGUI</artifactId>
+    <artifactId>TrainTicketBookingSystemClient</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>TrainTicketBookingSystemGUI</name>
+    <name>TrainTicketBookingSystemClient</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,6 +15,18 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>iuh.fit</groupId>
+            <artifactId>TrainTicketBookingSystemServer</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/TrainTicketBookingSystemServer-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>7.0.4.Final</version>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -61,7 +73,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                iuh.fit.trainticketbookingsystemgui/iuh.fit.trainticketbookingsystemgui.HelloApplication
+                                iuh.fit.trainticketbookingsystemclient/iuh.fit.HelloApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

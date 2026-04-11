@@ -43,6 +43,7 @@ public class ScheduleService {
             schedule.setRoute(route);
             schedule.setDepartureTime(request.getDepartureTime());
             schedule.setArrivalTime(request.getArrivalTime());
+            schedule.setScheduleStatus(model.entity.enums.ScheduleStatus.ENABLED);
 
             em.persist(schedule);
 
@@ -121,7 +122,8 @@ public class ScheduleService {
                 throw new RuntimeException("Schedule not found");
             }
 
-            em.remove(schedule);
+            schedule.setScheduleStatus(model.entity.enums.ScheduleStatus.DISABLED);
+            em.merge(schedule);
 
             tx.commit();
         } catch (Exception e) {

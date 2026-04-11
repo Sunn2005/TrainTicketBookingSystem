@@ -22,6 +22,7 @@ public class ScheduleDAO extends BaseDAO<Schedule, String> {
                                     + "AND s.route.arrivalStation.stationID = :arrivalId "
                                     + "AND s.departureTime >= :fromTime "
                                     + "AND s.departureTime < :toTime "
+                                    + "AND s.scheduleStatus = model.entity.enums.ScheduleStatus.ENABLED "
                                     + "ORDER BY s.departureTime", Schedule.class)
                     .setParameter("departureId", departureStationId)
                     .setParameter("arrivalId", arrivalStationId)

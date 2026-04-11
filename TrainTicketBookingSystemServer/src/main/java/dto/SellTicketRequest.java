@@ -5,21 +5,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SellTicketRequest {
     private String sellerUserId;
-    private String scheduleId;
-    private String seatId;
-
-    private String customerName;
-    private String customerCccd;
-    private CustomerType customerType;
-
     private boolean isQRPaymentMethod;
+    private List<TicketDetail> tickets;
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TicketDetail {
+        private String scheduleId;
+        private String seatId;
+        private String customerName;
+        private String customerCccd;
+        private CustomerType customerType;
+    }
 }
-

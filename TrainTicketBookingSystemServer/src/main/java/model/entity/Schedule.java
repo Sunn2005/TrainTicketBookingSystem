@@ -1,14 +1,10 @@
 package model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import model.entity.enums.ScheduleStatus;
 
 import java.time.LocalDateTime;
 
@@ -35,5 +31,8 @@ public class Schedule {
 
     @Column(name = "arrival_time", nullable = false)
     private LocalDateTime arrivalTime;
- 
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "schedule_status", nullable = false)
+    private ScheduleStatus scheduleStatus;
 }

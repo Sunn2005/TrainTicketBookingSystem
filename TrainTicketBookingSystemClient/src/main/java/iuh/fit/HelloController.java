@@ -1,4 +1,4 @@
-package iuh.fit.trainticketbookingsystemgui;
+package iuh.fit;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

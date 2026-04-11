@@ -38,6 +38,7 @@ public class TicketService {
     private final PaymentDAO paymentDAO = new PaymentDAO();
     private final ScheduleDAO scheduleDAO = new ScheduleDAO();
     private final SeatDAO seatDAO = new SeatDAO();
+    private final VietQRService vietQRService = new VietQRService();
 
     private static final String FILE_PATH = "json/basePrice.json";
     private final ObjectMapper mapper = new ObjectMapper();
@@ -75,96 +76,121 @@ public class TicketService {
                 throw new IllegalArgumentException("Seller is inactive: " + request.getSellerUserId());
             }
 
-            Schedule schedule = em.find(Schedule.class, request.getScheduleId());
-            if (schedule == null) {
-                throw new IllegalArgumentException("Schedule not found: " + request.getScheduleId());
+            if (request.getTickets() == null || request.getTickets().isEmpty()) {
+                return ActionResponse.fail("No tickets to sell.");
             }
 
-            Seat seat = em.find(Seat.class, request.getSeatId());
-            if (seat == null) {
-                throw new IllegalArgumentException("Seat not found: " + request.getSeatId());
+            List<Ticket> savedTickets = new ArrayList<>();
+            double totalFinalPrice = 0.0;
+            List<String> ticketIds = new ArrayList<>();
+
+            for (SellTicketRequest.TicketDetail detail : request.getTickets()) {
+                Schedule schedule = em.find(Schedule.class, detail.getScheduleId());
+                if (schedule == null || schedule.getScheduleStatus() == model.entity.enums.ScheduleStatus.DISABLED) {
+                    throw new IllegalArgumentException("Không tìm thấy lịch trình hoặc lịch trình đã bị vô hiệu hóa.");
+                }
+
+                // Seat validation
+                Seat seat = null;
+                if (detail.getSeatId() != null) {
+                    seat = em.find(Seat.class, detail.getSeatId());
+                    if (seat == null) {
+                        throw new IllegalArgumentException("Seat not found: " + detail.getSeatId());
+                    }
+
+                    if (!seat.getCarriage().getTrain().getTrainID().equals(schedule.getTrain().getTrainID())) {
+                        throw new IllegalArgumentException("Seat does not belong to schedule's train.");
+                    }
+
+                    if (ticketDAO.isSeatBooked(detail.getScheduleId(), detail.getSeatId())) {
+                        throw new IllegalStateException("Ghế đã có người đặt trên chuyến này.");
+                    }
+                }
+
+                // Customer
+                Customer customer = em.find(Customer.class, detail.getCustomerCccd());
+                if (customer == null) {
+                    customer = new Customer();
+                    customer.setCustomerID(detail.getCustomerCccd());
+                }
+                customer.setFullName(detail.getCustomerName());
+                CustomerType cType = detail.getCustomerType() == null ? CustomerType.ADULT : detail.getCustomerType();
+                customer.setCustomerType(cType);
+                customer = em.merge(customer);
+
+                double distance = schedule.getRoute().getDistance();
+                double seatFee = 0;
+                if (seat != null) {
+                    if (seat.getSeatType() == model.entity.enums.SeatType.SOFT_SEAT) {
+                        seatFee = this.basePrice.getSoftSeatFee();
+                    } else if (seat.getSeatType() == model.entity.enums.SeatType.SOFT_SLEEPER) {
+                        seatFee = this.basePrice.getSoftSleeperFee();
+                    }
+                }
+                double basePriceVal = distance * this.basePrice.getPricePerDistance() + seatFee;
+
+                double calculatedFinalPrice = basePriceVal;
+                String computedDiscount = "0%";
+
+                switch (cType) {
+                    case CHILD:
+                        calculatedFinalPrice = basePriceVal * this.basePrice.getChildDiscount();
+                        computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getChildDiscount()) * 100);
+                        break;
+                    case STUDENT:
+                        calculatedFinalPrice = basePriceVal * this.basePrice.getStudentDiscount();
+                        computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getStudentDiscount()) * 100);
+                        break;
+                    case ELDERLY:
+                        calculatedFinalPrice = basePriceVal * this.basePrice.getElderlyDiscount();
+                        computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getElderlyDiscount()) * 100);
+                        break;
+                    case ADULT:
+                    default:
+                        calculatedFinalPrice = basePriceVal;
+                        computedDiscount = "0%";
+                        break;
+                }
+
+                Ticket ticket = new Ticket();
+                ticket.setTicketID(generateId("TICKET"));
+                ticket.setUser(seller);
+                ticket.setCustomer(customer);
+                ticket.setSchedule(schedule);
+                ticket.setSeat(seat);
+                ticket.setDiscount(computedDiscount);
+                ticket.setPrice(basePriceVal);
+                ticket.setFinalPrice(calculatedFinalPrice);
+                ticket.setCreateAt(LocalDateTime.now());
+                ticket.setTicketStatus(TicketStatus.PENDING);
+                em.persist(ticket);
+
+                Payment payment = new Payment();
+                payment.setPaymentID(generateId("PAY"));
+                payment.setTicket(ticket);
+                payment.setPaymentMethod(request.isQRPaymentMethod() ? "QR_CODE" : "CASH");
+                payment.setAmount(BigDecimal.valueOf(calculatedFinalPrice));
+                payment.setPaymentTime(LocalDateTime.now());
+                payment.setPaymentStatus(PaymentStatus.PENDING);
+                em.persist(payment);
+
+                savedTickets.add(ticket);
+                ticketIds.add(ticket.getTicketID());
+                totalFinalPrice += calculatedFinalPrice;
             }
-
-            if (!seat.getCarriage().getTrain().getTrainID().equals(schedule.getTrain().getTrainID())) {
-                throw new IllegalArgumentException("Seat does not belong to schedule's train.");
-            }
-
-            if (ticketDAO.isSeatBooked(request.getScheduleId(), request.getSeatId())) {
-                throw new IllegalStateException("Seat is already booked for this schedule.");
-            }
-
-            // Reuse customerID as CCCD for now because Customer entity has no dedicated cccd field.
-            Customer customer = em.find(Customer.class, request.getCustomerCccd());
-            if (customer == null) {
-                customer = new Customer();
-                customer.setCustomerID(request.getCustomerCccd());
-            }
-            customer.setFullName(request.getCustomerName());
-            CustomerType cType = request.getCustomerType() == null ? CustomerType.ADULT : request.getCustomerType();
-            customer.setCustomerType(cType);
-            customer = em.merge(customer);
-
-            double distance = schedule.getRoute().getDistance();
-            double seatFee = 0;
-            if (seat.getSeatType() == model.entity.enums.SeatType.SOFT_SEAT) {
-                seatFee = this.basePrice.getSoftSeatFee();
-            } else if (seat.getSeatType() == model.entity.enums.SeatType.SOFT_SLEEPER) {
-                seatFee = this.basePrice.getSoftSleeperFee();
-            }
-            double basePriceVal = distance * this.basePrice.getPricePerDistance() + seatFee;
-
-            double calculatedFinalPrice = basePriceVal;
-            String computedDiscount = "0%";
-
-            switch (cType) {
-                case CHILD:
-                    calculatedFinalPrice = basePriceVal * this.basePrice.getChildDiscount();
-                    computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getChildDiscount()) * 100);
-                    break;
-                case STUDENT:
-                    calculatedFinalPrice = basePriceVal * this.basePrice.getStudentDiscount();
-                    computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getStudentDiscount()) * 100);
-                    break;
-                case ELDERLY:
-                    calculatedFinalPrice = basePriceVal * this.basePrice.getElderlyDiscount();
-                    computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getElderlyDiscount()) * 100);
-                    break;
-                case ADULT:
-                default:
-                    calculatedFinalPrice = basePriceVal;
-                    computedDiscount = "0%";
-                    break;
-            }
-
-            Ticket ticket = new Ticket();
-            ticket.setTicketID(generateId("TICKET"));
-            ticket.setUser(seller);
-            ticket.setCustomer(customer);
-            ticket.setSchedule(schedule);
-            ticket.setSeat(seat);
-            ticket.setDiscount(computedDiscount);
-            ticket.setPrice(basePriceVal);
-            ticket.setFinalPrice(calculatedFinalPrice);
-            ticket.setCreateAt(LocalDateTime.now());
-            ticket.setTicketStatus(TicketStatus.PENDING); // qr payment or cash
-            em.persist(ticket);
-
-            Payment payment = new Payment();
-            payment.setPaymentID(generateId("PAY"));
-            payment.setTicket(ticket);
-            payment.setPaymentMethod(request.isQRPaymentMethod() ? "QR_CODE" : "CASH");
-            payment.setAmount(BigDecimal.valueOf(calculatedFinalPrice));
-            payment.setPaymentTime(LocalDateTime.now());
-            payment.setPaymentStatus(PaymentStatus.PENDING); // QR or cash defaults to pending until confirmed, or maybe CASH is instant?
-            em.persist(payment);
 
             tx.commit();
 
+            String joinedIds = String.join(", ", ticketIds);
             if (request.isQRPaymentMethod()) {
-                String dummyQrUrl = "https://dummy-qr-url.com/pay/" + payment.getPaymentID();
-                return ActionResponse.success(ticket.getTicketID() + "-" + dummyQrUrl);
+                String paymentDescription = "Thanh toan ve " + joinedIds;
+                if (paymentDescription.length() > 50) {
+                    paymentDescription = paymentDescription.substring(0, 47) + "...";
+                }
+                String qrUrl = vietQRService.generateQRCodeUrl(totalFinalPrice, paymentDescription);
+                return ActionResponse.success(joinedIds + " - URL_QR: " + qrUrl);
             } else {
-                return ActionResponse.success(ticket.getTicketID());
+                return ActionResponse.success(joinedIds);
             }
 
         } catch (IllegalArgumentException | IllegalStateException e) {
@@ -294,8 +320,8 @@ public class TicketService {
             double exchangeFee = ticket.getPrice() * feePercentage;
 
             Schedule newSchedule = em.find(Schedule.class, newScheduleId);
-            if (newSchedule == null) {
-                return ActionResponse.fail("Không tìm thấy lịch trình mới: " + newScheduleId);
+            if (newSchedule == null || newSchedule.getScheduleStatus() == model.entity.enums.ScheduleStatus.DISABLED) {
+                return ActionResponse.fail("Không tìm thấy lịch trình mới hoặc lịch trình đã bị vô hiệu hóa.");
             }
 
             Seat newSeat = em.find(Seat.class, newSeatId);
@@ -400,8 +426,8 @@ public class TicketService {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             Schedule schedule = em.find(Schedule.class, scheduleId);
-            if (schedule == null) {
-                throw new IllegalArgumentException("Schedule not found: " + scheduleId);
+            if (schedule == null || schedule.getScheduleStatus() == model.entity.enums.ScheduleStatus.DISABLED) {
+                return java.util.Collections.emptyList();
             }
 
             List<Seat> allSeats = seatDAO.findByTrainId(schedule.getTrain().getTrainID());

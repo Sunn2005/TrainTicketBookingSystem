@@ -352,7 +352,7 @@ public class UserService {
                 return new dto.ScheduleStatisticsResponse(java.util.Collections.emptyList());
             }
 
-            java.util.List<model.entity.Schedule> schedules = em.createQuery("SELECT s FROM Schedule s", model.entity.Schedule.class).getResultList();
+            java.util.List<model.entity.Schedule> schedules = em.createQuery("SELECT s FROM Schedule s WHERE s.scheduleStatus = model.entity.enums.ScheduleStatus.ENABLED", model.entity.Schedule.class).getResultList();
             java.util.List<dto.ScheduleStatisticsResponse.ScheduleStatisticDetail> details = new java.util.ArrayList<>();
 
             for (model.entity.Schedule s : schedules) {
