@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SocketClient {
+    public static final String HOST = "127.0.0.1";
+    public static final int PORT = 9999;
     public String sendMessage(String host, int port, String message) throws IOException {
         List<String> responses = sendMessages(host, port, List.of(message));
         return responses.isEmpty() ? "No response" : responses.getFirst();
