@@ -1,0 +1,169 @@
+.root {
+    -fx-font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    -fx-background-color: -color-bg-app;
+}
+
+.header {
+    -fx-background-color: -color-primary;
+}
+
+.avatar {
+    -fx-background-color: -color-text-on-primary;
+    -fx-background-radius: 999;
+    -fx-text-fill: -color-primary;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-pref-width: 35px;
+    -fx-pref-height: 35px;
+    -fx-alignment: center;
+}
+
+.header-title {
+    -fx-text-fill: -color-text-on-primary;
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+}
+
+.header-subtitle {
+    -fx-text-fill: -color-text-subtle-on-primary;
+    -fx-font-size: 16px;
+}
+
+.header-date,
+.header-time {
+    -fx-text-fill: -color-text-on-primary;
+    -fx-font-size: 18px;
+    -fx-font-weight: 500;
+}
+
+.sidebar {
+    -fx-background-color: derive(-color-primary, 28%);
+    -fx-pref-width: 310px;
+}
+
+.menu-accordion .titled-pane > .title {
+    -fx-background-color: derive(-color-primary, 28%);
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+.menu-accordion .titled-pane > .title > .text {
+    -fx-fill: -color-text-on-primary;
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+}
+
+.menu-accordion .titled-pane > .content {
+    -fx-background-color: derive(-color-primary, 28%);
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 0 0 10px 10px;
+    -fx-background-radius: 0 0 10px 10px;
+}
+
+.menu-content {
+    -fx-padding: 10 12 12 12;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-on-primary;
+    -fx-font-size: 17px;
+    -fx-font-weight: 600;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+    -fx-padding: 10 8 10 8;
+}
+
+.menu-button:hover {
+    -fx-background-color: -color-overlay-hover;
+    -fx-background-radius: 8px;
+}
+
+.menu-button-active {
+    -fx-background-color: -color-overlay-hover;
+    -fx-background-radius: 8px;
+    -fx-border-color: -color-text-on-primary;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+}
+
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-on-primary;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+    -fx-padding: 12 10 12 10;
+    -fx-border-color: -color-text-on-primary;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.logout-button:hover {
+    -fx-background-color: -color-overlay-hover;
+}
+
+.content-wrap {
+    -fx-background-color: -color-bg-content;
+}
+
+.screen-root {
+    -fx-spacing: 16px;
+}
+
+.screen-title {
+    -fx-text-fill: -color-text-title;
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+}
+
+.screen-subtitle {
+    -fx-text-fill: -color-text-muted;
+    -fx-font-size: 14px;
+}
+
+.card {
+    -fx-background-color: -color-bg-card;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 14, 0.2, 0, 4);
+    -fx-padding: 14 16 14 16;
+}
+
+.card-label {
+    -fx-text-fill: -color-text-muted;
+    -fx-font-size: 14px;
+}
+
+.card-value {
+    -fx-text-fill: -color-text-accent;
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+}
+
+.panel {
+    -fx-background-color: -color-bg-card;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, -color-shadow-soft, 12, 0.2, 0, 3);
+    -fx-padding: 14 16 16 16;
+}
+
+.panel-title {
+    -fx-text-fill: -color-text-title;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+}
+
+.placeholder {
+    -fx-background-color: -color-bg-placeholder;
+    -fx-background-radius: 10px;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-style: segments(8, 8);
+    -fx-border-radius: 10px;
+    -fx-padding: 12px;
+}
+
+.placeholder-text {
+    -fx-text-fill: -color-text-secondary;
+    -fx-font-size: 18px;
+}

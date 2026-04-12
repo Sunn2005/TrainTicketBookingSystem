@@ -1,17 +1,17 @@
-package iuh.fit.controller;
+package iuh.fit.service;
 
 import controller.ScheduleController;
 import dto.CreateScheduleRequest;
 import dto.UpdateScheduleRequest;
 
-public class ScheduleClientController {
+public class ScheduleClientService {
     private final ScheduleController delegate;
 
-    public ScheduleClientController() {
+    public ScheduleClientService() {
         this.delegate = new ScheduleController();
     }
 
-    public ScheduleClientController(ScheduleController delegate) {
+    public ScheduleClientService(ScheduleController delegate) {
         this.delegate = delegate;
     }
 

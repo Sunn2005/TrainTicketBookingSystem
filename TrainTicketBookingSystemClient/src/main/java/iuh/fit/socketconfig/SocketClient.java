@@ -1,4 +1,4 @@
-package iuh.fit;
+package iuh.fit.socketconfig;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

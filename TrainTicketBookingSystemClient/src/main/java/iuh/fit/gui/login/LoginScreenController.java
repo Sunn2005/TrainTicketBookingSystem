@@ -1,15 +1,23 @@
-package iuh.fit;
+package iuh.fit.gui.login;
 
+import iuh.fit.App;
+import iuh.fit.constance.AppTheme;
+import iuh.fit.context.UserContext;
+import iuh.fit.socketconfig.SocketClient;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class HelloController {
+public class LoginScreenController {
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 9999;
 
@@ -28,12 +36,14 @@ public class HelloController {
     private TextField usernameField;
 
     @FXML
-    private TextField passwordField;
+    private PasswordField passwordField;
 
     @FXML
     protected void onLoginButtonClick() {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
+        //String username = usernameField.getText();
+        String username = "manager1";
+        //String password = passwordField.getText();
+        String password = "man123";
 
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
             welcomeText.setText("Nhap day du username va password.");
@@ -43,7 +53,15 @@ public class HelloController {
         String command = "LOGIN|" + username.trim() + "|" + password.trim();
         try {
             String rawResponse = socketClient.sendRawMessage(HOST, PORT, command);
-            welcomeText.setText(parseLoginResponse(rawResponse));
+            LoginResult loginResult = parseLoginResponse(rawResponse);
+
+            if (loginResult.success()) {
+                UserContext.getInstance().setUser(loginResult.userID(), loginResult.fullName(), loginResult.role());
+                openHomeScreen();
+                return;
+            }
+
+            welcomeText.setText(loginResult.message());
         } catch (IOException e) {
             welcomeText.setText("Khong the ket noi server tai " + HOST + ":" + PORT);
         }
@@ -92,21 +110,31 @@ public class HelloController {
         }
     }
 
-    private String parseLoginResponse(String rawResponse) {
+    private void openHomeScreen() throws IOException {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("/iuh/fit/gui/home/home-view.fxml"));
+        Scene homeScene = new Scene(loader.load(), 1366, 768);
+        AppTheme.applyTo(homeScene);
+
+        Stage stage = (Stage) usernameField.getScene().getWindow();
+        stage.setTitle("Train Ticket Booking - Home");
+        stage.setScene(homeScene);
+    }
+
+    private LoginResult parseLoginResponse(String rawResponse) {
         if (rawResponse == null || rawResponse.isBlank()) {
-            return "Khong nhan duoc phan hoi login tu server.";
+            return new LoginResult(false, "", "", "", "Khong nhan duoc phan hoi login tu server.");
         }
 
         String[] parts = rawResponse.split("\\|");
         if (parts.length >= 5 && "LOGIN_SUCCESS".equalsIgnoreCase(parts[0])) {
-            return "Login thanh cong: userID=" + parts[1]
-                    + ", fullName=" + parts[2]
-                    + ", role=" + parts[3]
-                    + ", message=" + parts[4];
+            return new LoginResult(true, parts[1], parts[2], parts[3], "Login thanh cong");
         }
         if (parts.length >= 2 && "LOGIN_FAIL".equalsIgnoreCase(parts[0])) {
-            return "Login that bai: " + parts[1];
+            return new LoginResult(false, "", "", "", "Login that bai: " + parts[1]);
         }
-        return "Phan hoi login khong hop le: " + rawResponse;
+        return new LoginResult(false, "", "", "", "Phan hoi login khong hop le: " + rawResponse);
+    }
+
+    private record LoginResult(boolean success, String userID, String fullName, String role, String message) {
     }
 }

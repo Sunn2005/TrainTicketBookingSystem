@@ -4,7 +4,14 @@ module iuh.fit.trainticketbookingsystemclient {
     requires TrainTicketBookingSystemServer;
 
     opens iuh.fit to javafx.fxml;
-    opens iuh.fit.controller to javafx.fxml;
+    opens iuh.fit.service to javafx.fxml;
+    opens iuh.fit.gui.login to javafx.fxml;
+    opens iuh.fit.socketconfig to javafx.fxml;
+    opens iuh.fit.gui.home to javafx.fxml;
+
     exports iuh.fit;
-    exports iuh.fit.controller;
+    exports iuh.fit.service;
+    exports iuh.fit.gui.login;
+    exports iuh.fit.socketconfig;
+    exports iuh.fit.gui.home;
 }

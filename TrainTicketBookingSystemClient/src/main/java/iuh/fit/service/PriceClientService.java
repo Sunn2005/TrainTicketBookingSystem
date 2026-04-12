@@ -1,16 +1,16 @@
-package iuh.fit.controller;
+package iuh.fit.service;
 
 import controller.PriceController;
 import model.entity.BasePrice;
 
-public class PriceClientController {
+public class PriceClientService {
     private final PriceController delegate;
 
-    public PriceClientController() {
+    public PriceClientService() {
         this.delegate = new PriceController();
     }
 
-    public PriceClientController(PriceController delegate) {
+    public PriceClientService(PriceController delegate) {
         this.delegate = delegate;
     }
 

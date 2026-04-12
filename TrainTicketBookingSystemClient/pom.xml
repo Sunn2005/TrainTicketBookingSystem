@@ -95,7 +95,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                iuh.fit.trainticketbookingsystemclient/iuh.fit.HelloApplication
+                                iuh.fit.trainticketbookingsystemclient/iuh.fit.App
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

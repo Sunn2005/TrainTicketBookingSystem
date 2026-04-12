@@ -1,17 +1,17 @@
-package iuh.fit.controller;
+package iuh.fit.service;
 
 import controller.TrainController;
 import dto.CreateTrainRequest;
 import dto.UpdateTrainRequest;
 
-public class TrainClientController {
+public class TrainClientService {
     private final TrainController delegate;
 
-    public TrainClientController() {
+    public TrainClientService() {
         this.delegate = new TrainController();
     }
 
-    public TrainClientController(TrainController delegate) {
+    public TrainClientService(TrainController delegate) {
         this.delegate = delegate;
     }
 

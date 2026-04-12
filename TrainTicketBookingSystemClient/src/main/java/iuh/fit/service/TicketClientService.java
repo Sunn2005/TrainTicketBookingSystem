@@ -1,4 +1,4 @@
-package iuh.fit.controller;
+package iuh.fit.service;
 
 import controller.TicketController;
 import dto.ActionResponse;
@@ -10,14 +10,14 @@ import model.entity.enums.PaymentStatus;
 import java.time.LocalDate;
 import java.util.List;
 
-public class TicketClientController {
+public class TicketClientService {
     private final TicketController delegate;
 
-    public TicketClientController() {
+    public TicketClientService() {
         this.delegate = new TicketController();
     }
 
-    public TicketClientController(TicketController delegate) {
+    public TicketClientService(TicketController delegate) {
         this.delegate = delegate;
     }
 

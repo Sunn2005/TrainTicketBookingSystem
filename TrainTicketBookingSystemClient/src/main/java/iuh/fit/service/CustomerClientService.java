@@ -1,18 +1,18 @@
-package iuh.fit.controller;
+package iuh.fit.service;
 
 import controller.CustomerController;
 import model.entity.Customer;
 
 import java.util.List;
 
-public class CustomerClientController {
+public class CustomerClientService {
     private final CustomerController delegate;
 
-    public CustomerClientController() {
+    public CustomerClientService() {
         this.delegate = new CustomerController();
     }
 
-    public CustomerClientController(CustomerController delegate) {
+    public CustomerClientService(CustomerController delegate) {
         this.delegate = delegate;
     }
 

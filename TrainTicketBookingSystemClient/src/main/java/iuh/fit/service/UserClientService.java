@@ -1,4 +1,4 @@
-package iuh.fit.controller;
+package iuh.fit.service;
 
 import controller.UserController;
 import dto.*;
@@ -6,14 +6,14 @@ import model.entity.enums.UserStatus;
 
 import java.util.List;
 
-public class UserClientController {
+public class UserClientService {
     private final UserController delegate;
 
-    public UserClientController() {
+    public UserClientService() {
         this.delegate = new UserController();
     }
 
-    public UserClientController(UserController delegate) {
+    public UserClientService(UserController delegate) {
         this.delegate = delegate;
     }
 
