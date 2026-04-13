@@ -22,7 +22,7 @@ public class Train {
     @Column(name = "train_id", nullable = false)
     private String trainID;
 
-    @Column(name = "train_name", nullable = false)
+    @Column(name = "train_name", unique = true, nullable = false)
     private String trainName;
 
     @OneToMany(mappedBy = "train")

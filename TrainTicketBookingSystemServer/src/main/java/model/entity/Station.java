@@ -18,7 +18,7 @@ public class Station {
     @Column(name = "station_id", nullable = false)
     private String stationID;
 
-    @Column(name = "station_name", nullable = false)
+    @Column(name = "station_name", unique = true, nullable = false)
     private String stationName;
 
     @Column(name = "location", nullable = false)

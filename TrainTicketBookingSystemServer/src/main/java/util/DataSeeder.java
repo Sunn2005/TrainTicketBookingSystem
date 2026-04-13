@@ -30,11 +30,11 @@ public class DataSeeder {
             em.persist(rAdmin); em.persist(rManager); em.persist(rEmployee);
 
             // 2. User
-            User u1 = new User("USER-001", "admin1", "admin123", "Nguyễn Quản Trị", "system", LocalDateTime.now(), rAdmin, UserStatus.ACTIVE);
-            User u2 = new User("USER-002", "manager1", "man123", "Phạm Trưởng Ga", "admin1", LocalDateTime.now(), rManager, UserStatus.ACTIVE);
-            User u3 = new User("USER-003", "emp1", "emp123", "Lê Nhân Viên Một", "admin1", LocalDateTime.now(), rEmployee, UserStatus.ACTIVE);
-            User u4 = new User("USER-004", "emp2", "emp123", "Trần Ban Vé", "admin1", LocalDateTime.now(), rEmployee, UserStatus.ACTIVE);
-            User u5 = new User("USER-005", "emp3", "emp123", "Vũ Hướng Dẫn", "admin1", LocalDateTime.now(), rEmployee, UserStatus.ACTIVE);
+            User u1 = new User("USER-001", "admin1", "admin123", "Nguyễn Quản Trị","quantri@gmail.com", "system", LocalDateTime.now(), rAdmin, UserStatus.ACTIVE);
+            User u2 = new User("USER-002", "QL001", "QL001@", "Trần Thanh Xuân","tranthanhxuan123123@gmail.com", "admin1", LocalDateTime.now(), rManager, UserStatus.ACTIVE);
+            User u3 = new User("USER-003", "NV001", "NV001@", "Trần Huỳnh Duy Hiệu","tranhieu.111177@gmail.com", "admin1", LocalDateTime.now(), rEmployee, UserStatus.ACTIVE);
+            User u4 = new User("USER-004", "NV002", "NV002@", "Ừng Thị Thanh Trúc","trucung41@gmail.com", "admin1", LocalDateTime.now(), rEmployee, UserStatus.ACTIVE);
+            User u5 = new User("USER-005", "NV003", "NV003@", "Nguyễn Hữu Lộc","huuloc09112005@gmail.com", "admin1", LocalDateTime.now(), rEmployee, UserStatus.ACTIVE);
             em.persist(u1); em.persist(u2); em.persist(u3); em.persist(u4); em.persist(u5);
 
             // 3. Station

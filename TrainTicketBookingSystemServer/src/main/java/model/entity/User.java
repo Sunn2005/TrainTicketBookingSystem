@@ -26,7 +26,7 @@ public class User {
     @Column(name = "user_id", nullable = false)
     private String userID;
 
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "user_name", unique = true, nullable = false)
     private String userName;
 
     @Column(name = "password", nullable = false)
@@ -34,6 +34,9 @@ public class User {
 
     @Column(name = "full_name")
     private String fullName;
+
+    @Column(nullable = false, unique = true)
+    private String email;
 
     @Column(name = "create_by")
     private String createdBy;
