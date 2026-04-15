@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<VBox spacing="8.0" styleClass="sidebar" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="iuh.fit.gui.home.HomeSidebarController">
+    <padding>
+        <Insets bottom="16.0" left="14.0" right="14.0" top="16.0"/>
+    </padding>
+    <Accordion fx:id="menuAccordion" styleClass="menu-accordion">
+        <panes>
+            <TitledPane styleClass="menu-group" text="Quản lý vé">
+                <VBox spacing="10.0" styleClass="menu-content">
+                    <Button fx:id="sellTicketButton" maxWidth="1.7976931348623157E308" onAction="#onSellTicketClick" styleClass="menu-button" text="Bán vé"/>
+                    <Button fx:id="exchangeTicketButton" maxWidth="1.7976931348623157E308" onAction="#onExchangeTicketClick" styleClass="menu-button" text="Đổi vé"/>
+                    <Button fx:id="cancelTicketButton" maxWidth="1.7976931348623157E308" onAction="#onCancelTicketClick" styleClass="menu-button" text="Huỷ vé"/>
+                </VBox>
+            </TitledPane>
+            <TitledPane styleClass="menu-group" text="Quản lý chuyến tàu">
+                <VBox spacing="10.0" styleClass="menu-content">
+                    <Button fx:id="scheduleButton" maxWidth="1.7976931348623157E308" onAction="#onScheduleClick" styleClass="menu-button" text="Lịch trình"/>
+                    <Button fx:id="coachButton" maxWidth="1.7976931348623157E308" onAction="#onCoachClick" styleClass="menu-button" text="Thêm chuyến tàu"/>
+                </VBox>
+            </TitledPane>
+            <TitledPane styleClass="menu-group" text="Quản lý khách hàng">
+                <VBox spacing="10.0" styleClass="menu-content">
+                    <Button fx:id="customerListButton" maxWidth="1.7976931348623157E308" onAction="#onCustomerListClick" styleClass="menu-button" text="Danh sach khách hàng"/>
+                    <Button fx:id="customerUpdateButton" maxWidth="1.7976931348623157E308" onAction="#onCustomerUpdateClick" styleClass="menu-button" text="Tra cứu thông tin khách hàng"/>
+                </VBox>
+            </TitledPane>
+        </panes>
+    </Accordion>
+    <Pane VBox.vgrow="ALWAYS"/>
+    <Button maxWidth="1.7976931348623157E308" onAction="#onLogoutClick" styleClass="logout-button" text="Đăng xuất"/>
+</VBox>
