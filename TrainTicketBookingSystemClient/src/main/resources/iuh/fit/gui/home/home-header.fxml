@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="header" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="iuh.fit.gui.home.HomeHeaderController">
+    <padding>
+        <Insets bottom="16.0" left="24.0" right="24.0" top="16.0"/>
+    </padding>
+
+    <Label fx:id="avatarLabel" styleClass="avatar" text="U"/>
+    <VBox spacing="2.0">
+        <Label fx:id="fullNameLabel" styleClass="header-title" text="Username"/>
+        <Label fx:id="roleLabel" styleClass="header-subtitle" text="Manager"/>
+    </VBox>
+
+    <Pane HBox.hgrow="ALWAYS"/>
+
+    <VBox alignment="CENTER_RIGHT" spacing="4.0">
+        <Label fx:id="dateLabel" styleClass="header-date" text="Thursday, 20/04/2026"/>
+        <Label fx:id="timeLabel" styleClass="header-time" text="18:59:59"/>
+    </VBox>
+</HBox>
+

@@ -1,6 +1,7 @@
 package iuh.fit.gui.login;
 
 import iuh.fit.App;
+import iuh.fit.WindowSizing;
 import iuh.fit.constance.AppTheme;
 import iuh.fit.context.UserContext;
 import iuh.fit.socketconfig.SocketClient;
@@ -41,9 +42,9 @@ public class LoginScreenController {
     @FXML
     protected void onLoginButtonClick() {
         //String username = usernameField.getText();
-        String username = "manager1";
+        String username = "QL001";
         //String password = passwordField.getText();
-        String password = "man123";
+        String password = "QL001@";
 
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
             welcomeText.setText("Nhap day du username va password.");
@@ -112,12 +113,13 @@ public class LoginScreenController {
 
     private void openHomeScreen() throws IOException {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/iuh/fit/gui/home/home-view.fxml"));
-        Scene homeScene = new Scene(loader.load(), 1366, 768);
+        Scene homeScene = new Scene(loader.load());
         AppTheme.applyTo(homeScene);
 
         Stage stage = (Stage) usernameField.getScene().getWindow();
         stage.setTitle("Train Ticket Booking - Home");
         stage.setScene(homeScene);
+        WindowSizing.applyFullScreen(stage);
     }
 
     private LoginResult parseLoginResponse(String rawResponse) {

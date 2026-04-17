@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane prefHeight="768.0" prefWidth="1366.0" stylesheets="@login.css" xmlns:fx="http://javafx.com/fxml"
+<StackPane prefHeight="768.0" prefWidth="1366.0"  stylesheets="@login.css" xmlns:fx="http://javafx.com/fxml"
            fx:controller="iuh.fit.gui.login.LoginScreenController" styleClass="login-root">
     <VBox alignment="TOP_CENTER" maxWidth="620.0" spacing="18.0" styleClass="login-panel">
         <padding>

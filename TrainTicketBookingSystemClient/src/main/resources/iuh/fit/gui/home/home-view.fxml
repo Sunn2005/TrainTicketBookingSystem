@@ -1,81 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Accordion?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 
 <BorderPane prefHeight="768.0" prefWidth="1366.0" stylesheets="@home.css" xmlns:fx="http://javafx.com/fxml"
             fx:controller="iuh.fit.gui.home.HomeScreenController">
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="header" BorderPane.alignment="CENTER">
-            <padding>
-                <Insets bottom="16.0" left="24.0" right="24.0" top="16.0"/>
-            </padding>
-
-            <Label fx:id="avatarLabel" styleClass="avatar" text="U"/>
-            <VBox spacing="2.0">
-                <Label fx:id="fullNameLabel" styleClass="header-title" text="Username"/>
-                <Label fx:id="roleLabel" styleClass="header-subtitle" text="Manager"/>
-            </VBox>
-
-            <Pane HBox.hgrow="ALWAYS"/>
-
-            <VBox alignment="CENTER_RIGHT" spacing="4.0">
-                <Label fx:id="dateLabel" styleClass="header-date" text="Thursday, 20/04/2026"/>
-                <Label fx:id="timeLabel" styleClass="header-time" text="18:59:59"/>
-            </VBox>
-        </HBox>
+        <fx:include fx:id="header" source="home-header.fxml"/>
     </top>
 
     <left>
-        <VBox spacing="14.0" styleClass="sidebar" BorderPane.alignment="TOP_CENTER">
-            <padding>
-                <Insets bottom="16.0" left="14.0" right="14.0" top="16.0"/>
-            </padding>
-
-            <Accordion expandedPane="$ticketPane" styleClass="menu-accordion">
-                <panes>
-                    <TitledPane fx:id="ticketPane" styleClass="menu-group" text="Quản lý vé">
-                        <content>
-                            <VBox spacing="8.0" styleClass="menu-content">
-                                <Button fx:id="sellTicketButton" maxWidth="1.7976931348623157E308" onAction="#showSellTicketScreen" styleClass="menu-button" text="Bán vé"/>
-                                <Button fx:id="exchangeTicketButton" maxWidth="1.7976931348623157E308" onAction="#showExchangeTicketScreen" styleClass="menu-button" text="Đổi vé"/>
-                                <Button fx:id="cancelTicketButton" maxWidth="1.7976931348623157E308" onAction="#showCancelTicketScreen" styleClass="menu-button" text="Huỷ vé"/>
-                            </VBox>
-                        </content>
-                    </TitledPane>
-
-                    <TitledPane styleClass="menu-group" text="Quản lý chuyến tàu">
-                        <content>
-                            <VBox spacing="8.0" styleClass="menu-content">
-                                <Button fx:id="scheduleButton" maxWidth="1.7976931348623157E308" onAction="#showScheduleScreen" styleClass="menu-button" text="Lịch trình"/>
-                                <Button fx:id="coachButton" maxWidth="1.7976931348623157E308" onAction="#showCoachScreen" styleClass="menu-button" text="Thêm chuyến tàu"/>
-                            </VBox>
-                        </content>
-                    </TitledPane>
-
-                    <TitledPane styleClass="menu-group" text="Quản lý khách hàng">
-                        <content>
-                            <VBox spacing="8.0" styleClass="menu-content">
-                                <Button fx:id="customerListButton" maxWidth="1.7976931348623157E308" onAction="#showCustomerListScreen" styleClass="menu-button" text="Danh sach khách hàng"/>
-                                <Button fx:id="customerUpdateButton" maxWidth="1.7976931348623157E308" onAction="#showCustomerUpdateScreen" styleClass="menu-button" text="Tra cứu thông tin khách hàng"/>
-                            </VBox>
-                        </content>
-                    </TitledPane>
-                </panes>
-            </Accordion>
-
-            <Pane VBox.vgrow="ALWAYS"/>
-            <Button fx:id="logoutButton" maxWidth="1.7976931348623157E308" onAction="#onLogoutButtonClick" styleClass="logout-button" text="Đăng xuất"/>
-        </VBox>
+        <fx:include fx:id="sidebar" source="home-sidebar.fxml"/>
     </left>
 
     <center>

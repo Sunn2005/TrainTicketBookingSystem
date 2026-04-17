@@ -12,11 +12,12 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/iuh/fit/gui/login/login-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1366, 768);
+        Scene scene = new Scene(fxmlLoader.load());
         AppTheme.applyTo(scene);
 
         stage.setTitle("Train Ticket Socket Client");
         stage.setScene(scene);
+        WindowSizing.applyHalfScreen(stage);
         stage.show();
     }
 }
