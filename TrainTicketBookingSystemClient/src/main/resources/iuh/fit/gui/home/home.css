@@ -40,12 +40,13 @@
     -fx-background-color: derive(-color-primary, 28%);
     -fx-pref-width: 350px;
 }
-.menu-group{
-    -fx-padding: 15 15 15 15
+
+.menu-group {
+    -fx-padding: 0;
 }
 
 .menu-accordion .titled-pane {
-    -fx-padding: 0 0 15px 0;
+    -fx-padding: 0 0 12px 0;
 }
 
 .menu-accordion .titled-pane > .title {

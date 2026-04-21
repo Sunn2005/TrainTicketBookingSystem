@@ -33,6 +33,9 @@ public class HomeSidebarController {
     @FXML
     private Button customerUpdateButton;
 
+    @FXML
+    private Button updatePasswordButton;
+
     private List<Button> menuButtons;
     private Map<String, Button> routeButtonMap;
     private Consumer<String> routeHandler;
@@ -51,7 +54,8 @@ public class HomeSidebarController {
                 scheduleButton,
                 coachButton,
                 customerListButton,
-                customerUpdateButton
+                customerUpdateButton,
+                updatePasswordButton
         );
 
         routeButtonMap = Map.of(
@@ -61,7 +65,8 @@ public class HomeSidebarController {
                 HomeContentFactory.ROUTE_SCHEDULE, scheduleButton,
                 HomeContentFactory.ROUTE_COACH, coachButton,
                 HomeContentFactory.ROUTE_CUSTOMER_LIST, customerListButton,
-                HomeContentFactory.ROUTE_CUSTOMER_UPDATE, customerUpdateButton
+                HomeContentFactory.ROUTE_CUSTOMER_UPDATE, customerUpdateButton,
+                HomeContentFactory.ROUTE_UPDATE_PASSWORD, updatePasswordButton
         );
     }
 
@@ -111,6 +116,11 @@ public class HomeSidebarController {
     @FXML
     private void onCustomerUpdateClick() {
         handleRoute(HomeContentFactory.ROUTE_CUSTOMER_UPDATE);
+    }
+
+    @FXML
+    private void onUpdatePasswordClick() {
+        handleRoute(HomeContentFactory.ROUTE_UPDATE_PASSWORD);
     }
 
     @FXML

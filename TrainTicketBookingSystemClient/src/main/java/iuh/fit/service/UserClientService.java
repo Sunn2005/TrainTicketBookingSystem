@@ -1,20 +1,28 @@
 package iuh.fit.service;
 
 import controller.UserController;
+import dao.UserDAO;
 import dto.*;
+import model.entity.User;
 import model.entity.enums.UserStatus;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class UserClientService {
     private final UserController delegate;
+    private final UserDAO userDAO;
 
     public UserClientService() {
         this.delegate = new UserController();
+        this.userDAO = new UserDAO();
     }
 
     public UserClientService(UserController delegate) {
         this.delegate = delegate;
+        this.userDAO = new UserDAO();
     }
 
     public LoginResponse login(String userName, String password) {

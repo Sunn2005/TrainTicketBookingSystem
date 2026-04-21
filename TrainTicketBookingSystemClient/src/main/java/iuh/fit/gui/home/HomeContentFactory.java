@@ -1,11 +1,16 @@
 package iuh.fit.gui.home;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
+import java.io.IOException;
+import java.net.URL;
 
 final class HomeContentFactory {
     static final String ROUTE_SELL_TICKET = "sell-ticket";
@@ -15,6 +20,7 @@ final class HomeContentFactory {
     static final String ROUTE_COACH = "coach";
     static final String ROUTE_CUSTOMER_LIST = "customer-list";
     static final String ROUTE_CUSTOMER_UPDATE = "customer-update";
+    static final String ROUTE_UPDATE_PASSWORD = "update-password";
 
     private HomeContentFactory() {
     }
@@ -63,6 +69,10 @@ final class HomeContentFactory {
                     "Da xu ly", "13",
                     "Con lai", "3"
             );
+            case ROUTE_UPDATE_PASSWORD -> loadView(
+                    "/iuh/fit/gui/user/update-password-view.fxml",
+                    "/iuh/fit/gui/user/update-password.css"
+            );
             default -> createSampleScreen(
                     "Ban ve",
                     "Man hinh mau cho nghiep vu ban ve tai quay.",
@@ -71,6 +81,36 @@ final class HomeContentFactory {
                     "Doanh thu", "58,200,000 VND"
             );
         };
+    }
+
+    private static Node loadView(String fxmlPath, String cssPath) {
+        try {
+            URL fxmlUrl = HomeContentFactory.class.getResource(fxmlPath);
+            if (fxmlUrl == null) {
+                return createLoadError("Khong tim thay file FXML: " + fxmlPath);
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
+
+            URL cssUrl = HomeContentFactory.class.getResource(cssPath);
+            if (cssUrl != null) {
+                root.getStylesheets().add(cssUrl.toExternalForm());
+            }
+            return root;
+        } catch (IOException exception) {
+            return createLoadError("Khong the tai giao dien doi mat khau: " + exception.getMessage());
+        }
+    }
+
+    private static Node createLoadError(String message) {
+        Label errorLabel = new Label(message);
+        errorLabel.getStyleClass().add("screen-subtitle");
+
+        VBox root = new VBox(8);
+        root.getStyleClass().add("screen-root");
+        root.getChildren().addAll(new Label("Co loi khi tai giao dien"), errorLabel);
+        return root;
     }
 
     private static Node createSampleScreen(
