@@ -3,6 +3,7 @@ package iuh.fit.gui.home;
 import iuh.fit.App;
 import iuh.fit.constance.AppTheme;
 import iuh.fit.context.UserContext;
+import iuh.fit.gui.ticket.TicketContext;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -96,13 +97,16 @@ public class HomeScreenController {
     @FXML
     private void showSellTicketScreen() {
         setActiveButton(sellTicketButton);
-        contentContainer.getChildren().setAll(createSampleScreen(
-                "Ban ve",
-                "Man hinh mau cho nghiep vu ban ve tai quay.",
-                "Ve da ban", "248",
-                "Cho thanh toan", "12",
-                "Doanh thu", "58,200,000 VND"
-        ));
+        TicketContext.getInstance().reset();
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource(
+                    "/iuh/fit/gui/ticket/search/search-schedule-view.fxml"));
+            contentContainer.getChildren().setAll((Node) loader.load());
+        } catch (Exception e) {  // đổi IOException → Exception
+            e.printStackTrace();  // thêm dòng này
+            contentContainer.getChildren().setAll(
+                    new Label("Không thể tải màn hình bán vé: " + e.getMessage()));
+        }
     }
 
     @FXML

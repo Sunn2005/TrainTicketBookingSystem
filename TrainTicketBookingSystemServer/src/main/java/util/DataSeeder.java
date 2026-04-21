@@ -73,16 +73,34 @@ public class DataSeeder {
                 }
             }
 
-            // 7. Seat
+// 7. Seat
             java.util.List<Seat> seats = new java.util.ArrayList<>();
             int seatIndex = 1;
+
             for (Carriage car : carriages) {
                 for (int i = 1; i <= 4; i++) {
-                    SeatType type = (i % 2 == 0) ? SeatType.SOFT_SLEEPER : SeatType.SOFT_SEAT;
-                    Seat seat = new Seat(String.format("SEA-%03d", seatIndex++), car, i, type);
+
+                    SeatType type;
+
+                    // Nếu là toa số 1 → toàn ghế mềm
+                    if (car.getCarriageNumber() == 1) {
+                        type = SeatType.SOFT_SEAT;
+                    }
+                    // Nếu là toa số 2 → toàn giường mềm
+                    else {
+                        type = SeatType.SOFT_SLEEPER;
+                    }
+
+                    Seat seat = new Seat(
+                            String.format("SEA-%03d", seatIndex++),
+                            car,
+                            i,
+                            type
+                    );
+
                     em.persist(seat);
                     seats.add(seat);
-                    car.getSeats().add(seat); // Liên kết Seat vào Carriage
+                    car.getSeats().add(seat);
                 }
             }
 
