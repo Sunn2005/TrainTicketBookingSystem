@@ -1,0 +1,293 @@
+/* ══════════════════════════════════════════════
+   TICKET MODULE - Shared CSS
+   ══════════════════════════════════════════════ */
+
+.page-root { -fx-background-color: -color-bg-content; }
+
+/* ── Scroll ───────────────────────────────────── */
+.main-scroll {
+    -fx-background-color: transparent;
+    -fx-background: -color-bg-content;
+    -fx-border-color: transparent;
+}
+.main-scroll > .viewport { -fx-background-color: -color-bg-content; }
+
+/* ── Result header ────────────────────────────── */
+.result-header { -fx-background-color: #1a6dc8; }
+.result-header-text {
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white;
+}
+
+/* ── Breadcrumb ───────────────────────────────── */
+.breadcrumb-bar {
+    -fx-background-color: #e8f0fb;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 0 0 1 0;
+}
+.breadcrumb-sep  { -fx-text-fill: -color-text-secondary; -fx-font-size: 14px; }
+.breadcrumb-title {
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #0a3d8a;
+}
+
+/* ── Segment tabs ─────────────────────────────── */
+.segment-tab-active {
+    -fx-background-color: #1a6dc8;
+    -fx-text-fill: white;
+    -fx-font-size: 13px; -fx-font-weight: bold;
+    -fx-background-radius: 0; -fx-border-radius: 0;
+    -fx-padding: 10 0 10 0; -fx-cursor: hand;
+}
+.segment-tab {
+    -fx-background-color: #e8f0fb;
+    -fx-text-fill: #1a6dc8;
+    -fx-font-size: 13px; -fx-font-weight: bold;
+    -fx-background-radius: 0; -fx-border-radius: 0;
+    -fx-border-color: #b0c8f0; -fx-border-width: 0 0 2 0;
+    -fx-padding: 10 0 10 0; -fx-cursor: hand;
+}
+.segment-tab:hover { -fx-background-color: #d0e4f7; }
+
+/* ── Section titles ───────────────────────────── */
+.section-segment-title {
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8;
+    -fx-border-color: #1a6dc8; -fx-border-width: 0 0 0 3;
+    -fx-padding: 2 0 2 8;
+}
+.section-segment-title-return {
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #7c3aed;
+    -fx-border-color: #7c3aed; -fx-border-width: 0 0 0 3;
+    -fx-padding: 2 0 2 8;
+}
+
+/* ── Train card ───────────────────────────────── */
+.train-scroll {
+    -fx-background-color: transparent;
+    -fx-background: -color-bg-content;
+    -fx-border-color: transparent;
+}
+.train-scroll > .viewport { -fx-background-color: -color-bg-content; }
+
+.train-card {
+    -fx-background-color: #888;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0, 0, 2);
+    -fx-cursor: hand;
+}
+.train-card:hover { -fx-background-color: #777; }
+.train-card-selected {
+    -fx-background-color: #1a6dc8;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(26,109,200,0.45), 10, 0, 0, 3);
+}
+.train-card-name {
+    -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;
+    -fx-background-color: #666; -fx-background-radius: 6;
+    -fx-padding: 3 10 3 10;
+}
+.train-card-name-sel {
+    -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;
+    -fx-background-color: #155baa; -fx-background-radius: 6;
+    -fx-padding: 3 10 3 10;
+}
+.train-card-info { -fx-font-size: 11px; -fx-text-fill: white; }
+.train-card-price { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #f5c842; }
+.seats-available { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #f5c842; }
+.seats-booked    { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #aaa; }
+
+/* ── Carriage ─────────────────────────────────── */
+.carriage-scroll {
+    -fx-background-color: transparent; -fx-background: #f0f6ff;
+    -fx-border-color: #b0c8f0; -fx-border-width: 1; -fx-border-radius: 6;
+}
+.carriage-scroll > .viewport { -fx-background-color: #f0f6ff; }
+.carriage-map-title { -fx-font-size: 12px; -fx-text-fill: -color-text-muted; -fx-font-style: italic; }
+.carriage-box {
+    -fx-background-color: #ddeeff; -fx-background-radius: 6;
+    -fx-border-color: #b0c8f0; -fx-border-radius: 6; -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+.carriage-box:hover { -fx-background-color: #c8dff8; }
+.carriage-box-selected {
+    -fx-background-color: #1a6dc8; -fx-background-radius: 6;
+    -fx-border-color: #0f4a8a; -fx-border-radius: 6; -fx-border-width: 1.5;
+}
+.carriage-icon-soft    { -fx-text-fill: #1a6dc8; -fx-font-size: 26px; }
+.carriage-icon-sleeper { -fx-text-fill: #7c3aed; -fx-font-size: 26px; }
+.carriage-number     { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; -fx-font-weight: bold; }
+.carriage-number-sel { -fx-font-size: 11px; -fx-text-fill: white; -fx-font-weight: bold; }
+
+/* ── Seat map ─────────────────────────────────── */
+.seat-map-title { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+.seat-map-container {
+    -fx-background-color: white;
+    -fx-border-color: #c0d0e8; -fx-border-width: 1.5;
+    -fx-border-radius: 8; -fx-background-radius: 8;
+}
+.seat-btn-available {
+    -fx-background-color: #e05252; -fx-text-fill: white;
+    -fx-font-size: 12px; -fx-font-weight: bold;
+    -fx-background-radius: 4; -fx-border-color: #c03030;
+    -fx-border-radius: 4; -fx-border-width: 1; -fx-cursor: hand;
+}
+.seat-btn-available:hover { -fx-background-color: #c03030; }
+.seat-btn-selected {
+    -fx-background-color: #16a34a; -fx-text-fill: white;
+    -fx-font-size: 12px; -fx-font-weight: bold;
+    -fx-background-radius: 4; -fx-border-color: #15803d;
+    -fx-border-radius: 4; -fx-border-width: 1;
+}
+.legend-label { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }
+.selected-count-label { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+
+/* ── Passenger card ───────────────────────────── */
+.passenger-card {
+    -fx-background-color: white; -fx-background-radius: 8;
+    -fx-border-color: -color-border-soft; -fx-border-radius: 8; -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.06), 4, 0, 0, 1);
+}
+.passenger-card-header {
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8;
+    -fx-border-color: -color-border-soft; -fx-border-width: 0 0 1 0;
+    -fx-padding: 0 0 8 0;
+}
+.passenger-price-label {
+    -fx-font-size: 16px; -fx-font-weight: bold;
+    -fx-text-fill: #e05252; -fx-padding: 18 0 0 12;
+}
+
+/* ── Confirm screen ───────────────────────────── */
+.confirm-segment {
+    -fx-background-color: white; -fx-background-radius: 8;
+    -fx-border-color: -color-border-soft; -fx-border-radius: 8; -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.05), 4, 0, 0, 1);
+}
+.confirm-segment-title {
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8;
+    -fx-border-color: -color-border-soft; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 6 0;
+}
+.confirm-segment-title-return {
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #7c3aed;
+    -fx-border-color: -color-border-soft; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 6 0;
+}
+.confirm-train  { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-text-title; }
+.confirm-route  { -fx-font-size: 12px; -fx-text-fill: -color-text-muted; }
+.confirm-time   { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #e05252; }
+.confirm-pax    { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-text-accent; }
+.confirm-seat   { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }
+.confirm-price  { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+.confirm-total-box {
+    -fx-background-color: #f0f6ff; -fx-background-radius: 6;
+    -fx-border-color: #b0c8f0; -fx-border-radius: 6; -fx-border-width: 1;
+}
+.confirm-payment    { -fx-font-size: 12px; -fx-text-fill: -color-text-muted; }
+.confirm-total-label { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-text-title; }
+.confirm-total-value { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+
+/* ── Sidebar ──────────────────────────────────── */
+.sidebar {
+    -fx-background-color: #f8faff;
+    -fx-border-color: -color-border-soft; -fx-border-width: 0 0 0 1;
+}
+.sidebar-header { -fx-background-color: #1a6dc8; }
+.sidebar-header-text { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white; }
+.sidebar-combo {
+    -fx-font-size: 13px; -fx-background-color: white;
+    -fx-border-color: #ccc; -fx-border-radius: 4;
+    -fx-background-radius: 4; -fx-border-width: 1;
+}
+
+/* ── Cart ─────────────────────────────────────── */
+.cart-empty-label { -fx-font-size: 13px; -fx-text-fill: #888; }
+.cart-segment-label {
+    -fx-font-size: 11px; -fx-font-weight: bold;
+    -fx-text-fill: #1a6dc8; -fx-padding: 4 0 2 0;
+}
+.cart-segment-label-return {
+    -fx-font-size: 11px; -fx-font-weight: bold;
+    -fx-text-fill: #7c3aed; -fx-padding: 4 0 2 0;
+}
+.cart-seat  { -fx-font-size: 11px; -fx-text-fill: -color-text-accent; }
+.cart-price { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+.cart-train { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #0a3d8a; }
+.cart-remove-btn {
+    -fx-background-color: transparent; -fx-text-fill: #dc2626;
+    -fx-font-size: 11px; -fx-cursor: hand;
+    -fx-padding: 2 5 2 5; -fx-border-color: #dc2626;
+    -fx-border-radius: 3; -fx-border-width: 1;
+}
+.cart-remove-btn:hover { -fx-background-color: #fee2e2; }
+.cart-total-box { -fx-background-color: #f0f6ff; }
+.cart-total-label { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: -color-text-title; }
+.cart-total-value { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+
+/* ── Form ─────────────────────────────────────── */
+.field-label { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted; }
+.form-field {
+    -fx-font-size: 13px; -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-radius: 4; -fx-background-radius: 4;
+    -fx-border-width: 1; -fx-padding: 7 10 7 10;
+}
+.form-field:focused {
+    -fx-border-color: -color-border-focus; -fx-background-color: white;
+}
+.form-combo {
+    -fx-font-size: 13px; -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-radius: 4; -fx-background-radius: 4; -fx-border-width: 1;
+}
+.form-radio { -fx-font-size: 13px; -fx-text-fill: -color-text-accent; -fx-cursor: hand; }
+.form-card {
+    -fx-background-color: white; -fx-background-radius: 6;
+    -fx-border-color: -color-border-soft; -fx-border-radius: 6; -fx-border-width: 1;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.05), 4, 0, 0, 1);
+}
+.card-title { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-text-title; }
+
+/* ── Buttons ──────────────────────────────────── */
+.btn-primary {
+    -fx-background-color: #1a6dc8; -fx-text-fill: white;
+    -fx-font-size: 13px; -fx-font-weight: bold;
+    -fx-background-radius: 4; -fx-padding: 8 20 8 20; -fx-cursor: hand;
+}
+.btn-primary:hover   { -fx-background-color: #155baa; }
+.btn-primary:pressed { -fx-background-color: #0f4a8a; }
+.btn-primary:disabled { -fx-background-color: #ccc; -fx-text-fill: #888; }
+
+.btn-confirm {
+    -fx-background-color: #16a34a; -fx-text-fill: white;
+    -fx-font-size: 13px; -fx-font-weight: bold;
+    -fx-background-radius: 4; -fx-padding: 9 24 9 24; -fx-cursor: hand;
+}
+.btn-confirm:hover    { -fx-background-color: #15803d; }
+.btn-confirm:disabled { -fx-background-color: #ccc; -fx-text-fill: #888; }
+
+.btn-secondary {
+    -fx-background-color: transparent; -fx-text-fill: -color-text-muted;
+    -fx-font-size: 13px; -fx-background-radius: 4;
+    -fx-border-color: -color-border-soft; -fx-border-radius: 4;
+    -fx-border-width: 1; -fx-padding: 7 16 7 16; -fx-cursor: hand;
+}
+.btn-secondary:hover { -fx-background-color: -color-bg-placeholder; }
+
+.btn-link {
+    -fx-background-color: transparent; -fx-text-fill: #1a6dc8;
+    -fx-font-size: 12px; -fx-cursor: hand; -fx-underline: true;
+}
+
+/* ── Result ───────────────────────────────────── */
+.result-card {
+    -fx-background-color: white; -fx-background-radius: 10;
+    -fx-border-color: -color-border-soft; -fx-border-radius: 10; -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.1), 12, 0, 0, 3);
+    -fx-max-width: 500;
+}
+.result-icon    { -fx-font-size: 48px; }
+.result-title   { -fx-font-size: 20px; -fx-font-weight: bold; }
+.result-message { -fx-font-size: 13px; -fx-text-fill: -color-text-accent; }
+.result-qr      { -fx-font-size: 12px; -fx-text-fill: #1a6dc8; }
+
+/* ── Status ───────────────────────────────────── */
+.status-error { -fx-font-size: 12px; -fx-text-fill: #dc2626; }
+.section-big-title { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: -color-text-title; }

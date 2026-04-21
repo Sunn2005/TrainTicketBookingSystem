@@ -5,43 +5,38 @@ import dto.ActionResponse;
 import dto.ScheduleInfoResponse;
 import dto.SellTicketRequest;
 import model.entity.Seat;
-import model.entity.enums.PaymentStatus;
+import model.entity.Station;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class TicketClientService {
-    private final TicketController delegate;
+    private final TicketController delegate = new TicketController();
 
-    public TicketClientService() {
-        this.delegate = new TicketController();
+    public List<Station> getStations() {
+        return new dao.StationDAO().findAll();
     }
 
-    public TicketClientService(TicketController delegate) {
-        this.delegate = delegate;
-    }
-
-    public List<ScheduleInfoResponse> getSchedulesWithAvailableSeats(String departureStation, String destinationStation, LocalDate date) {
-        return delegate.getSchedulesWithAvailableSeats(departureStation, destinationStation, date);
+    public List<ScheduleInfoResponse> getSchedulesWithAvailableSeats(
+            String depId, String arrId, LocalDate date) {
+        return delegate.getSchedulesWithAvailableSeats(depId, arrId, date);
     }
 
     public List<Seat> getAvailableSeats(String scheduleId) {
-        return delegate.getAvailableSeats(scheduleId);
+        List<Seat> seats = delegate.getAvailableSeats(scheduleId);
+        // Ép load lazy fields trong cùng session
+        for (Seat seat : seats) {
+            seat.getCarriage().getCarriageNumber();
+            seat.getSeatType().name();
+        }
+        return seats;
     }
 
     public ActionResponse sellTicket(SellTicketRequest request) {
         return delegate.sellTicket(request);
     }
 
-    public ActionResponse cancelTicket(String ticketId, String reason) {
-        return delegate.cancelTicket(ticketId, reason);
-    }
-
-    public ActionResponse exchangeTicket(String ticketId, String newScheduleId, String newSeatId) {
-        return delegate.exchangeTicket(ticketId, newScheduleId, newSeatId);
-    }
-
-    public ActionResponse updatePaymentStatus(String ticketId, PaymentStatus status) {
-        return delegate.updatePaymentStatus(ticketId, status);
+    public ActionResponse cancelTicket(String ticketId, String cccd) {
+        return delegate.cancelTicket(ticketId, cccd);
     }
 }
