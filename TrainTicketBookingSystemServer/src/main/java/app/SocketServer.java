@@ -1,7 +1,12 @@
 package app;
 
+
 import controller.UserController;
+import controller.StationController;
+import model.entity.Station;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.LoginResponse;
+import java.util.List;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 public class SocketServer {
     public static final int DEFAULT_PORT = 9999;
     private final UserController userController = new UserController();
+    private final StationController stationController = new StationController();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -68,8 +75,25 @@ public class SocketServer {
         if (trimmed.toUpperCase().startsWith("LOGIN|")) {
             return handleLogin(trimmed);
         }
+        if (trimmed.toUpperCase().startsWith("REQUEST_PASSWORD_RESET|")) {
+            return handleRequestPasswordReset(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("GET_PASSWORD_RESET_REQUESTS")) {
+            return handleGetPasswordResetRequests();
+        }
+        if (trimmed.toUpperCase().startsWith("RESET_PASSWORD|")) {
+            return handleResetPassword(trimmed);
+        }
         if ("PING".equalsIgnoreCase(trimmed)) {
             return "PONG";
+        }
+        if ("GET_ALL_STATIONS".equalsIgnoreCase(trimmed)) {
+            try {
+                List<Station> stations = stationController.getAllStations();
+                return objectMapper.writeValueAsString(stations);
+            } catch (Exception e) {
+                return "ERROR: Server error when fetching stations";
+            }
         }
         if ("BOOKING_STATUS".equalsIgnoreCase(trimmed)) {
             return "SERVER_READY";
@@ -106,6 +130,38 @@ public class SocketServer {
             return "LOGIN_FAIL|" + failMessage;
         } catch (Exception e) {
             return "LOGIN_FAIL|" + safe(e.getMessage());
+        }
+    }
+
+    private String handleRequestPasswordReset(String command) {
+        String[] parts = command.split("\\|");
+        if (parts.length < 5) return "ERROR|Sai dinh dang. Dung: REQUEST_PASSWORD_RESET|userID|fullName|role|email";
+        try {
+            dto.PasswordResetRequestDTO req = new dto.PasswordResetRequestDTO(parts[1], parts[2], parts[3], parts[4]);
+            dto.ActionResponse res = userController.requestPasswordReset(req);
+            return res.isSuccess() ? "SUCCESS|" + res.getMessage() : "ERROR|" + res.getMessage();
+        } catch (Exception e) {
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleGetPasswordResetRequests() {
+        try {
+            java.util.List<dto.PasswordResetRequestDTO> reqs = userController.getPendingPasswordResets();
+            return "SUCCESS|" + objectMapper.writeValueAsString(reqs);
+        } catch (Exception e) {
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleResetPassword(String command) {
+        String[] parts = command.split("\\|");
+        if (parts.length < 3) return "ERROR|Sai dinh dang. Dung: RESET_PASSWORD|userID|newPassword";
+        try {
+            dto.ActionResponse res = userController.resetPassword(parts[1], parts[2]);
+            return res.isSuccess() ? "SUCCESS|" + res.getMessage() : "ERROR|" + res.getMessage();
+        } catch (Exception e) {
+            return "ERROR|" + e.getMessage();
         }
     }
 

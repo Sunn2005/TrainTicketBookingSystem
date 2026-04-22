@@ -88,4 +88,16 @@ public class UserController {
         return userService.scheduleStatistics(request);
     }
 
+    public ActionResponse requestPasswordReset(PasswordResetRequestDTO request) {
+        return userService.requestPasswordReset(request);
+    }
+
+    public List<PasswordResetRequestDTO> getPendingPasswordResets() {
+        return userService.getPendingPasswordResets();
+    }
+
+    public ActionResponse resetPassword(String targetUserId, String newPassword) {
+        return userService.resetPassword(targetUserId, newPassword);
+    }
+
 }

@@ -38,19 +38,46 @@ public class DataSeeder {
             em.persist(u1); em.persist(u2); em.persist(u3); em.persist(u4); em.persist(u5);
 
             // 3. Station
-            Station s1 = new Station("STA-001", "Ga Sài Gòn", "Hồ Chí Minh");
-            Station s2 = new Station("STA-002", "Ga Nha Trang", "Khánh Hòa");
-            Station s3 = new Station("STA-003", "Ga Đà Nẵng", "Đà Nẵng");
-            Station s4 = new Station("STA-004", "Ga Huế", "Thừa Thiên Huế");
-            Station s5 = new Station("STA-005", "Ga Hà Nội", "Hà Nội");
-            em.persist(s1); em.persist(s2); em.persist(s3); em.persist(s4); em.persist(s5);
+            Station s1 = new Station("STA-001", "Ga Hà Nội", "Hà Nội");
+            Station s2 = new Station("STA-002", "Ga Long Biên", "Hà Nội");
+            Station s3 = new Station("STA-003", "Ga Gia Lâm", "Hà Nội");
+            Station s4 = new Station("STA-004", "Ga Phủ Lý", "Hà Nam");
+            Station s5 = new Station("STA-005", "Ga Nam Định", "Nam Định");
+            Station s6 = new Station("STA-006", "Ga Ninh Bình", "Ninh Bình");
+            Station s7 = new Station("STA-007", "Ga Bỉm Sơn", "Thanh Hóa");
+            Station s8 = new Station("STA-008", "Ga Thanh Hóa", "Thanh Hóa");
+            Station s9 = new Station("STA-009", "Ga Minh Khôi", "Thanh Hóa");
+            Station s10 = new Station("STA-010", "Ga Vinh", "Nghệ An");
+            Station s11 = new Station("STA-011", "Ga Yên Trung", "Nghệ An");
+            Station s12 = new Station("STA-012", "Ga Hương Phố", "Hà Tĩnh");
+            Station s13 = new Station("STA-013", "Ga Đồng Hới", "Quảng Bình");
+            Station s14 = new Station("STA-014", "Ga Đông Hà", "Quảng Trị");
+            Station s15 = new Station("STA-015", "Ga Huế", "Thừa Thiên Huế");
+            Station s16 = new Station("STA-016", "Ga Đà Nẵng", "Đà Nẵng");
+            Station s17 = new Station("STA-017", "Ga Tam Kỳ", "Quảng Nam");
+            Station s18 = new Station("STA-018", "Ga Quảng Ngãi", "Quảng Ngãi");
+            Station s19 = new Station("STA-019", "Ga Diêu Trì", "Bình Định");
+            Station s20 = new Station("STA-020", "Ga Tuy Hòa", "Phú Yên");
+            Station s21 = new Station("STA-021", "Ga Giã", "Khánh Hòa");
+            Station s22 = new Station("STA-022", "Ga Nha Trang", "Khánh Hòa");
+            Station s23 = new Station("STA-023", "Ga Tháp Chàm", "Ninh Thuận");
+            Station s24 = new Station("STA-024", "Ga Phan Rang", "Ninh Thuận");
+            Station s25 = new Station("STA-025", "Ga Phan Thiết", "Bình Thuận");
+            Station s26 = new Station("STA-026", "Ga Bình Thuận", "Bình Thuận");
+            Station s27 = new Station("STA-027", "Ga Biên Hòa", "Đồng Nai");
+            Station s28 = new Station("STA-028", "Ga Dĩ An", "Bình Dương");
+            Station s29 = new Station("STA-029", "Ga Sài Gòn", "TP. Hồ Chí Minh");
+
+            for (Station station : java.util.List.of(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20, s21, s22, s23, s24, s25, s26, s27, s28, s29)) {
+                em.persist(station);
+            }
 
             // 4. Route
-            Route rt1 = new Route("ROU-001", s1, s5, 1726.0); // Sài Gòn -> Hà Nội
-            Route rt2 = new Route("ROU-002", s5, s1, 1726.0); // Hà Nội -> Sài Gòn
-            Route rt3 = new Route("ROU-003", s1, s3, 935.0);  // Sài Gòn -> Đà Nẵng
-            Route rt4 = new Route("ROU-004", s3, s5, 791.0);  // Đà Nẵng -> Hà Nội
-            Route rt5 = new Route("ROU-005", s1, s2, 411.0);  // Sài Gòn -> Nha Trang
+            Route rt1 = new Route("ROU-001", s29, s1, 1726.0); // Sài Gòn -> Hà Nội
+            Route rt2 = new Route("ROU-002", s1, s29, 1726.0); // Hà Nội -> Sài Gòn
+            Route rt3 = new Route("ROU-003", s29, s16, 935.0);  // Sài Gòn -> Đà Nẵng
+            Route rt4 = new Route("ROU-004", s16, s1, 791.0);  // Đà Nẵng -> Hà Nội
+            Route rt5 = new Route("ROU-005", s29, s22, 411.0);  // Sài Gòn -> Nha Trang
             em.persist(rt1); em.persist(rt2); em.persist(rt3); em.persist(rt4); em.persist(rt5);
 
             // 5. Train
@@ -105,11 +132,11 @@ public class DataSeeder {
             }
 
             // 8. Customer
-            Customer c1 = new Customer("CUS-001", "Trần Khách Một", CustomerType.ADULT);
-            Customer c2 = new Customer("CUS-002", "Lê Khách Sinh Viên", CustomerType.STUDENT);
-            Customer c3 = new Customer("CUS-003", "Phạm Lão Thành", CustomerType.ELDERLY);
-            Customer c4 = new Customer("CUS-004", "Vũ Khách Trẻ Em", CustomerType.CHILD);
-            Customer c5 = new Customer("CUS-005", "Hồ Khách Hai", CustomerType.ADULT);
+            Customer c1 = new Customer("001090123456", "Trần Khách Một", CustomerType.ADULT); // Nam, sinh 1990, Hà Nội
+            Customer c2 = new Customer("048303234567", "Lê Khách Sinh Viên", CustomerType.STUDENT); // Nữ, sinh 2003, Đà Nẵng
+            Customer c3 = new Customer("079050345678", "Phạm Lão Thành", CustomerType.ELDERLY); // Nam, sinh 1950, TP.HCM
+            Customer c4 = new Customer("001315456789", "Vũ Khách Trẻ Em", CustomerType.CHILD); // Nữ, sinh 2015, Hà Nội
+            Customer c5 = new Customer("079085567890", "Hồ Khách Hai", CustomerType.ADULT); // Nam, sinh 1985, TP.HCM
             em.persist(c1); em.persist(c2); em.persist(c3); em.persist(c4); em.persist(c5);
 
             // 9. Schedule

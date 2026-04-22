@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "carriages")
+@Table(
+    name = "carriages",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_carriage_train", columnNames = {"train_id", "carriage_number"})
+    }
+)
 public class Carriage {
 
     @Id
@@ -36,4 +42,3 @@ public class Carriage {
     @ToString.Exclude
     private List<Seat> seats;
 }
-

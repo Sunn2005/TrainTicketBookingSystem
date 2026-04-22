@@ -3,7 +3,6 @@ package iuh.fit.gui.home;
 import iuh.fit.App;
 import iuh.fit.constance.AppTheme;
 import iuh.fit.context.UserContext;
-import iuh.fit.gui.ticket.TicketContext;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -97,7 +96,6 @@ public class HomeScreenController {
     @FXML
     private void showSellTicketScreen() {
         setActiveButton(sellTicketButton);
-        TicketContext.getInstance().reset();
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
                     "/iuh/fit/gui/ticket/search/search-schedule-view.fxml"));

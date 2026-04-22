@@ -1,106 +1,106 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<?import javafx.geometry.Insets?>-->
+<!--<?import javafx.scene.control.*?>-->
+<!--<?import javafx.scene.layout.*?>-->
 
-<HBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="iuh.fit.gui.ticket.seat.SelectSeatController"
-      stylesheets="@../ticket.css"
-      styleClass="page-root" spacing="0">
+<!--<HBox xmlns="http://javafx.com/javafx"-->
+<!--      xmlns:fx="http://javafx.com/fxml"-->
+<!--      fx:controller="iuh.fit.gui.ticket.seat.SelectSeatController"-->
+<!--      stylesheets="@../ticket.css"-->
+<!--      styleClass="page-root" spacing="0">-->
 
-    <!-- ══ LEFT ══ -->
-    <VBox HBox.hgrow="ALWAYS" spacing="0">
+<!--    &lt;!&ndash; ══ LEFT ══ &ndash;&gt;-->
+<!--    <VBox HBox.hgrow="ALWAYS" spacing="0">-->
 
-        <!-- Breadcrumb -->
-        <HBox styleClass="breadcrumb-bar" alignment="CENTER_LEFT" spacing="8">
-            <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>
-            <Button text="← Đổi chuyến" styleClass="btn-link" onAction="#onBackToSearch"/>
-            <Label text="›" styleClass="breadcrumb-sep"/>
-            <Label fx:id="breadcrumbLabel" styleClass="breadcrumb-title"/>
-        </HBox>
+<!--        &lt;!&ndash; Breadcrumb &ndash;&gt;-->
+<!--        <HBox styleClass="breadcrumb-bar" alignment="CENTER_LEFT" spacing="8">-->
+<!--            <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>-->
+<!--            <Button text="← Đổi chuyến" styleClass="btn-link" onAction="#onBackToSearch"/>-->
+<!--            <Label text="›" styleClass="breadcrumb-sep"/>-->
+<!--            <Label fx:id="breadcrumbLabel" styleClass="breadcrumb-title"/>-->
+<!--        </HBox>-->
 
-        <!-- Segment tabs (khứ hồi) -->
-        <HBox fx:id="segmentTabBox" spacing="0" visible="false" managed="false">
-            <Button fx:id="outboundTab" text="→ Chọn ghế chiều đi"
-                    styleClass="segment-tab-active" onAction="#onTabOutbound"
-                    maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-            <Button fx:id="returnTab" text="← Chọn ghế chiều về"
-                    styleClass="segment-tab" onAction="#onTabReturn"
-                    maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-        </HBox>
+<!--        &lt;!&ndash; Segment tabs (khứ hồi) &ndash;&gt;-->
+<!--        <HBox fx:id="segmentTabBox" spacing="0" visible="false" managed="false">-->
+<!--            <Button fx:id="outboundTab" text="→ Chọn ghế chiều đi"-->
+<!--                    styleClass="segment-tab-active" onAction="#onTabOutbound"-->
+<!--                    maxWidth="Infinity" HBox.hgrow="ALWAYS"/>-->
+<!--            <Button fx:id="returnTab" text="← Chọn ghế chiều về"-->
+<!--                    styleClass="segment-tab" onAction="#onTabReturn"-->
+<!--                    maxWidth="Infinity" HBox.hgrow="ALWAYS"/>-->
+<!--        </HBox>-->
 
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="main-scroll">
-            <VBox spacing="12">
-                <padding><Insets top="12" right="12" bottom="20" left="12"/></padding>
+<!--        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="main-scroll">-->
+<!--            <VBox spacing="12">-->
+<!--                <padding><Insets top="12" right="12" bottom="20" left="12"/></padding>-->
 
-                <Label fx:id="statusLabel" styleClass="status-error" wrapText="true"/>
+<!--                <Label fx:id="statusLabel" styleClass="status-error" wrapText="true"/>-->
 
-                <!-- Carriage map -->
-                <VBox fx:id="carriageSection" spacing="6">
-                    <Label fx:id="carriageMapLabel" styleClass="carriage-map-title"/>
-                    <ScrollPane styleClass="carriage-scroll"
-                                prefHeight="85" fitToHeight="true">
-                        <HBox fx:id="carriageBox" spacing="8" alignment="CENTER_LEFT">
-                            <padding><Insets top="8" right="8" bottom="8" left="8"/></padding>
-                        </HBox>
-                    </ScrollPane>
-                </VBox>
+<!--                &lt;!&ndash; Carriage map &ndash;&gt;-->
+<!--                <VBox fx:id="carriageSection" spacing="6">-->
+<!--                    <Label fx:id="carriageMapLabel" styleClass="carriage-map-title"/>-->
+<!--                    <ScrollPane styleClass="carriage-scroll"-->
+<!--                                prefHeight="85" fitToHeight="true">-->
+<!--                        <HBox fx:id="carriageBox" spacing="8" alignment="CENTER_LEFT">-->
+<!--                            <padding><Insets top="8" right="8" bottom="8" left="8"/></padding>-->
+<!--                        </HBox>-->
+<!--                    </ScrollPane>-->
+<!--                </VBox>-->
 
-                <!-- Seat map -->
-                <VBox fx:id="seatSection" spacing="8" visible="false" managed="false">
-                    <HBox alignment="CENTER_LEFT" spacing="12">
-                        <Label fx:id="seatMapTitle" styleClass="seat-map-title"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <HBox spacing="10" alignment="CENTER_RIGHT">
-                            <HBox spacing="4" alignment="CENTER_LEFT">
-                                <Label text="■" style="-fx-text-fill:#e05252;-fx-font-size:16px;"/>
-                                <Label text="Trống" styleClass="legend-label"/>
-                            </HBox>
-                            <HBox spacing="4" alignment="CENTER_LEFT">
-                                <Label text="■" style="-fx-text-fill:#16a34a;-fx-font-size:16px;"/>
-                                <Label text="Đã chọn" styleClass="legend-label"/>
-                            </HBox>
-                        </HBox>
-                    </HBox>
-                    <VBox styleClass="seat-map-container">
-                        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-                        <GridPane fx:id="seatGrid" hgap="8" vgap="8"/>
-                    </VBox>
-                    <HBox alignment="CENTER_RIGHT" spacing="10">
-                        <Label fx:id="countLabel" styleClass="selected-count-label"/>
-                        <Button fx:id="nextBtn" text="Tiếp theo: Nhập thông tin →"
-                                styleClass="btn-primary" onAction="#onNext"
-                                visible="false" managed="false"/>
-                    </HBox>
-                </VBox>
-            </VBox>
-        </ScrollPane>
-    </VBox>
+<!--                &lt;!&ndash; Seat map &ndash;&gt;-->
+<!--                <VBox fx:id="seatSection" spacing="8" visible="false" managed="false">-->
+<!--                    <HBox alignment="CENTER_LEFT" spacing="12">-->
+<!--                        <Label fx:id="seatMapTitle" styleClass="seat-map-title"/>-->
+<!--                        <Region HBox.hgrow="ALWAYS"/>-->
+<!--                        <HBox spacing="10" alignment="CENTER_RIGHT">-->
+<!--                            <HBox spacing="4" alignment="CENTER_LEFT">-->
+<!--                                <Label text="■" style="-fx-text-fill:#e05252;-fx-font-size:16px;"/>-->
+<!--                                <Label text="Trống" styleClass="legend-label"/>-->
+<!--                            </HBox>-->
+<!--                            <HBox spacing="4" alignment="CENTER_LEFT">-->
+<!--                                <Label text="■" style="-fx-text-fill:#16a34a;-fx-font-size:16px;"/>-->
+<!--                                <Label text="Đã chọn" styleClass="legend-label"/>-->
+<!--                            </HBox>-->
+<!--                        </HBox>-->
+<!--                    </HBox>-->
+<!--                    <VBox styleClass="seat-map-container">-->
+<!--                        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>-->
+<!--                        <GridPane fx:id="seatGrid" hgap="8" vgap="8"/>-->
+<!--                    </VBox>-->
+<!--                    <HBox alignment="CENTER_RIGHT" spacing="10">-->
+<!--                        <Label fx:id="countLabel" styleClass="selected-count-label"/>-->
+<!--                        <Button fx:id="nextBtn" text="Tiếp theo: Nhập thông tin →"-->
+<!--                                styleClass="btn-primary" onAction="#onNext"-->
+<!--                                visible="false" managed="false"/>-->
+<!--                    </HBox>-->
+<!--                </VBox>-->
+<!--            </VBox>-->
+<!--        </ScrollPane>-->
+<!--    </VBox>-->
 
-    <!-- ══ RIGHT: GIỎ VÉ ══ -->
-    <VBox styleClass="sidebar" spacing="0" minWidth="265" maxWidth="265">
-        <HBox styleClass="sidebar-header" alignment="CENTER_LEFT" spacing="6">
-            <padding><Insets top="8" right="10" bottom="8" left="10"/></padding>
-            <Label text="≡" style="-fx-font-size:14px;-fx-text-fill:white;"/>
-            <Label text="Giỏ vé" styleClass="sidebar-header-text"/>
-        </HBox>
-        <VBox fx:id="cartBox" spacing="0" minHeight="80">
-            <padding><Insets top="8" right="10" bottom="8" left="10"/></padding>
-            <Label fx:id="cartEmptyLabel" text="Chưa chọn ghế"
-                   styleClass="cart-empty-label"/>
-        </VBox>
-        <VBox fx:id="cartTotalBox" styleClass="cart-total-box"
-              visible="false" managed="false">
-            <padding><Insets top="6" right="10" bottom="8" left="10"/></padding>
-            <Separator/>
-            <HBox style="-fx-padding:6 0 0 0;">
-                <Label text="Tổng (ước tính):" styleClass="cart-total-label"
-                       HBox.hgrow="ALWAYS"/>
-                <Label fx:id="cartTotalLabel" styleClass="cart-total-value"/>
-            </HBox>
-            <Label text="* Giá theo loại KH sẽ tính ở bước sau"
-                   style="-fx-font-size:10px;-fx-text-fill:#888;"/>
-        </VBox>
-    </VBox>
-</HBox>
+<!--    &lt;!&ndash; ══ RIGHT: GIỎ VÉ ══ &ndash;&gt;-->
+<!--    <VBox styleClass="sidebar" spacing="0" minWidth="265" maxWidth="265">-->
+<!--        <HBox styleClass="sidebar-header" alignment="CENTER_LEFT" spacing="6">-->
+<!--            <padding><Insets top="8" right="10" bottom="8" left="10"/></padding>-->
+<!--            <Label text="≡" style="-fx-font-size:14px;-fx-text-fill:white;"/>-->
+<!--            <Label text="Giỏ vé" styleClass="sidebar-header-text"/>-->
+<!--        </HBox>-->
+<!--        <VBox fx:id="cartBox" spacing="0" minHeight="80">-->
+<!--            <padding><Insets top="8" right="10" bottom="8" left="10"/></padding>-->
+<!--            <Label fx:id="cartEmptyLabel" text="Chưa chọn ghế"-->
+<!--                   styleClass="cart-empty-label"/>-->
+<!--        </VBox>-->
+<!--        <VBox fx:id="cartTotalBox" styleClass="cart-total-box"-->
+<!--              visible="false" managed="false">-->
+<!--            <padding><Insets top="6" right="10" bottom="8" left="10"/></padding>-->
+<!--            <Separator/>-->
+<!--            <HBox style="-fx-padding:6 0 0 0;">-->
+<!--                <Label text="Tổng (ước tính):" styleClass="cart-total-label"-->
+<!--                       HBox.hgrow="ALWAYS"/>-->
+<!--                <Label fx:id="cartTotalLabel" styleClass="cart-total-value"/>-->
+<!--            </HBox>-->
+<!--            <Label text="* Giá theo loại KH sẽ tính ở bước sau"-->
+<!--                   style="-fx-font-size:10px;-fx-text-fill:#888;"/>-->
+<!--        </VBox>-->
+<!--    </VBox>-->
+<!--</HBox>-->

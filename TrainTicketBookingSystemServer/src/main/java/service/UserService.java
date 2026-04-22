@@ -1,8 +1,6 @@
 package service;
 
-import dto.ActionResponse;
-import dto.RevenueStatisticsRequest;
-import dto.SeatTypeRevenueRequest;
+import dto.*;
 import model.entity.Role;
 import model.entity.User;
 import model.entity.enums.UserStatus;
@@ -14,12 +12,12 @@ import java.util.UUID;
 import dao.UserDAO;
 import dao.RoleDAO;
 import java.util.List;
-import dto.TransactionDTO;
-import dto.LoginResponse;
 
 public class UserService {
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
+    private static final List<PasswordResetRequestDTO> passwordResetRequests = new java.util.ArrayList<>();
+
 
     public UserService() {
     }
@@ -260,7 +258,7 @@ public class UserService {
         }
     }
 
-    public dto.RevenueStatisticsResponse revenueStatistics(RevenueStatisticsRequest request) {
+    public RevenueStatisticsResponse revenueStatistics(RevenueStatisticsRequest request) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             User user = em.find(User.class, request.getManagerID());
@@ -330,7 +328,7 @@ public class UserService {
         }
     }
 
-    public dto.SeatTypeRevenueResponse seatTypeRevenue(SeatTypeRevenueRequest request) {
+    public SeatTypeRevenueResponse seatTypeRevenue(SeatTypeRevenueRequest request) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             User user = em.find(User.class, request.getManagerID());
@@ -366,7 +364,7 @@ public class UserService {
         }
     }
 
-    public dto.ScheduleStatisticsResponse scheduleStatistics(dto.ScheduleStatisticsRequest request) {
+    public ScheduleStatisticsResponse scheduleStatistics(dto.ScheduleStatisticsRequest request) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             User user = em.find(User.class, request.getManagerID());
@@ -418,6 +416,61 @@ public class UserService {
         } catch (Exception e) {
             e.printStackTrace();
             return new dto.ScheduleStatisticsResponse(java.util.Collections.emptyList());
+        } finally {
+            em.close();
+        }
+    }
+
+
+    public ActionResponse requestPasswordReset(dto.PasswordResetRequestDTO request) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            User user = userDAO.findByID(request.getUserID()).orElse(null);
+            if (user == null) {
+                return new ActionResponse(false, "Người dùng không tồn tại");
+            }
+            if (user.getEmail() == null || !user.getEmail().trim().equalsIgnoreCase(request.getEmail().trim())) {
+                return new ActionResponse(false, "Email không khớp với hệ thống");
+            }
+            if (!user.getFullName().trim().equalsIgnoreCase(request.getFullName().trim())) {
+                return new ActionResponse(false, "Họ tên không khớp");
+            }
+
+            boolean exists = passwordResetRequests.stream()
+                .anyMatch(r -> r.getUserID().equals(request.getUserID()));
+            if (!exists) {
+                passwordResetRequests.add(request);
+            }
+            return new ActionResponse(true, "Yêu cầu đã được gửi đến Admin");
+        } catch (Exception e) {
+            return new ActionResponse(false, "Lỗi: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
+    public java.util.List<dto.PasswordResetRequestDTO> getPendingPasswordResets() {
+        return new java.util.ArrayList<>(passwordResetRequests);
+    }
+
+    public ActionResponse resetPassword(String targetUserId, String newPassword) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            User user = userDAO.findByID(targetUserId).orElse(null);
+            if (user == null) {
+                return new ActionResponse(false, "Người dùng không tồn tại");
+            }
+            user.setPassword(newPassword);
+            em.merge(user);
+            tx.commit();
+            
+            passwordResetRequests.removeIf(r -> r.getUserID().equals(targetUserId));
+            return new ActionResponse(true, "Cập nhật mật khẩu thành công");
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            return new ActionResponse(false, "Lỗi server: " + e.getMessage());
         } finally {
             em.close();
         }

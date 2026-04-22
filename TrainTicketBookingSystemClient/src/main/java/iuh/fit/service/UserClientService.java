@@ -56,4 +56,16 @@ public class UserClientService {
     public ScheduleStatisticsResponse scheduleStatistics(ScheduleStatisticsRequest request) {
         return delegate.scheduleStatistics(request);
     }
+
+    public ActionResponse requestPasswordReset(PasswordResetRequestDTO request) {
+        return delegate.requestPasswordReset(request);
+    }
+
+    public List<PasswordResetRequestDTO> getPendingPasswordResets() {
+        return delegate.getPendingPasswordResets();
+    }
+
+    public ActionResponse resetPassword(String targetUserId, String newPassword) {
+        return delegate.resetPassword(targetUserId, newPassword);
+    }
 }

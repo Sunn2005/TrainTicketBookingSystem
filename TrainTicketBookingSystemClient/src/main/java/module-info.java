@@ -12,7 +12,6 @@ module iuh.fit.trainticketbookingsystemclient {
     opens iuh.fit.gui.login to javafx.fxml;
     opens iuh.fit.socketconfig to javafx.fxml;
     opens iuh.fit.gui.home to javafx.fxml;
-    opens iuh.fit.gui.ticket to javafx.fxml;
     opens iuh.fit.gui.ticket.search to javafx.fxml;
     opens iuh.fit.gui.ticket.seat to javafx.fxml;
     opens iuh.fit.gui.ticket.passenger to javafx.fxml;
@@ -23,5 +22,5 @@ module iuh.fit.trainticketbookingsystemclient {
     exports iuh.fit.gui.login;
     exports iuh.fit.socketconfig;
     exports iuh.fit.gui.home;
-    exports iuh.fit.gui.ticket;
 }
+
