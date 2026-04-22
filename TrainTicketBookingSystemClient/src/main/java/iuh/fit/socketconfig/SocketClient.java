@@ -49,7 +49,7 @@ public class SocketClient {
                 writer.flush();
 
                 String response = reader.readLine();
-                responses.add("Server: " + greeting + " | Response: " + response);
+                responses.add(response);
             }
             return responses;
         }

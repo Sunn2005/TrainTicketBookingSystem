@@ -1,11 +1,11 @@
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<?xml version="1.0" encoding="UTF-8"?>-->
 <!--<?import javafx.geometry.Insets?>-->
 <!--<?import javafx.scene.control.*?>-->
 <!--<?import javafx.scene.layout.*?>-->
 
 <!--<HBox xmlns="http://javafx.com/javafx"-->
 <!--      xmlns:fx="http://javafx.com/fxml"-->
-<!--      fx:controller="iuh.fit.gui.ticket.seat.SelectSeatController"-->
+      fx:controller="iuh.fit.gui.ticket.seat.SelectSeatController"
 <!--      stylesheets="@../ticket.css"-->
 <!--      styleClass="page-root" spacing="0">-->
 
@@ -103,4 +103,4 @@
 <!--                   style="-fx-font-size:10px;-fx-text-fill:#888;"/>-->
 <!--        </VBox>-->
 <!--    </VBox>-->
-<!--</HBox>-->
+<!--</HBox>

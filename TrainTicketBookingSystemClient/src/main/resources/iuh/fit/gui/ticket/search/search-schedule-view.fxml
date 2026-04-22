@@ -1,82 +1,82 @@
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<!--<?import javafx.geometry.Insets?>-->
-<!--<?import javafx.scene.control.*?>-->
-<!--<?import javafx.scene.layout.*?>-->
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<!--<HBox xmlns="http://javafx.com/javafx"-->
-<!--      xmlns:fx="http://javafx.com/fxml"-->
-<!--      fx:controller="iuh.fit.gui.ticket.search.SearchScheduleController"-->
-<!--      stylesheets="@../ticket.css"-->
-<!--      styleClass="page-root" spacing="0">-->
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="iuh.fit.gui.ticket.search.SearchScheduleController"
+      stylesheets="@../ticket.css"
+      styleClass="page-root" spacing="0">
 
-<!--    &lt;!&ndash; ══ LEFT: KẾT QUẢ ══ &ndash;&gt;-->
-<!--    <VBox HBox.hgrow="ALWAYS" spacing="0">-->
+    <!-- &lt;!&ndash; ══ LEFT: KẾT QUẢ ══ &ndash;&gt; -->
+    <VBox HBox.hgrow="ALWAYS" spacing="0">
 
-<!--        <HBox fx:id="resultHeaderBox" styleClass="result-header"-->
-<!--              alignment="CENTER_LEFT" spacing="8"-->
-<!--              visible="false" managed="false">-->
-<!--            <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>-->
-<!--            <Label text="≡" style="-fx-font-size:16px;-fx-text-fill:white;"/>-->
-<!--            <Label fx:id="resultHeaderLabel" styleClass="result-header-text"/>-->
-<!--        </HBox>-->
+        <HBox fx:id="resultHeaderBox" styleClass="result-header"
+              alignment="CENTER_LEFT" spacing="8"
+              visible="false" managed="false">
+            <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>
+            <Label text="≡" style="-fx-font-size:16px;-fx-text-fill:white;"/>
+            <Label fx:id="resultHeaderLabel" styleClass="result-header-text"/>
+        </HBox>
 
-<!--        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="main-scroll">-->
-<!--            <VBox spacing="12">-->
-<!--                <padding><Insets top="12" right="12" bottom="20" left="12"/></padding>-->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="main-scroll">
+            <VBox spacing="12">
+                <padding><Insets top="12" right="12" bottom="20" left="12"/></padding>
 
-<!--                <Label fx:id="statusLabel" styleClass="status-error" wrapText="true"/>-->
+                <Label fx:id="statusLabel" styleClass="status-error" wrapText="true"/>
 
-<!--                <ScrollPane fx:id="trainScrollPane" styleClass="train-scroll"-->
-<!--                            visible="false" managed="false"-->
-<!--                            prefHeight="260" fitToHeight="true">-->
-<!--                    <VBox fx:id="trainSectionsBox" spacing="16">-->
-<!--                        <padding><Insets top="8" right="8" bottom="8" left="8"/></padding>-->
-<!--                    </VBox>-->
-<!--                </ScrollPane>-->
-<!--            </VBox>-->
-<!--        </ScrollPane>-->
-<!--    </VBox>-->
+                <ScrollPane fx:id="trainScrollPane" styleClass="train-scroll"
+                            visible="false" managed="false"
+                            prefHeight="260" fitToHeight="true">
+                    <VBox fx:id="trainSectionsBox" spacing="16">
+                        <padding><Insets top="8" right="8" bottom="8" left="8"/></padding>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+        </ScrollPane>
+    </VBox>
 
-<!--    &lt;!&ndash; ══ RIGHT: SIDEBAR TÌM KIẾM ══ &ndash;&gt;-->
-<!--    <VBox styleClass="sidebar" spacing="0" minWidth="265" maxWidth="265">-->
-<!--        <HBox styleClass="sidebar-header" alignment="CENTER_LEFT" spacing="6">-->
-<!--            <padding><Insets top="8" right="10" bottom="8" left="10"/></padding>-->
-<!--            <Label text="≡" style="-fx-font-size:14px;-fx-text-fill:white;"/>-->
-<!--            <Label text="Thông tin hành trình" styleClass="sidebar-header-text"/>-->
-<!--        </HBox>-->
+    <!-- &lt;!&ndash; ══ RIGHT: SIDEBAR TÌM KIẾM ══ &ndash;&gt; -->
+    <VBox styleClass="sidebar" spacing="0" minWidth="265" maxWidth="265">
+        <HBox styleClass="sidebar-header" alignment="CENTER_LEFT" spacing="6">
+            <padding><Insets top="8" right="10" bottom="8" left="10"/></padding>
+            <Label text="≡" style="-fx-font-size:14px;-fx-text-fill:white;"/>
+            <Label text="Thông tin hành trình" styleClass="sidebar-header-text"/>
+        </HBox>
 
-<!--        <VBox spacing="10">-->
-<!--            <padding><Insets top="10" right="12" bottom="10" left="12"/></padding>-->
+        <VBox spacing="10">
+            <padding><Insets top="10" right="12" bottom="10" left="12"/></padding>
 
-<!--            <VBox spacing="5">-->
-<!--                <Label text="Ga đi" styleClass="field-label"/>-->
-<!--                <ComboBox fx:id="departureCombo" maxWidth="Infinity"-->
-<!--                          styleClass="sidebar-combo" promptText="Chọn ga đi..."/>-->
-<!--            </VBox>-->
-<!--            <VBox spacing="5">-->
-<!--                <Label text="Ga đến" styleClass="field-label"/>-->
-<!--                <ComboBox fx:id="arrivalCombo" maxWidth="Infinity"-->
-<!--                          styleClass="sidebar-combo" promptText="Chọn ga đến..."/>-->
-<!--            </VBox>-->
+            <VBox spacing="5">
+                <Label text="Ga đi" styleClass="field-label"/>
+                <ComboBox fx:id="departureCombo" maxWidth="Infinity"
+                          styleClass="sidebar-combo" promptText="Chọn ga đi..."/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Ga đến" styleClass="field-label"/>
+                <ComboBox fx:id="arrivalCombo" maxWidth="Infinity"
+                          styleClass="sidebar-combo" promptText="Chọn ga đến..."/>
+            </VBox>
 
-<!--            <HBox spacing="16" alignment="CENTER_LEFT">-->
-<!--                <RadioButton fx:id="oneWayRadio" text="Một chiều" styleClass="form-radio"/>-->
-<!--                <RadioButton fx:id="roundTripRadio" text="Khứ hồi" styleClass="form-radio"/>-->
-<!--            </HBox>-->
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <RadioButton fx:id="oneWayRadio" text="Một chiều" styleClass="form-radio"/>
+                <RadioButton fx:id="roundTripRadio" text="Khứ hồi" styleClass="form-radio"/>
+            </HBox>
 
-<!--            <VBox spacing="5">-->
-<!--                <Label text="Ngày đi" styleClass="field-label"/>-->
-<!--                <DatePicker fx:id="departureDatePicker" maxWidth="Infinity"/>-->
-<!--            </VBox>-->
-<!--            <VBox spacing="5">-->
-<!--                <Label text="Ngày về" styleClass="field-label"/>-->
-<!--                <DatePicker fx:id="returnDatePicker" maxWidth="Infinity" disable="true"/>-->
-<!--            </VBox>-->
+            <VBox spacing="5">
+                <Label text="Ngày đi" styleClass="field-label"/>
+                <DatePicker fx:id="departureDatePicker" maxWidth="Infinity"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Ngày về" styleClass="field-label"/>
+                <DatePicker fx:id="returnDatePicker" maxWidth="Infinity" disable="true"/>
+            </VBox>
 
-<!--            <Label fx:id="searchStatusLabel" styleClass="status-error" wrapText="true"/>-->
+            <Label fx:id="searchStatusLabel" styleClass="status-error" wrapText="true"/>
 
-<!--            <Button fx:id="searchButton" text="Tìm kiếm"-->
-<!--                    styleClass="btn-primary" maxWidth="Infinity" onAction="#onSearch"/>-->
-<!--        </VBox>-->
-<!--    </VBox>-->
-<!--</HBox>-->
+           <Button fx:id="searchButton" text="Tìm kiếm"
+                   styleClass="btn-primary" maxWidth="Infinity" onAction="#onSearch"/>
+        </VBox>
+    </VBox>
+</HBox>

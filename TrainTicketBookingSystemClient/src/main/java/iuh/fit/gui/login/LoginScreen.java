@@ -17,7 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class LoginScreenController {
+public class LoginScreen {
     private static final String HOST = SocketClient.HOST;
     private static final int PORT = SocketClient.PORT;
 

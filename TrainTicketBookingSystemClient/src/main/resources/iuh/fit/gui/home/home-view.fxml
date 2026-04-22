@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane prefHeight="768.0" prefWidth="1366.0" stylesheets="@home.css" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="iuh.fit.gui.home.HomeScreenController">
+            fx:controller="iuh.fit.gui.home.HomeScreen">
     <top>
         <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="header" BorderPane.alignment="CENTER">
             <padding>

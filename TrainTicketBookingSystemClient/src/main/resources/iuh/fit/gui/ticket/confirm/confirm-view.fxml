@@ -5,7 +5,7 @@
 
 <!--<HBox xmlns="http://javafx.com/javafx"-->
 <!--      xmlns:fx="http://javafx.com/fxml"-->
-<!--      fx:controller="iuh.fit.gui.ticket.confirm.ConfirmController"-->
+      fx:controller="iuh.fit.gui.ticket.confirm.ConfirmController"
 <!--      stylesheets="@../ticket.css"-->
 <!--      styleClass="page-root" spacing="0">-->
 
