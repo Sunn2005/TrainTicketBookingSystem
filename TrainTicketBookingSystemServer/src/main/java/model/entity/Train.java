@@ -27,6 +27,7 @@ public class Train {
 
     @OneToMany(mappedBy = "train")
     @ToString.Exclude
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Carriage> carriages;
 
 }

@@ -3,6 +3,9 @@ package app;
 
 import controller.UserController;
 import controller.StationController;
+import controller.TicketController;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import model.entity.Station;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.LoginResponse;
@@ -21,7 +24,10 @@ public class SocketServer {
     public static final int DEFAULT_PORT = 9999;
     private final UserController userController = new UserController();
     private final StationController stationController = new StationController();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    private final TicketController ticketController = new TicketController();
 
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -86,6 +92,13 @@ public class SocketServer {
         }
         if ("PING".equalsIgnoreCase(trimmed)) {
             return "PONG";
+        }
+        
+        if (trimmed.toUpperCase().startsWith("GET_SCHEDULES|")) {
+            return handleGetSchedules(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("GET_SEATS|")) {
+            return handleGetSeats(trimmed);
         }
         if ("GET_ALL_STATIONS".equalsIgnoreCase(trimmed)) {
             try {
@@ -161,6 +174,30 @@ public class SocketServer {
             dto.ActionResponse res = userController.resetPassword(parts[1], parts[2]);
             return res.isSuccess() ? "SUCCESS|" + res.getMessage() : "ERROR|" + res.getMessage();
         } catch (Exception e) {
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleGetSchedules(String command) {
+        String[] parts = command.split("\\|");
+        if (parts.length < 4) return "ERROR|Invalid format";
+        try {
+            java.util.List<dto.ScheduleInfoResponse> res = ticketController.getSchedulesWithAvailableSeats(parts[1], parts[2], java.time.LocalDate.parse(parts[3]));
+            return objectMapper.writeValueAsString(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleGetSeats(String command) {
+        String[] parts = command.split("\\|");
+        if (parts.length < 2) return "ERROR|Invalid format";
+        try {
+            java.util.List<model.entity.Seat> res = ticketController.getAvailableSeats(parts[1]);
+            return objectMapper.writeValueAsString(res);
+        } catch (Exception e) {
+            e.printStackTrace();
             return "ERROR|" + e.getMessage();
         }
     }

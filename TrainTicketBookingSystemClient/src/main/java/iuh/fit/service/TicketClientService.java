@@ -9,6 +9,8 @@ import model.entity.Station;
 import model.entity.enums.PaymentStatus;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import iuh.fit.socketconfig.SocketClient;
 
 import java.time.LocalDate;
@@ -17,7 +19,7 @@ import java.util.List;
 public class TicketClientService {
     private final TicketController delegate;
     private final SocketClient socketClient = new SocketClient();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     public TicketClientService() {
         this.delegate = new TicketController();
@@ -28,11 +30,33 @@ public class TicketClientService {
     }
 
     public List<ScheduleInfoResponse> getSchedulesWithAvailableSeats(String departureStation, String destinationStation, LocalDate date) {
-        return delegate.getSchedulesWithAvailableSeats(departureStation, destinationStation, date);
+        try {
+            String message = "GET_SCHEDULES|" + departureStation + "|" + destinationStation + "|" + date.toString();
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, message);
+            if (response == null || response.startsWith("ERROR") || "No response".equals(response)) {
+                System.err.println("Lỗi lấy lịch trình: " + response);
+                return List.of();
+            }
+            return objectMapper.readValue(response, new TypeReference<List<ScheduleInfoResponse>>(){});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
     }
 
     public List<Seat> getAvailableSeats(String scheduleId) {
-        return delegate.getAvailableSeats(scheduleId);
+        try {
+            String message = "GET_SEATS|" + scheduleId;
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, message);
+            if (response == null || response.startsWith("ERROR") || "No response".equals(response)) {
+                System.err.println("Lỗi lấy ghế: " + response);
+                return List.of();
+            }
+            return objectMapper.readValue(response, new TypeReference<List<Seat>>(){});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
     }
 
     public ActionResponse sellTicket(SellTicketRequest request) {

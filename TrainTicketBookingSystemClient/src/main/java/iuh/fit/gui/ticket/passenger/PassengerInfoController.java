@@ -153,11 +153,15 @@ public class PassengerInfoController {
         typeCombo.setConverter(new javafx.util.StringConverter<>() {
             @Override public String toString(CustomerType t) {
                 if (t == null) return "";
+                if (TicketContext.getInstance() == null) {
+                    return t.name(); // Fallback nếu chưa load được
+                }
+                double discountPercent = (1.0 - TicketContext.getInstance().getDiscountRate(t)) * 100;
                 return switch (t) {
                     case ADULT   -> "Người lớn";
-                    case CHILD   -> "Trẻ em  (-25%)";
-                    case STUDENT -> "Sinh viên  (-10%)";
-                    case ELDERLY -> "Người cao tuổi  (-15%)";
+                    case CHILD   -> String.format("Trẻ em  (-%.0f%%)", discountPercent);
+                    case STUDENT -> String.format("Sinh viên  (-%.0f%%)", discountPercent);
+                    case ELDERLY -> String.format("Người cao tuổi  (-%.0f%%)", discountPercent);
                 };
             }
             @Override public CustomerType fromString(String s) { return null; }

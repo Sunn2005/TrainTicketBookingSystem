@@ -1,11 +1,12 @@
 module iuh.fit.trainticketbookingsystemclient {
     requires javafx.controls;
     requires javafx.fxml;
-    requires TrainTicketBookingSystemServer;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.datatype.jsr310;
     requires org.hibernate.orm.core;
     requires jakarta.persistence;
     requires java.naming;
+    requires TrainTicketBookingSystemServer;
 
     opens iuh.fit to javafx.fxml;
     opens iuh.fit.service to javafx.fxml;

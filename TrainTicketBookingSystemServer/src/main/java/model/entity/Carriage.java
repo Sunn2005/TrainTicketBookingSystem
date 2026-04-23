@@ -40,5 +40,6 @@ public class Carriage {
 
     @OneToMany(mappedBy = "carriage")
     @ToString.Exclude
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Seat> seats;
 }

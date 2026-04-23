@@ -135,7 +135,17 @@ public class SelectSeatController {
                 ? ctx.getOutboundSchedule() : ctx.getReturnSchedule();
         carriageMapLabel.setText("Sơ đồ toa — "
                 + (schedule != null ? schedule.getTrainName() : "")
-                + "  (Tối đa " + MAX + " ghế, cùng 1 toa)");
+                + "  (Tối đa " + MAX + " ghế/lần đặt)");
+
+        VBox locoBox = new VBox(3);
+        locoBox.setAlignment(Pos.CENTER);
+        ImageView locoIcon = loadIcon("/iuh/fit/img/Toa_Dau.png", 72, 44);
+        Label locoFallback = new Label("TOA DAU");
+        locoFallback.setStyle("-fx-font-size:12px; -fx-text-fill: #0077c8; -fx-font-weight: bold;");
+        Label locoText = new Label(schedule != null ? schedule.getTrainId() : "Tàu");
+        locoText.setStyle("-fx-font-size:12px; -fx-font-weight: bold;");
+        locoBox.getChildren().addAll(locoIcon != null ? locoIcon : locoFallback, locoText);
+        carriageBox.getChildren().add(locoBox);
 
         for (var entry : carriageMap.entrySet()) {
             int num = entry.getKey();
@@ -148,48 +158,30 @@ public class SelectSeatController {
             box.setPadding(new Insets(4, 8, 4, 8));
             box.getStyleClass().add(sel ? "carriage-box-selected" : "carriage-box");
 
-            String iconPath = dom == SeatType.SOFT_SLEEPER
-                    ? "/iuh/fit/img/carriage_sleeper.png"
-                    : "/iuh/fit/img/carriage_soft.png";
-            ImageView icon = loadIcon(iconPath, 52, 36);
-            Label fb = new Label(dom == SeatType.SOFT_SLEEPER ? "🛏" : "💺");
-            fb.setStyle("-fx-font-size:26px;");
-            fb.getStyleClass().add(dom == SeatType.SOFT_SLEEPER
-                    ? "carriage-icon-sleeper" : "carriage-icon-soft");
+            boolean soldOut = seats.isEmpty();
+            String iconPath;
+            if (soldOut) {
+                iconPath = "/iuh/fit/img/Toa_Het_Slot.png";
+            } else {
+                iconPath = dom == SeatType.SOFT_SLEEPER
+                        ? "/iuh/fit/img/Toa_Giuong_Nam.png"
+                        : "/iuh/fit/img/Toa_Ghe_Mem.png";
+            }
+            ImageView icon = loadIcon(iconPath, 58, 40);
+            Label fb = new Label(soldOut ? "FULL" : "TOA");
+            fb.setStyle("-fx-font-size:12px; -fx-font-weight: bold;");
 
             Label lbl = new Label(String.valueOf(num));
             lbl.getStyleClass().add(sel ? "carriage-number-sel" : "carriage-number");
 
-             box.getChildren().addAll(icon != null ? icon : fb, lbl);
-             box.setOnMouseClicked(_ -> onClickCarriage(num));
-             box.setStyle("-fx-cursor:hand;");
-             carriageBox.getChildren().add(box);
-         }
-
-         Label locoLabel = new Label("🚂");
-         locoLabel.setStyle("-fx-font-size:30px;");
-         carriageBox.getChildren().add(locoLabel);
-     }
+            box.getChildren().addAll(icon != null ? icon : fb, lbl);
+            box.setOnMouseClicked(_ -> onClickCarriage(num));
+            box.setStyle("-fx-cursor:hand;");
+            carriageBox.getChildren().add(box);
+        }
+    }
 
     private void onClickCarriage(int num) {
-        List<Seat> active = getActiveSeats();
-        if (!active.isEmpty()
-                && active.get(0).getCarriage().getCarriageNumber() != num) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Đổi toa");
-            alert.setHeaderText("Chuyển sang toa " + num);
-            alert.setContentText("Ghế đã chọn sẽ bị xóa. Tiếp tục?");
-            alert.showAndWait().ifPresent(btn -> {
-                if (btn == ButtonType.OK) {
-                    active.clear();
-                    seatBtnMap.clear();
-                    updateCart();
-                    updateCount();
-                    showSeatMap(num);
-                }
-            });
-            return;
-        }
         showSeatMap(num);
     }
 

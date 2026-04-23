@@ -1,9 +1,11 @@
 package iuh.fit.gui.ticket;
 
 import dto.ScheduleInfoResponse;
+import model.entity.BasePrice;
 import model.entity.Seat;
 import model.entity.enums.CustomerType;
 import model.entity.enums.SeatType;
+import iuh.fit.service.PriceClientService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,9 +14,7 @@ import java.util.List;
 public final class TicketContext {
     private static final TicketContext INSTANCE = new TicketContext();
 
-    private static final double PRICE_PER_DISTANCE = 1000.0;
-    private static final double SOFT_SEAT_FEE = 300000.0;
-    private static final double SOFT_SLEEPER_FEE = 500000.0;
+    private BasePrice basePrice;
 
     private String departureStationId;
     private String departureStationName;
@@ -33,6 +33,12 @@ public final class TicketContext {
     private final List<PassengerInfo> passengers = new ArrayList<>();
 
     private TicketContext() {
+        try {
+            PriceClientService pcs = new PriceClientService();
+            this.basePrice = pcs.getBasePrice();
+        } catch (Exception e) {
+            this.basePrice = new BasePrice(1000.0, 300000.0, 500000.0, 0.9, 0.85, 0.75);
+        }
     }
 
     public static TicketContext getInstance() {
@@ -56,26 +62,44 @@ public final class TicketContext {
     }
 
     public double getDistance() {
-        // Keep a safe default so UI price calculation still works without route distance data.
+        // Return accumulated distance or default 1 fallback. Currently UI doesn't track distance effectively
+        // Without full route info we default to 1.
         return 1.0;
     }
 
     public static double calcPrice(double distance, SeatType seatType, CustomerType customerType) {
-        double seatFee = seatType == SeatType.SOFT_SLEEPER ? SOFT_SLEEPER_FEE : SOFT_SEAT_FEE;
-        double base = distance * PRICE_PER_DISTANCE + seatFee;
+        return getInstance().calculatePrice(distance, seatType, customerType);
+    }
+
+    private double calculatePrice(double distance, SeatType seatType, CustomerType customerType) {
+        if (basePrice == null) {
+            return 0.0;
+        }
+        double seatFee = seatType == SeatType.SOFT_SLEEPER
+                ? basePrice.getSoftSleeperFee() : basePrice.getSoftSeatFee();
+        // Giữ đúng công thức: distance * pricePerDistance + seatFee,
+        // Nhưng nếu frontend không lấy được distance, ta tính Base tạm:
+        double base = (distance > 0 ? distance : 1) * basePrice.getPricePerDistance() + seatFee;
+
+        // "áp dụng ưu đãi đối với customerType"
+        // Lúc chọn ghế thì TicketContext.calcPrice được gọi truyền vào `null` vì chưa biết customerType.
         return base * discount(customerType);
     }
 
-    private static double discount(CustomerType customerType) {
-        if (customerType == null) {
+    private double discount(CustomerType customerType) {
+        if (customerType == null || basePrice == null) {
             return 1.0;
         }
         return switch (customerType) {
-            case STUDENT -> 0.9;
-            case CHILD -> 0.75;
-            case ELDERLY -> 0.85;
+            case STUDENT -> 1 - basePrice.getStudentDiscount();
+            case CHILD -> 1 - basePrice.getChildDiscount();
+            case ELDERLY -> 1 - basePrice.getElderlyDiscount();
             default -> 1.0;
         };
+    }
+
+    public double getDiscountRate(CustomerType customerType) {
+        return discount(customerType);
     }
 
     public String getDepartureStationId() {

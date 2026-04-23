@@ -183,81 +183,137 @@ public class SearchScheduleController {
 
     private void buildSections(boolean isRound) {
         trainSectionsBox.getChildren().clear();
+        trainSectionsBox.setSpacing(20);
 
         if (!goList.isEmpty()) {
-            Label title = new Label("→  CHUYẾN ĐI");
-            title.getStyleClass().add("section-segment-title");
-            HBox cards = new HBox(10);
-            cards.setAlignment(Pos.CENTER_LEFT);
+            String lblText = "TUYẾN " + ctx.getDepartureStationName().toUpperCase() + " → " + ctx.getArrivalStationName().toUpperCase() + ", NGÀY " + ctx.getDepartureDate().format(DATEFMT);
+            Label title = new Label(lblText.toUpperCase());
+            title.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0077c8;");
+            
+            HBox titleBox = new HBox(title);
+            titleBox.setPadding(new Insets(15, 10, 15, 10));
+            titleBox.setStyle("-fx-background-color: #e8f4f8; -fx-border-color: #0077c8; -fx-border-width: 0 0 0 4px;");
+
+            VBox cards = new VBox(10);
+            cards.setAlignment(Pos.TOP_CENTER);
             goList.forEach(s -> cards.getChildren().add(buildCard(s, "outbound")));
-            VBox sec = new VBox(8, title, cards);
+            VBox sec = new VBox(10, titleBox, cards);
+            sec.setPadding(new Insets(10));
+            sec.setStyle("-fx-background-color: transparent;");
             trainSectionsBox.getChildren().add(sec);
         }
 
         if (isRound && !retList.isEmpty()) {
-            Label title = new Label("←  CHUYẾN VỀ");
-            title.getStyleClass().add("section-segment-title-return");
-            HBox cards = new HBox(10);
-            cards.setAlignment(Pos.CENTER_LEFT);
+            String lblText = "TUYẾN " + ctx.getArrivalStationName().toUpperCase() + " → " + ctx.getDepartureStationName().toUpperCase() + ", NGÀY " + ctx.getReturnDate().format(DATEFMT);
+            Label title = new Label(lblText.toUpperCase());
+            title.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0077c8;");
+
+            HBox titleBox = new HBox(title);
+            titleBox.setPadding(new Insets(15, 10, 15, 10));
+            titleBox.setStyle("-fx-background-color: #e8f4f8; -fx-border-color: #0077c8; -fx-border-width: 0 0 0 4px;");
+
+            VBox cards = new VBox(10);
+            cards.setAlignment(Pos.TOP_CENTER);
             retList.forEach(s -> cards.getChildren().add(buildCard(s, "return")));
-            VBox sec = new VBox(8, title, cards);
+            VBox sec = new VBox(10, titleBox, cards);
+            sec.setPadding(new Insets(10));
+            sec.setStyle("-fx-background-color: transparent;");
             trainSectionsBox.getChildren().add(sec);
         }
     }
 
-    private VBox buildCard(ScheduleInfoResponse s, String segment) {
+    private Pane buildCard(ScheduleInfoResponse s, String segment) {
         boolean isSel = ("outbound".equals(segment) && ctx.getOutboundSchedule() != null
                 && ctx.getOutboundSchedule().getScheduleId().equals(s.getScheduleId()))
                 || ("return".equals(segment) && ctx.getReturnSchedule() != null
                 && ctx.getReturnSchedule().getScheduleId().equals(s.getScheduleId()));
 
-        VBox card = new VBox(4);
-        card.setAlignment(Pos.CENTER);
-        card.setPrefWidth(148);
-        card.setPadding(new Insets(10, 8, 10, 8));
-        card.getStyleClass().add(isSel ? "train-card-selected" : "train-card");
+        HBox card = new HBox(20);
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.setPadding(new Insets(15, 20, 15, 20));
+        card.setStyle("-fx-background-color: white; -fx-background-radius: 8px; -fx-border-color: " + (isSel ? "#ffc107" : "#e0e0e0") + "; -fx-border-radius: 8px; -fx-border-width: " + (isSel ? "2px" : "1px") + "; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        
+        // 1. Logo / Train ID
+        VBox trainIdBox = new VBox(5);
+        trainIdBox.setAlignment(Pos.CENTER);
+        trainIdBox.setPrefWidth(100);
+        Label vnrLabel = new Label("VND");
+        vnrLabel.setStyle("-fx-text-fill: #0077c8; -fx-font-weight: bold; -fx-font-style: italic;");
+        Label trId = new Label(s.getTrainId());
+        trId.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+        trainIdBox.getChildren().addAll(vnrLabel, trId);
 
-        Label nameLabel = new Label(s.getTrainId());
-        nameLabel.getStyleClass().add(isSel ? "train-card-name-sel" : "train-card-name");
+        // 2. Schedule Info
+        VBox scheduleBox = new VBox(5);
+        scheduleBox.setAlignment(Pos.CENTER);
+        HBox.setHgrow(scheduleBox, Priority.ALWAYS);
+        
+        HBox timeBox = new HBox(20);
+        timeBox.setAlignment(Pos.CENTER);
+        
+        VBox depBox = new VBox(5);
+        depBox.setAlignment(Pos.CENTER);
+        Label depTime = new Label(s.getDepartureTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        depTime.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 15px;");
+        Label depDate = new Label(s.getDepartureTime().format(DateTimeFormatter.ofPattern("dd/MM")));
+        HBox dH = new HBox(5, depTime, depDate);
+        dH.setAlignment(Pos.CENTER);
+        Label depStation = new Label(s.getDepartureStationName());
+        depStation.setStyle("-fx-font-weight: bold;");
+        depBox.getChildren().addAll(dH, depStation);
+        
+        VBox midBox = new VBox(2);
+        midBox.setAlignment(Pos.CENTER);
+        ImageView trainIcon = new ImageView(new Image(App.class.getResourceAsStream("img/train.png")));
+        trainIcon.setFitHeight(30);
+        trainIcon.setFitWidth(30);
+        trainIcon.setPreserveRatio(true);
+        long minutes = java.time.Duration.between(s.getDepartureTime(), s.getArrivalTime()).toMinutes();
+        String durStr = (minutes/60) + " giờ " + (minutes%60) + " phút";
+        Label durLabel = new Label(durStr);
+        durLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 12px;");
+        Label line = new Label("-----------------------");
+        line.setStyle("-fx-text-fill: #ccc;");
+        midBox.getChildren().addAll(trainIcon, line, durLabel);
 
-        ImageView icon = loadIcon(
-                isSel ? "/iuh/fit/img/train_blue.png" : "/iuh/fit/img/train_gray.png",
-                80, 58);
-        Label fallback = new Label(isSel ? "🚆" : "🚂");
-        fallback.setStyle("-fx-font-size: 36px;");
+        VBox arrBox = new VBox(5);
+        arrBox.setAlignment(Pos.CENTER);
+        Label arrTime = new Label(s.getArrivalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        arrTime.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 15px;");
+        Label arrDate = new Label(s.getArrivalTime().format(DateTimeFormatter.ofPattern("dd/MM")));
+        HBox aH = new HBox(5, arrTime, arrDate);
+        aH.setAlignment(Pos.CENTER);
+        Label arrStation = new Label(s.getArrivalStationName());
+        arrStation.setStyle("-fx-font-weight: bold;");
+        arrBox.getChildren().addAll(aH, arrStation);
+        
+        timeBox.getChildren().addAll(depBox, midBox, arrBox);
+        scheduleBox.getChildren().add(timeBox);
 
-        Label depInfo = new Label("TG đi   " + fmt(s, true));
-        depInfo.getStyleClass().add("train-card-info");
-        Label arrInfo = new Label("TG đến " + fmt(s, false));
-        arrInfo.getStyleClass().add("train-card-info");
+        // 3. Seats
+        VBox seatBox = new VBox(5);
+        seatBox.setAlignment(Pos.CENTER);
+        seatBox.setPrefWidth(120);
+        Label seatL = new Label("Chỗ còn");
+        seatL.setStyle("-fx-font-weight: bold;");
+        Label seatCount = new Label(String.valueOf(s.getAvailableSeatCount()));
+        seatCount.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 16px;");
+        seatBox.getChildren().addAll(seatL, seatCount);
 
-        double minPrice = TicketContext.calcPrice(
-                ctx.getDistance(), SeatType.SOFT_SEAT, CustomerType.ADULT);
-        Label priceLabel = new Label("Từ " + money(minPrice) + " đ");
-        priceLabel.getStyleClass().add("train-card-price");
-
-        VBox availBox = new VBox(1);
-        availBox.setAlignment(Pos.CENTER);
-        Label aTitle = new Label("Chỗ trống");
-        aTitle.getStyleClass().add("train-card-info");
-        Label aVal = new Label(String.valueOf(s.getAvailableSeatCount()));
-        aVal.getStyleClass().add(s.getAvailableSeatCount() == 0
-                ? "seats-booked" : "seats-available");
-        availBox.getChildren().addAll(aTitle, aVal);
-
-        Label wheels = new Label("⚙  ⚙");
-        wheels.setStyle("-fx-font-size:13px;-fx-text-fill:#f5c842;");
-
-        card.getChildren().addAll(nameLabel,
-                icon != null ? icon : fallback,
-                depInfo, arrInfo, priceLabel, availBox, wheels);
-
-        if (s.getAvailableSeatCount() > 0) {
-            card.setOnMouseClicked(e -> onSelectTrain(s, segment));
-            card.setStyle("-fx-cursor: hand;");
-        } else {
-            card.setOpacity(0.5);
+        // 4. Select button
+        Button btn = new Button(isSel ? "Đã chọn" : "→ Chọn");
+        btn.setStyle(isSel ? "-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" : "-fx-background-color: #0077c8; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+        btn.setPrefWidth(100);
+        btn.setPrefHeight(35);
+        btn.setOnAction(e -> onSelectTrain(s, segment));
+        
+        if (s.getAvailableSeatCount() <= 0) {
+            btn.setDisable(true);
+            btn.setText("Hết chỗ");
+            card.setOpacity(0.6);
         }
+
+        card.getChildren().addAll(trainIdBox, scheduleBox, seatBox, btn);
         return card;
     }
 
@@ -298,16 +354,6 @@ public class SearchScheduleController {
     private String fmt(ScheduleInfoResponse s, boolean dep) {
         var t = dep ? s.getDepartureTime() : s.getArrivalTime();
         return t != null ? t.format(SHORT) : "--";
-    }
-
-    private ImageView loadIcon(String path, double w, double h) {
-        try {
-            var st = getClass().getResourceAsStream(path);
-            if (st == null) return null;
-            ImageView iv = new ImageView(new Image(st));
-            iv.setFitWidth(w); iv.setFitHeight(h); iv.setPreserveRatio(true);
-            return iv;
-        } catch (Exception e) { return null; }
     }
 
     private String money(double v) { return CURRENCY.format((long) v); }
