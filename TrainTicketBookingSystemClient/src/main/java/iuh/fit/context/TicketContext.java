@@ -1,4 +1,4 @@
-package iuh.fit.gui.ticket;
+package iuh.fit.context;
 
 import dto.ScheduleInfoResponse;
 import model.entity.BasePrice;
@@ -32,6 +32,8 @@ public final class TicketContext {
     private final List<Seat> returnSeats = new ArrayList<>();
     private final List<PassengerInfo> passengers = new ArrayList<>();
 
+    private double currentDistance = 1.0;
+
     private TicketContext() {
         try {
             PriceClientService pcs = new PriceClientService();
@@ -62,9 +64,8 @@ public final class TicketContext {
     }
 
     public double getDistance() {
-        // Return accumulated distance or default 1 fallback. Currently UI doesn't track distance effectively
-        // Without full route info we default to 1.
-        return 1.0;
+        // Return current distance from selected schedule
+        return currentDistance;
     }
 
     public static double calcPrice(double distance, SeatType seatType, CustomerType customerType) {
@@ -91,9 +92,9 @@ public final class TicketContext {
             return 1.0;
         }
         return switch (customerType) {
-            case STUDENT -> 1 - basePrice.getStudentDiscount();
-            case CHILD -> 1 - basePrice.getChildDiscount();
-            case ELDERLY -> 1 - basePrice.getElderlyDiscount();
+            case STUDENT -> basePrice.getStudentDiscount();
+            case CHILD -> basePrice.getChildDiscount();
+            case ELDERLY -> basePrice.getElderlyDiscount();
             default -> 1.0;
         };
     }
@@ -192,6 +193,10 @@ public final class TicketContext {
 
     public List<PassengerInfo> getPassengers() {
         return passengers;
+    }
+
+    public void setCurrentDistance(double currentDistance) {
+        this.currentDistance = currentDistance;
     }
 
     public static final class PassengerInfo {

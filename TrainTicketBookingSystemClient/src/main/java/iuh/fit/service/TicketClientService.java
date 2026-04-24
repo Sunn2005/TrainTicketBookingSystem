@@ -60,7 +60,17 @@ public class TicketClientService {
     }
 
     public ActionResponse sellTicket(SellTicketRequest request) {
-        return delegate.sellTicket(request);
+        try {
+            String json = objectMapper.writeValueAsString(request);
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, "SELL_TICKET|" + json);
+            if (response == null || response.startsWith("ERROR")) {
+                return ActionResponse.fail("Lỗi khi bán vé: " + response);
+            }
+            return objectMapper.readValue(response, ActionResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ActionResponse.fail("Lỗi khi kết nối tới server: " + e.getMessage());
+        }
     }
 
     public ActionResponse cancelTicket(String ticketId, String reason) {
@@ -72,7 +82,31 @@ public class TicketClientService {
     }
 
     public ActionResponse updatePaymentStatus(String ticketId, PaymentStatus status) {
-        return delegate.updatePaymentStatus(ticketId, status);
+        try {
+            String message = "UPDATE_PAYMENT_STATUS|" + ticketId + "|" + status.name();
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, message);
+            if (response == null || response.startsWith("ERROR")) {
+                return ActionResponse.fail("Lỗi khi cập nhật trạng thái thanh toán: " + response);
+            }
+            return objectMapper.readValue(response, ActionResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ActionResponse.fail("Lỗi khi kết nối tới server: " + e.getMessage());
+        }
+    }
+
+    public ActionResponse updateTicketStatus(String ticketId, model.entity.enums.TicketStatus status) {
+        try {
+            String message = "UPDATE_TICKET_STATUS|" + ticketId + "|" + status.name();
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, message);
+            if (response == null || response.startsWith("ERROR")) {
+                return ActionResponse.fail("Lỗi khi cập nhật trạng thái vé: " + response);
+            }
+            return objectMapper.readValue(response, ActionResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ActionResponse.fail("Lỗi khi kết nối tới server: " + e.getMessage());
+        }
     }
 
     public List<Station> getAllStations() throws Exception {

@@ -37,7 +37,7 @@
 
                <HBox alignment="CENTER_RIGHT" spacing="10">
                    <Button text="← Quay lại" styleClass="btn-secondary" onAction="#onBack"/>
-                   <Button text="Xem xác nhận →" styleClass="btn-primary"
+                   <Button text="Thanh toán →" styleClass="btn-primary"
                            onAction="#onNext" minWidth="200"/>
                </HBox>
            </VBox>

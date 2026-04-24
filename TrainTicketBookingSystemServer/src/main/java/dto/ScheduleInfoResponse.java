@@ -17,5 +17,6 @@ public class ScheduleInfoResponse {
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private int availableSeatCount;
+    private double distance;
 }
 

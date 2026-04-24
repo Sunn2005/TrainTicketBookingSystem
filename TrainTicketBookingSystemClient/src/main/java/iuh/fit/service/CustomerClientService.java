@@ -1,26 +1,47 @@
 package iuh.fit.service;
 
-import controller.CustomerController;
 import model.entity.Customer;
+import iuh.fit.socketconfig.SocketClient;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.util.List;
 
 public class CustomerClientService {
-    private final CustomerController delegate;
+    private final SocketClient socketClient = new SocketClient();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     public CustomerClientService() {
-        this.delegate = new CustomerController();
-    }
-
-    public CustomerClientService(CustomerController delegate) {
-        this.delegate = delegate;
     }
 
     public Customer getCustomerById(String customerId) {
-        return delegate.getCustomerById(customerId);
+        try {
+            String message = "GET_CUSTOMER|" + customerId;
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, message);
+            if (response == null || response.startsWith("ERROR") || "No response".equals(response)) {
+                return null;
+            }
+            return objectMapper.readValue(response, Customer.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public List<Customer> getAllCustomers() {
-        return delegate.getAllCustomers();
+        try {
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, "GET_ALL_CUSTOMERS");
+            if (response == null || response.startsWith("ERROR") || "No response".equals(response)) {
+                return List.of();
+            }
+            return objectMapper.readValue(response, new TypeReference<List<Customer>>(){});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
     }
 }

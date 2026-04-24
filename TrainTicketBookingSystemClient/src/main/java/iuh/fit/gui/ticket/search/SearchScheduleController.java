@@ -2,8 +2,7 @@ package iuh.fit.gui.ticket.search;
 
 import dto.ScheduleInfoResponse;
 import iuh.fit.App;
-import iuh.fit.gui.ticket.TicketContext;
-import iuh.fit.gui.ticket.TicketContext.PassengerInfo;
+import iuh.fit.context.TicketContext;
 import iuh.fit.constance.AppTheme;
 import iuh.fit.service.TicketClientService;
 import javafx.application.Platform;
@@ -20,8 +19,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.layout.StackPane;
 import model.entity.Station;
-import model.entity.enums.CustomerType;
-import model.entity.enums.SeatType;
 
 import java.io.IOException;
 import java.text.NumberFormat;

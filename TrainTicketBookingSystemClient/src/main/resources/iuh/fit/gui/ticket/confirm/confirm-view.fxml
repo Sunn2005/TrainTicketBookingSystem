@@ -1,78 +1,103 @@
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<!--<?import javafx.geometry.Insets?>-->
-<!--<?import javafx.scene.control.*?>-->
-<!--<?import javafx.scene.layout.*?>-->
+<?xml version="1.0" encoding="UTF-8"?>
 
-<!--<HBox xmlns="http://javafx.com/javafx"-->
-<!--      xmlns:fx="http://javafx.com/fxml"-->
-      fx:controller="iuh.fit.gui.ticket.confirm.ConfirmController"
-<!--      stylesheets="@../ticket.css"-->
-<!--      styleClass="page-root" spacing="0">-->
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
 
-<!--    <VBox HBox.hgrow="ALWAYS" spacing="0">-->
-<!--        <HBox styleClass="breadcrumb-bar" alignment="CENTER_LEFT" spacing="8">-->
-<!--            <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>-->
-<!--            <Button text="← Sửa thông tin" styleClass="btn-link" onAction="#onBack"/>-->
-<!--            <Label text="›" styleClass="breadcrumb-sep"/>-->
-<!--            <Label text="Xác nhận &amp; Thanh toán" styleClass="breadcrumb-title"/>-->
-<!--        </HBox>-->
+<HBox spacing="0" styleClass="page-root" stylesheets="@../ticket.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="iuh.fit.gui.ticket.confirm.ConfirmController">
 
-<!--        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="main-scroll">-->
-<!--            <VBox spacing="14">-->
-<!--                <padding><Insets top="14" right="14" bottom="20" left="14"/></padding>-->
+    <VBox spacing="0" HBox.hgrow="ALWAYS">
+        <HBox alignment="CENTER_LEFT" spacing="8" styleClass="breadcrumb-bar">
+            <padding><Insets bottom="10" left="16" right="16" top="10" /></padding>
+            <Button onAction="#onBack" styleClass="btn-link" text="← Sửa thông tin" />
+            <Label styleClass="breadcrumb-sep" text="›" />
+            <Label styleClass="breadcrumb-title" text="Xác nhận &amp; Thanh toán" />
+        </HBox>
 
-<!--                <VBox fx:id="detailsBox" spacing="10"/>-->
+        <ScrollPane fitToWidth="true" styleClass="main-scroll" VBox.vgrow="ALWAYS">
+            <VBox spacing="14">
+                <padding><Insets bottom="20" left="14" right="14" top="14" /></padding>
 
-<!--                <VBox styleClass="confirm-total-box" spacing="6">-->
-<!--                    <padding><Insets top="10" right="14" bottom="10" left="14"/></padding>-->
-<!--                    <Label fx:id="paymentLabel" styleClass="confirm-payment"/>-->
-<!--                    <Separator/>-->
-<!--                    <HBox>-->
-<!--                        <Label text="Tổng tiền:" styleClass="confirm-total-label"-->
-<!--                               HBox.hgrow="ALWAYS"/>-->
-<!--                        <Label fx:id="totalLabel" styleClass="confirm-total-value"/>-->
-<!--                    </HBox>-->
-<!--                    <Label text="* Giá ước tính, chính xác do server tính"-->
-<!--                           style="-fx-font-size:10px;-fx-text-fill:#888;"/>-->
-<!--                </VBox>-->
+                <VBox fx:id="detailsBox" spacing="10" />
 
-<!--                <Label fx:id="statusLabel" styleClass="status-error" wrapText="true"/>-->
+                <VBox spacing="6" styleClass="confirm-total-box">
+                    <padding><Insets bottom="10" left="14" right="14" top="10" /></padding>
+                    <Label fx:id="paymentLabel" styleClass="confirm-payment" />
+                    <Separator />
+                    <HBox>
+                        <Label styleClass="confirm-total-label" text="Tổng tiền:" HBox.hgrow="ALWAYS" />
+                        <Label fx:id="totalLabel" styleClass="confirm-total-value" />
+                    </HBox>
+                    <Label style="-fx-font-size:10px;-fx-text-fill:#888;" text="* Giá ước tính, chính xác do server tính" />
+                </VBox>
 
-<!--                <HBox fx:id="actionBox" alignment="CENTER_RIGHT" spacing="10">-->
-<!--                    <Button text="← Quay lại" styleClass="btn-secondary" onAction="#onBack"/>-->
-<!--                    <Button fx:id="payBtn" text="✔  Xác nhận thanh toán"-->
-<!--                            styleClass="btn-confirm" onAction="#onPay" minWidth="220"/>-->
-<!--                </HBox>-->
+                <Label fx:id="statusLabel" styleClass="status-error" wrapText="true" />
+
+                <HBox fx:id="actionBox" alignment="CENTER_RIGHT" spacing="10">
+                    <Button onAction="#onBack" styleClass="btn-secondary" text="← Quay lại" />
+                </HBox>
 
 <!--                &lt;!&ndash; Result &ndash;&gt;-->
-<!--                <VBox fx:id="resultBox" visible="false" managed="false"-->
-<!--                      alignment="CENTER" spacing="14">-->
-<!--                    <VBox styleClass="result-card" alignment="CENTER" spacing="12">-->
-<!--                        <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>-->
-<!--                        <Label fx:id="resultIcon" styleClass="result-icon"/>-->
-<!--                        <Label fx:id="resultTitle" styleClass="result-title"/>-->
-<!--                        <Label fx:id="resultMessage" styleClass="result-message"-->
-<!--                               wrapText="true" style="-fx-text-alignment:center;"/>-->
-<!--                        <Label fx:id="resultQr" styleClass="result-qr" wrapText="true"-->
-<!--                               visible="false" managed="false"/>-->
-<!--                        <Separator/>-->
-<!--                        <Button text="＋  Bán vé mới" styleClass="btn-primary"-->
-<!--                                onAction="#onNewTicket" minWidth="180"/>-->
-<!--                    </VBox>-->
-<!--                </VBox>-->
-<!--            </VBox>-->
-<!--        </ScrollPane>-->
-<!--    </VBox>-->
+                <VBox fx:id="resultBox" alignment="CENTER" managed="false" spacing="14" visible="false">
+                    <VBox alignment="CENTER" spacing="12" styleClass="result-card">
+                        <padding><Insets bottom="30" left="40" right="40" top="30" /></padding>
+                        <Label fx:id="resultIcon" styleClass="result-icon" />
+                        <Label fx:id="resultTitle" styleClass="result-title" />
+                        <Label fx:id="resultMessage" style="-fx-text-alignment:center;" styleClass="result-message" wrapText="true" />
+                        <Label fx:id="resultQr" managed="false" styleClass="result-qr" visible="false" wrapText="true" />
+                        <Separator />
+                        <Button minWidth="180" onAction="#onNewTicket" styleClass="btn-primary" text="＋  Bán vé mới" />
+                    </VBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+    
+    <!-- Sidebar tóm tắt -->
+    <VBox maxWidth="265" minWidth="265" spacing="0" styleClass="sidebar">
+        <HBox alignment="CENTER_LEFT" spacing="6" styleClass="sidebar-header">
+            <padding><Insets bottom="8" left="10" right="10" top="8" /></padding>
+            <Label style="-fx-font-size:14px;-fx-text-fill:white;" text="≡" />
+            <Label styleClass="sidebar-header-text" text="Tóm tắt đơn vé" />
+        </HBox>
 
-<!--    &lt;!&ndash; Sidebar tóm tắt &ndash;&gt;-->
-<!--    <VBox styleClass="sidebar" spacing="0" minWidth="265" maxWidth="265">-->
-<!--        <HBox styleClass="sidebar-header" alignment="CENTER_LEFT" spacing="6">-->
-<!--            <padding><Insets top="8" right="10" bottom="8" left="10"/></padding>-->
-<!--            <Label text="≡" style="-fx-font-size:14px;-fx-text-fill:white;"/>-->
-<!--            <Label text="Tóm tắt đơn vé" styleClass="sidebar-header-text"/>-->
-<!--        </HBox>-->
-<!--        <VBox fx:id="summaryBox" spacing="4">-->
-<!--            <padding><Insets top="8" right="10" bottom="8" left="10"/></padding>-->
-<!--        </VBox>-->
-<!--    </VBox>-->
-<!--</HBox>-->
+        <!-- Summary Box - hiển thị danh sách vé -->
+        <VBox fx:id="summaryBox" spacing="4">
+            <padding><Insets bottom="8" left="10" right="10" top="8" /></padding>
+        </VBox>
+
+        <!-- Payment Method: Cash -->
+        <VBox fx:id="cashPaymentBox" spacing="10" styleClass="form-card" managed="false" visible="false">
+            <padding><Insets top="8" right="10" bottom="8" left="10" /></padding>
+            <HBox styleClass="sidebar-header" alignment="CENTER_LEFT" spacing="6">
+                <Label text="💵" style="-fx-font-size:14px;" />
+                <Label text="Thanh toán tiền mặt" styleClass="sidebar-header-text" />
+            </HBox>
+            <Label text="Tổng cần thu:" styleClass="field-label" />
+            <Label fx:id="cashTotalLabel" styleClass="confirm-total-value" />
+
+            <Label text="Tiền khách đưa:" styleClass="field-label" />
+            <TextField fx:id="cashReceivedField" promptText="Nhập số tiền khách đưa" styleClass="form-field" />
+
+            <Label text="Tiền thối lại:" styleClass="field-label" />
+            <Label fx:id="changeLabel" styleClass="confirm-total-label" text="0 VNĐ" />
+
+            <Button fx:id="confirmCashBtn" text="✓ Xác nhận thanh toán" styleClass="btn-primary" onAction="#onConfirmCashPayment" />
+        </VBox>
+
+        <!-- Payment Method: QR Code -->
+        <VBox fx:id="qrPaymentBox" spacing="10" styleClass="form-card" managed="false" visible="false">
+            <padding><Insets top="8" right="10" bottom="8" left="10" /></padding>
+            <HBox styleClass="sidebar-header" alignment="CENTER_LEFT" spacing="6">
+                <Label text="📱" style="-fx-font-size:14px;" />
+                <Label text="Thanh toán QR Code" styleClass="sidebar-header-text" />
+            </HBox>
+            <Label text="Mã QR thanh toán:" styleClass="field-label" />
+            <Label fx:id="qrCodeLabel" styleClass="result-qr" wrapText="true" managed="false" visible="false" />
+            <ImageView fx:id="qrImage" fitWidth="230" fitHeight="230" preserveRatio="true" smooth="true" />
+            <Label text="Quét mã QR để thanh toán" style="-fx-font-size:10px;-fx-text-fill:#666;" wrapText="true" />
+            <Button fx:id="confirmQrBtn" text="✓ Xác nhận thanh toán" styleClass="btn-primary" onAction="#onConfirmQrPayment" />
+        </VBox>
+    </VBox>
+</HBox>

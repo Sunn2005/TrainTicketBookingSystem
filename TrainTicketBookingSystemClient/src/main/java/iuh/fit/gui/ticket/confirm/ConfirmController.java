@@ -1,23 +1,23 @@
 package iuh.fit.gui.ticket.confirm;
 
 import dto.ActionResponse;
-import dto.SellTicketRequest;
 import iuh.fit.App;
-import iuh.fit.gui.ticket.TicketContext;
-import iuh.fit.gui.ticket.TicketContext.PassengerInfo;
+import iuh.fit.context.TicketContext;
+import iuh.fit.context.TicketContext.PassengerInfo;
 import iuh.fit.constance.AppTheme;
-import iuh.fit.context.UserContext;
 import iuh.fit.service.TicketClientService;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import model.entity.Seat;
 import model.entity.enums.CustomerType;
+import model.entity.enums.PaymentStatus;
 import model.entity.enums.SeatType;
 
 import java.io.IOException;
@@ -35,26 +35,59 @@ public class ConfirmController {
     @FXML private Label statusLabel;
     @FXML private HBox  actionBox;
     @FXML private Button payBtn;
+    @FXML private VBox  summaryBox;
+    @FXML private VBox  cashPaymentBox;
+    @FXML private VBox  qrPaymentBox;
+    @FXML private Label cashTotalLabel;
+    @FXML private TextField cashReceivedField;
+    @FXML private Label changeLabel;
+    @FXML private Button confirmCashBtn;
+    @FXML private Label qrCodeLabel;
+    @FXML private ImageView qrImage;
+    @FXML private Button confirmQrBtn;
     @FXML private VBox  resultBox;
     @FXML private Label resultIcon;
     @FXML private Label resultTitle;
     @FXML private Label resultMessage;
     @FXML private Label resultQr;
-    @FXML private VBox  summaryBox;
 
-    private final TicketContext ctx = TicketContext.getInstance();
     private final TicketClientService ticketService = new TicketClientService();
+    private final TicketContext ctx = TicketContext.getInstance();
+    private final List<String> currentPaymentIds = new ArrayList<>();
+    private final List<String> currentTicketIds = new ArrayList<>();
+    private String currentQrUrl;
+    private double currentTotal = 0;
     private static final NumberFormat CURRENCY =
-            NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+            NumberFormat.getNumberInstance(Locale.of("vi", "VN"));
     private static final DateTimeFormatter SHORT =
             DateTimeFormatter.ofPattern("dd/MM HH:mm");
 
     @FXML
     private void initialize() {
-        paymentLabel.setText("Phương thức: "
-                + (ctx.isQrPayment() ? "QR Code (VietQR)" : "Tiền mặt"));
+        boolean isQr = ctx.isQrPayment();
+        paymentLabel.setText("Phương thức: " + (isQr ? "QR Code (VietQR)" : "Tiền mặt"));
         buildDetails();
         buildSummary();
+
+        // Hiển thị/ẩn payment boxes dựa vào phương thức thanh toán
+        if (isQr) {
+            // Hiện QR Code payment box
+            qrPaymentBox.setVisible(true);
+            qrPaymentBox.setManaged(true);
+            cashPaymentBox.setVisible(false);
+            cashPaymentBox.setManaged(false);
+
+            prepareQrUi();
+        } else {
+            // Hiện Cash payment box
+            cashPaymentBox.setVisible(true);
+            cashPaymentBox.setManaged(true);
+            qrPaymentBox.setVisible(false);
+            qrPaymentBox.setManaged(false);
+
+            // Setup Cash payment
+            setupCashPayment();
+        }
     }
 
     private void buildDetails() {
@@ -178,83 +211,200 @@ public class ConfirmController {
         }
     }
 
-    @FXML
-    private void onPay() {
-        String sellerId = UserContext.getInstance().getUserID();
-        List<SellTicketRequest.TicketDetail> details = new ArrayList<>();
+    private void setupCashPayment() {
+        // Tính tổng tiền
+        double total = calculateTotal();
+        cashTotalLabel.setText(money(total) + " đ");
+
+        // Listener cho tiền nhân viên nhập
+        cashReceivedField.textProperty().addListener((obs, oldVal, newVal) -> {
+            try {
+                if (newVal == null || newVal.isEmpty()) {
+                    changeLabel.setText("0 đ");
+                    return;
+                }
+                // Chỉ cho phép nhập số
+                if (!newVal.matches("[0-9]*")) {
+                    cashReceivedField.setText(oldVal);
+                    return;
+                }
+                long received = Long.parseLong(newVal);
+                long change = received - (long) total;
+                if (change < 0) {
+                    changeLabel.setStyle("-fx-text-fill:#dc2626;");
+                    changeLabel.setText(money(change) + " đ (Thiếu)");
+                } else {
+                    changeLabel.setStyle("-fx-text-fill:#16a34a;");
+                    changeLabel.setText(money(change) + " đ");
+                }
+            } catch (NumberFormatException e) {
+                changeLabel.setText("0 đ");
+            }
+        });
+    }
+
+    private void prepareQrUi() {
+        currentPaymentIds.clear();
+        currentTicketIds.clear();
+        currentQrUrl = null;
+        currentTotal = 0;
+        resultQr.setVisible(false);
+        qrCodeLabel.setVisible(false);
+        qrCodeLabel.setManaged(false);
+        qrImage.setVisible(false);
+        qrImage.setManaged(false);
+        confirmQrBtn.setText("Tạo mã QR");
+        statusLabel.setText("Nhấn nút để tạo mã QR và thanh toán khi khách xác nhận.");
+        statusLabel.setStyle("-fx-text-fill:#000000;");
+    }
+
+    private void createQrPayment() {
+        currentPaymentIds.clear();
+        currentQrUrl = null;
+        currentTotal = 0;
+        resultQr.setVisible(false);
+        qrCodeLabel.setVisible(false);
+        qrCodeLabel.setManaged(false);
+        qrImage.setVisible(false);
+        qrImage.setManaged(false);
+
+        try {
+            ActionResponse response = ticketService.sellTicket(
+                    PaymentFlowSupport.buildRequest(ctx, true));
+            System.out.println("Resone total: "+response.getTotal());
+            if (!response.isSuccess()) {
+                showError(response.getMessage());
+                return;
+            }
+            if (response.getQrUrl() == null || response.getQrUrl().isBlank()) {
+                showError("Không nhận được dữ liệu QR từ server.");
+                return;
+            }
+            currentQrUrl = response.getQrUrl();
+            currentTotal = response.getTotal();
+            if (response.getPaymentIds() != null && !response.getPaymentIds().isBlank()) {
+                String[] ids = response.getPaymentIds().split(",\\s*");
+                currentPaymentIds.addAll(List.of(ids));
+            }
+            if (response.getTicketIds() != null && !response.getTicketIds().isBlank()) {
+                String[] ids = response.getTicketIds().split(",\\s*");
+                currentTicketIds.addAll(List.of(ids));
+            }
+            totalLabel.setText(money(currentTotal) + " đ");
+            qrImage.setImage(new Image(currentQrUrl, true));
+            qrImage.setVisible(true);
+            qrImage.setManaged(true);
+            confirmQrBtn.setText("✓ Xác nhận thanh toán");
+            statusLabel.setText("Quét mã QR và bấm xác nhận sau khi khách thanh toán xong.");
+            statusLabel.setStyle("-fx-text-fill:#16a34a;");
+        } catch (Exception e) {
+            showError("Lỗi khi tạo mã QR: " + e.getMessage());
+        }
+    }
+
+    private double calculateTotal() {
+        double total = 0;
+        double dist = ctx.getDistance();
 
         for (int i = 0; i < ctx.getOutboundSeats().size(); i++) {
             PassengerInfo p = i < ctx.getPassengers().size()
                     ? ctx.getPassengers().get(i) : null;
-            details.add(new SellTicketRequest.TicketDetail(
-                    ctx.getOutboundSchedule().getScheduleId(),
-                    ctx.getOutboundSeats().get(i).getSeatID(),
-                    p != null ? p.getName().trim() : "",
-                    p != null ? p.getCccd().trim() : "",
-                    p != null ? p.getType() : CustomerType.ADULT));
+            CustomerType t = p != null ? p.getType() : CustomerType.ADULT;
+            total += TicketContext.calcPrice(
+                    dist, ctx.getOutboundSeats().get(i).getSeatType(), t);
         }
 
         for (int i = 0; i < ctx.getReturnSeats().size(); i++) {
-            if (ctx.getReturnSchedule() == null) break;
             PassengerInfo p = i < ctx.getPassengers().size()
                     ? ctx.getPassengers().get(i) : null;
-            details.add(new SellTicketRequest.TicketDetail(
-                    ctx.getReturnSchedule().getScheduleId(),
-                    ctx.getReturnSeats().get(i).getSeatID(),
-                    p != null ? p.getName().trim() : "",
-                    p != null ? p.getCccd().trim() : "",
-                    p != null ? p.getType() : CustomerType.ADULT));
+            CustomerType t = p != null ? p.getType() : CustomerType.ADULT;
+            total += TicketContext.calcPrice(
+                    dist, ctx.getReturnSeats().get(i).getSeatType(), t);
         }
-
-        SellTicketRequest req = new SellTicketRequest(sellerId, ctx.isQrPayment(), details);
-        payBtn.setDisable(true);
-        payBtn.setText("Đang xử lý...");
-
-        new Thread(() -> {
-            try {
-                ActionResponse resp = ticketService.sellTicket(req);
-                Platform.runLater(() -> {
-                    payBtn.setDisable(false);
-                    payBtn.setText("✔  Xác nhận thanh toán");
-                    showResult(resp);
-                });
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    payBtn.setDisable(false);
-                    payBtn.setText("✔  Xác nhận thanh toán");
-                    showError("Lỗi: " + e.getMessage());
-                });
-            }
-        }).start();
+        return total;
     }
 
-    private void showResult(ActionResponse resp) {
-        detailsBox.setVisible(false); detailsBox.setManaged(false);
-        actionBox.setVisible(false);  actionBox.setManaged(false);
-        resultBox.setVisible(true);   resultBox.setManaged(true);
-
-        if (resp.isSuccess()) {
-            resultIcon.setText("✔");
-            resultIcon.setStyle("-fx-text-fill:#16a34a;");
-            resultTitle.setText("Bán vé thành công!");
-            resultTitle.setStyle("-fx-text-fill:#16a34a;");
-            String msg = resp.getMessage();
-            if (ctx.isQrPayment() && msg.contains("URL_QR:")) {
-                String[] parts = msg.split("URL_QR:");
-                resultMessage.setText("Mã vé: " + parts[0].trim());
-                resultQr.setText("🔗 " + parts[1].trim());
-                resultQr.setVisible(true); resultQr.setManaged(true);
-            } else {
-                resultMessage.setText("Mã vé: " + msg);
+    @FXML
+    private void onConfirmCashPayment() {
+        try {
+            String received = cashReceivedField.getText();
+            if (received == null || received.isEmpty()) {
+                showError("Vui lòng nhập số tiền khách đưa");
+                return;
             }
-        } else {
-            resultIcon.setText("✗");
-            resultIcon.setStyle("-fx-text-fill:#dc2626;");
-            resultTitle.setText("Bán vé thất bại");
-            resultTitle.setStyle("-fx-text-fill:#dc2626;");
-            resultMessage.setText(resp.getMessage());
+            long receivedAmount = Long.parseLong(received);
+            double total = calculateTotal();
+            if (receivedAmount < total) {
+                showError("Tiền nhân viên nhập chưa đủ!");
+                return;
+            }
+            ActionResponse response = ticketService.sellTicket(PaymentFlowSupport.buildRequest(ctx, false));
+            if (!response.isSuccess()) {
+                showError(response.getMessage());
+                return;
+            }
+            // Update ticket status to PAID
+            if (response.getTicketIds() != null && !response.getTicketIds().isBlank()) {
+                String[] ticketIds = response.getTicketIds().split(",\\s*");
+                for (String ticketId : ticketIds) {
+                    ActionResponse updateRes = ticketService.updateTicketStatus(ticketId.trim(), model.entity.enums.TicketStatus.PAID);
+                    if (!updateRes.isSuccess()) {
+                        showError("Lỗi cập nhật trạng thái vé: " + updateRes.getMessage());
+                        return;
+                    }
+                }
+            }
+            showPaymentSuccess();
+        } catch (NumberFormatException e) {
+            showError("Số tiền không hợp lệ");
         }
     }
+
+    @FXML
+    private void onConfirmQrPayment() {
+        if (currentPaymentIds.isEmpty()) {
+            createQrPayment();
+            return;
+        }
+
+        for (String paymentId : currentPaymentIds) {
+            ActionResponse result = ticketService.updatePaymentStatus(paymentId, PaymentStatus.SUCCESS);
+            if (!result.isSuccess()) {
+                showError("Không thể xác nhận thanh toán: " + result.getMessage());
+                return;
+            }
+        }
+        // Update ticket status to PAID
+        for (String ticketId : currentTicketIds) {
+            ActionResponse updateRes = ticketService.updateTicketStatus(ticketId.trim(), model.entity.enums.TicketStatus.PAID);
+            if (!updateRes.isSuccess()) {
+                showError("Lỗi cập nhật trạng thái vé: " + updateRes.getMessage());
+                return;
+            }
+        }
+        confirmQrBtn.setDisable(true);
+        showPaymentSuccess();
+    }
+
+    private void showPaymentSuccess() {
+        resultBox.setVisible(true);
+        resultBox.setManaged(true);
+        resultIcon.setText("✓");
+        resultIcon.setStyle("-fx-text-fill:#16a34a;-fx-font-size:48;");
+        resultTitle.setText("Thanh toán thành công!");
+        resultMessage.setText("Vé của bạn đã được xác nhận. Mã vé: " + generateTicketCode());
+    }
+
+    private String generateTicketCode() {
+        return "VE" + System.currentTimeMillis() % 1000000;
+    }
+
+     @FXML
+     private void onPay() {
+         // Payment boxes đã có sẵn trên sidebar, không cần điều hướng
+         // Logic thanh toán được xử lý bởi onConfirmCashPayment() hoặc onConfirmQrPayment()
+     }
+
 
     @FXML
     private void onNewTicket() {

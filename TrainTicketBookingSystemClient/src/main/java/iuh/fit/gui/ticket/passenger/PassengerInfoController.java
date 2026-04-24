@@ -1,8 +1,8 @@
 package iuh.fit.gui.ticket.passenger;
 
 import iuh.fit.App;
-import iuh.fit.gui.ticket.TicketContext;
-import iuh.fit.gui.ticket.TicketContext.PassengerInfo;
+import iuh.fit.context.TicketContext;
+import iuh.fit.context.TicketContext.PassengerInfo;
 import iuh.fit.constance.AppTheme;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.*;
 
+import iuh.fit.service.CustomerClientService;
+import model.entity.Customer;
+
 public class PassengerInfoController {
 
     @FXML private VBox        passengerContainer;
@@ -31,6 +34,7 @@ public class PassengerInfoController {
     @FXML private Label       cartTotalLabel;
 
     private final TicketContext ctx = TicketContext.getInstance();
+    private final CustomerClientService customerClientService = new CustomerClientService();
     private ToggleGroup payGroup;
     private static final NumberFormat CURRENCY =
             NumberFormat.getNumberInstance(new Locale("vi", "VN"));
@@ -128,14 +132,6 @@ public class PassengerInfoController {
         TextField cccdFld = new TextField(info.getCccd());
         cccdFld.setPromptText("012345678901");
         cccdFld.getStyleClass().add("form-field");
-        cccdFld.textProperty().addListener((obs, o, n) -> {
-            if (!n.matches("[0-9]*") || n.length() > 12) {
-                cccdFld.setText(o);
-            } else {
-                info.setCccd(n);
-                checkDupCccd(cccdFld, n, info);
-            }
-        });
         cccdBox.getChildren().addAll(cccdLabel, cccdFld);
         row1.getChildren().addAll(nameBox, cccdBox);
 
@@ -173,6 +169,37 @@ public class PassengerInfoController {
         });
         typeBox.getChildren().addAll(typeLabel, typeCombo);
 
+        cccdFld.textProperty().addListener((obs, o, n) -> {
+            if (!n.matches("[0-9]*") || n.length() > 12) {
+                cccdFld.setText(o);
+            } else {
+                info.setCccd(n);
+                boolean isDup = checkDupCccd(cccdFld, n, info);
+                if ((n.length() == 9 || n.length() == 12) && !isDup) {
+                    java.util.concurrent.CompletableFuture.runAsync(() -> {
+                        try {
+                            Customer c = customerClientService.getCustomerById(n);
+                            if (c != null) {
+                                javafx.application.Platform.runLater(() -> {
+                                    if (c.getFullName() != null) {
+                                        nameFld.setText(c.getFullName());
+                                        info.setName(c.getFullName());
+                                    }
+                                    if (c.getCustomerType() != null) {
+                                        typeCombo.setValue(c.getCustomerType());
+                                        info.setType(c.getCustomerType());
+                                        refreshCart();
+                                    }
+                                });
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
+
         // Giá real-time
         Label priceLabel = new Label();
         priceLabel.getStyleClass().add("passenger-price-label");
@@ -186,8 +213,8 @@ public class PassengerInfoController {
         return card;
     }
 
-    private void checkDupCccd(TextField fld, String cccd, PassengerInfo cur) {
-        if (cccd.length() < 9) { fld.setStyle(""); statusLabel.setText(""); return; }
+    private boolean checkDupCccd(TextField fld, String cccd, PassengerInfo cur) {
+        if (cccd.length() < 9) { fld.setStyle(""); statusLabel.setText(""); return false; }
         boolean dup = ctx.getPassengers().stream()
                 .filter(p -> p != cur)
                 .anyMatch(p -> cccd.equals(p.getCccd()));
@@ -199,6 +226,7 @@ public class PassengerInfoController {
             fld.setStyle("");
             statusLabel.setText("");
         }
+        return dup;
     }
 
     private void refreshCart() {
@@ -252,8 +280,9 @@ public class PassengerInfoController {
             showError("Có CCCD bị trùng giữa các hành khách!"); return;
         }
 
-        ctx.setQrPayment(qrRadio.isSelected());
-        navigateTo("/iuh/fit/gui/ticket/confirm/confirm-view.fxml");
+         boolean isQr = qrRadio.isSelected();
+         ctx.setQrPayment(isQr);
+         navigateTo("/iuh/fit/gui/ticket/confirm/confirm-view.fxml");
     }
 
     @FXML

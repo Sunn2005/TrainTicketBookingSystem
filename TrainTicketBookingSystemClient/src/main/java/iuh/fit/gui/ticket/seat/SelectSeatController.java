@@ -1,8 +1,7 @@
 package iuh.fit.gui.ticket.seat;
 
 import iuh.fit.App;
-import iuh.fit.gui.ticket.TicketContext;
-import iuh.fit.gui.ticket.TicketContext.PassengerInfo;
+import iuh.fit.context.TicketContext;
 import iuh.fit.constance.AppTheme;
 import iuh.fit.service.TicketClientService;
 import javafx.application.Platform;
@@ -79,6 +78,8 @@ public class SelectSeatController {
         var schedule = segment.equals("outbound")
                 ? ctx.getOutboundSchedule() : ctx.getReturnSchedule();
         if (schedule == null) return;
+
+        ctx.setCurrentDistance(schedule.getDistance());
 
         breadcrumbLabel.setText(
                 (segment.equals("outbound") ? "Chiều đi — " : "Chiều về — ")

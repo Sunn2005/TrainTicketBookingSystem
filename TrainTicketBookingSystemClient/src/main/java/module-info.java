@@ -7,6 +7,7 @@ module iuh.fit.trainticketbookingsystemclient {
     requires jakarta.persistence;
     requires java.naming;
     requires TrainTicketBookingSystemServer;
+    requires static lombok;
 
     opens iuh.fit to javafx.fxml;
     opens iuh.fit.service to javafx.fxml;

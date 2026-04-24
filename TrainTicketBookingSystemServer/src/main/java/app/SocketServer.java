@@ -4,11 +4,13 @@ package app;
 import controller.UserController;
 import controller.StationController;
 import controller.TicketController;
+import controller.CustomerController;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import model.entity.Station;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.LoginResponse;
+import dto.SellTicketRequest;
 import java.util.List;
 
 import java.io.BufferedReader;
@@ -28,6 +30,7 @@ public class SocketServer {
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     private final TicketController ticketController = new TicketController();
+    private final CustomerController customerController = new CustomerController();
 
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -100,6 +103,16 @@ public class SocketServer {
         if (trimmed.toUpperCase().startsWith("GET_SEATS|")) {
             return handleGetSeats(trimmed);
         }
+        if (trimmed.toUpperCase().startsWith("GET_CUSTOMER|")) {
+            return handleGetCustomer(trimmed);
+        }
+        if ("GET_ALL_CUSTOMERS".equalsIgnoreCase(trimmed)) {
+            try {
+                return objectMapper.writeValueAsString(customerController.getAllCustomers());
+            } catch (Exception e) {
+                return "ERROR: Server error when fetching customers";
+            }
+        }
         if ("GET_ALL_STATIONS".equalsIgnoreCase(trimmed)) {
             try {
                 List<Station> stations = stationController.getAllStations();
@@ -107,8 +120,15 @@ public class SocketServer {
             } catch (Exception e) {
                 return "ERROR: Server error when fetching stations";
             }
+        }        if (trimmed.toUpperCase().startsWith("SELL_TICKET|")) {
+            return handleSellTicket(trimmed);
         }
-        if ("BOOKING_STATUS".equalsIgnoreCase(trimmed)) {
+        if (trimmed.toUpperCase().startsWith("UPDATE_PAYMENT_STATUS|")) {
+            return handleUpdatePaymentStatus(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("UPDATE_TICKET_STATUS|")) {
+            return handleUpdateTicketStatus(trimmed);
+        }        if ("BOOKING_STATUS".equalsIgnoreCase(trimmed)) {
             return "SERVER_READY";
         }
         if ("QUIT".equalsIgnoreCase(trimmed)) {
@@ -196,6 +216,73 @@ public class SocketServer {
         try {
             java.util.List<model.entity.Seat> res = ticketController.getAvailableSeats(parts[1]);
             return objectMapper.writeValueAsString(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleSellTicket(String command) {
+        try {
+            String payload = command.substring(command.indexOf('|') + 1);
+            SellTicketRequest request = objectMapper.readValue(payload, SellTicketRequest.class);
+            dto.ActionResponse result = ticketController.sellTicket(request);
+            System.out.println("handle sell ticket: "+result.getTotal());
+            return objectMapper.writeValueAsString(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleUpdatePaymentStatus(String command) {
+        try {
+            String[] parts = command.split("\\|", 3);
+            if (parts.length < 3) {
+                return "ERROR|Invalid format. Expected: UPDATE_PAYMENT_STATUS|paymentId|status";
+            }
+            String paymentId = parts[1].trim();
+            String statusName = parts[2].trim().toUpperCase();
+            model.entity.enums.PaymentStatus status = model.entity.enums.PaymentStatus.valueOf(statusName);
+            dto.ActionResponse result = ticketController.updatePaymentStatus(paymentId, status);
+            return objectMapper.writeValueAsString(result);
+        } catch (IllegalArgumentException e) {
+            return "ERROR|Invalid payment status: " + e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleUpdateTicketStatus(String command) {
+        try {
+            String[] parts = command.split("\\|", 3);
+            if (parts.length < 3) {
+                return "ERROR|Invalid format. Expected: UPDATE_TICKET_STATUS|ticketId|status";
+            }
+            String ticketId = parts[1].trim();
+            String statusName = parts[2].trim().toUpperCase();
+            model.entity.enums.TicketStatus status = model.entity.enums.TicketStatus.valueOf(statusName);
+            dto.ActionResponse result = ticketController.updateTicketStatus(ticketId, status);
+            return objectMapper.writeValueAsString(result);
+        } catch (IllegalArgumentException e) {
+            return "ERROR|Invalid ticket status: " + e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleGetCustomer(String command) {
+        String[] parts = command.split("\\|");
+        if (parts.length < 2) return "ERROR|Invalid format";
+        try {
+            String customerId = parts[1].trim();
+            model.entity.Customer customer = customerController.getCustomerById(customerId);
+            if (customer == null) {
+                return "ERROR|Customer not found";
+            }
+            return objectMapper.writeValueAsString(customer);
         } catch (Exception e) {
             e.printStackTrace();
             return "ERROR|" + e.getMessage();

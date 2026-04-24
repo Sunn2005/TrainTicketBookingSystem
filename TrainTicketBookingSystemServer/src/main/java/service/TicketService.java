@@ -83,6 +83,7 @@ public class TicketService {
             List<Ticket> savedTickets = new ArrayList<>();
             double totalFinalPrice = 0.0;
             List<String> ticketIds = new ArrayList<>();
+            List<String> paymentIds = new ArrayList<>();
 
             for (SellTicketRequest.TicketDetail detail : request.getTickets()) {
                 Schedule schedule = em.find(Schedule.class, detail.getScheduleId());
@@ -176,21 +177,23 @@ public class TicketService {
 
                 savedTickets.add(ticket);
                 ticketIds.add(ticket.getTicketID());
+                paymentIds.add(payment.getPaymentID());
                 totalFinalPrice += calculatedFinalPrice;
             }
 
             tx.commit();
 
             String joinedIds = String.join(", ", ticketIds);
+            String joinedPaymentIds = String.join(", ", paymentIds);
             if (request.isQRPaymentMethod()) {
                 String paymentDescription = "Thanh toan ve " + joinedIds;
                 if (paymentDescription.length() > 50) {
                     paymentDescription = paymentDescription.substring(0, 47) + "...";
                 }
                 String qrUrl = vietQRService.generateQRCodeUrl(totalFinalPrice, paymentDescription);
-                return ActionResponse.success(joinedIds + " - URL_QR: " + qrUrl);
+                return ActionResponse.success("Đã tạo QR cho đơn vé.", joinedIds, joinedPaymentIds, totalFinalPrice, qrUrl);
             } else {
-                return ActionResponse.success(joinedIds);
+                return ActionResponse.success("Bán vé thành công.", joinedIds, joinedPaymentIds, totalFinalPrice, null);
             }
 
         } catch (IllegalArgumentException | IllegalStateException e) {
@@ -413,7 +416,8 @@ public class TicketService {
                     s.getRoute().getArrivalStation().getStationName(),
                     s.getDepartureTime(),
                     s.getArrivalTime(),
-                    availableSeatsCount
+                    availableSeatsCount,
+                    s.getRoute().getDistance()
             );
 
             result.add(dto);
@@ -437,6 +441,46 @@ public class TicketService {
             return allSeats.stream()
                     .filter(seat -> !bookedSet.contains(seat.getSeatID()))
                     .toList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Ticket getTicketById(String ticketId) {
+        return ticketDAO.findByID(ticketId).map(ticket -> {
+            // Ép load lazy fields
+            ticket.getCustomer().getFullName();
+            ticket.getCustomer().getCustomerID();
+            ticket.getSchedule().getDepartureTime();
+            ticket.getSchedule().getArrivalTime();
+            ticket.getSchedule().getRoute().getDepartureStation().getStationName();
+            ticket.getSchedule().getRoute().getArrivalStation().getStationName();
+            ticket.getSchedule().getTrain().getTrainName();
+            ticket.getSchedule().getTrain().getTrainID();
+            ticket.getSeat().getSeatNumber();
+            ticket.getSeat().getSeatType().name();
+            ticket.getSeat().getCarriage().getCarriageNumber();
+            return ticket;
+        }).orElse(null);
+    }
+
+    public ActionResponse updateTicketStatus(String ticketId, model.entity.enums.TicketStatus status) {
+        EntityManager em = JPAUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            Ticket ticket = em.find(Ticket.class, ticketId);
+            if (ticket == null) {
+                return ActionResponse.fail("Ticket not found: " + ticketId);
+            }
+            ticket.setTicketStatus(status);
+            tx.commit();
+            return ActionResponse.success("Ticket status updated to " + status);
+        } catch (Exception e) {
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
+            }
+            return ActionResponse.fail("Error updating ticket status: " + e.getMessage());
         } finally {
             em.close();
         }
