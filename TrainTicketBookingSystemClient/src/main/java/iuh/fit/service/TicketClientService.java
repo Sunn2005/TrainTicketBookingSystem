@@ -4,6 +4,7 @@ import controller.TicketController;
 import dto.ActionResponse;
 import dto.ScheduleInfoResponse;
 import dto.SellTicketRequest;
+import iuh.fit.dto.SeatsInfoResponse;
 import model.entity.Seat;
 import model.entity.Station;
 import model.entity.enums.PaymentStatus;
@@ -56,6 +57,23 @@ public class TicketClientService {
         } catch (Exception e) {
             e.printStackTrace();
             return List.of();
+        }
+    }
+
+    public SeatsInfoResponse getSeatsInfoForSchedule(String scheduleId) {
+        try {
+            String message = "GET_ALL_SEATS_INFO|" + scheduleId;
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, message);
+            if (response == null || "No response".equals(response)) {
+                throw new RuntimeException("Không nhận được phản hồi từ server");
+            }
+            if (response.startsWith("ERROR")) {
+                throw new RuntimeException("Lỗi server khi lấy thông tin ghế: " + response);
+            }
+            return objectMapper.readValue(response, SeatsInfoResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi tải dữ liệu ghế: " + e.getMessage(), e);
         }
     }
 

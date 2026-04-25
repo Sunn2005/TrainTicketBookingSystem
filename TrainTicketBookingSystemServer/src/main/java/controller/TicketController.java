@@ -35,6 +35,10 @@ public class TicketController {
         return ticketService.findAvailableSeats(scheduleId);
     }
 
+    public dto.SeatsInfoResponse getSeatsInfoForSchedule(String scheduleId) {
+        return ticketService.getSeatsInfoForSchedule(scheduleId);
+    }
+
     public ActionResponse sellTicket(SellTicketRequest request) {
         return ticketService.sellTicket(request);
     }

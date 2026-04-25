@@ -446,6 +446,23 @@ public class TicketService {
         }
     }
 
+    public dto.SeatsInfoResponse getSeatsInfoForSchedule(String scheduleId) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            Schedule schedule = em.find(Schedule.class, scheduleId);
+            if (schedule == null || schedule.getScheduleStatus() == model.entity.enums.ScheduleStatus.DISABLED) {
+                return new dto.SeatsInfoResponse(new ArrayList<>(), new ArrayList<>());
+            }
+
+            List<Seat> allSeats = seatDAO.findByTrainId(schedule.getTrain().getTrainID());
+            List<String> bookedSeatIds = ticketDAO.getBookedSeatIds(scheduleId);
+
+            return new dto.SeatsInfoResponse(allSeats, bookedSeatIds);
+        } finally {
+            em.close();
+        }
+    }
+
     public Ticket getTicketById(String ticketId) {
         return ticketDAO.findByID(ticketId).map(ticket -> {
             // Ép load lazy fields

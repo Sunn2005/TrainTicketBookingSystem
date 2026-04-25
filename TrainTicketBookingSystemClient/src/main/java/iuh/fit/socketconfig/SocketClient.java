@@ -15,7 +15,7 @@ public class SocketClient {
     public static final int PORT = 9999;
     public String sendMessage(String host, int port, String message) throws IOException {
         List<String> responses = sendMessages(host, port, List.of(message));
-        return responses.isEmpty() ? "No response" : responses.getFirst();
+        return responses.isEmpty() ? "No response" : responses.get(0);
     }
 
     public String sendRawMessage(String host, int port, String message) throws IOException {

@@ -3,6 +3,7 @@ package iuh.fit.gui.ticket.seat;
 import iuh.fit.App;
 import iuh.fit.context.TicketContext;
 import iuh.fit.constance.AppTheme;
+import iuh.fit.dto.SeatsInfoResponse;
 import iuh.fit.service.TicketClientService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -55,6 +56,8 @@ public class SelectSeatController {
 
     private String activeSegment = "outbound";
     private Map<Integer, List<Seat>> carriageMap = new TreeMap<>();
+    private Map<Integer, List<Seat>> allCarriageMap = new TreeMap<>(); // Tất cả ghế (available + booked)
+    private Set<String> bookedSeatIds = new HashSet<>(); // Ghế đã đặt
     private int selectedCarriage = -1;
     private final Map<String, Button> seatBtnMap = new HashMap<>();
 
@@ -96,18 +99,24 @@ public class SelectSeatController {
 
         new Thread(() -> {
             try {
-                List<Seat> seats = ticketService.getAvailableSeats(schedule.getScheduleId());
+                // Lấy tất cả ghế (available + booked)
+                SeatsInfoResponse seatsInfo = ticketService.getSeatsInfoForSchedule(schedule.getScheduleId());
+                
                 Platform.runLater(() -> {
                     statusLabel.setText("");
-                    carriageMap = seats.stream().collect(Collectors.groupingBy(
+                    bookedSeatIds = new HashSet<>(seatsInfo.getBookedSeatIds() != null ? seatsInfo.getBookedSeatIds() : List.of());
+                    
+                    // Tổ chức ghế theo toa
+                    allCarriageMap = seatsInfo.getSeats().stream().collect(Collectors.groupingBy(
                             s -> s.getCarriage().getCarriageNumber(),
                             TreeMap::new, Collectors.toList()));
-                    if (carriageMap.isEmpty()) {
-                        showError("Không còn ghế trống."); return;
+                    
+                    if (allCarriageMap.isEmpty()) {
+                        showError("Không có ghế."); return;
                     }
                     buildCarriageMap();
                     // Mặc định mở toa đầu tiên
-                    int first = ((TreeMap<Integer, List<Seat>>) carriageMap).firstKey();
+                    int first = ((TreeMap<Integer, List<Seat>>) allCarriageMap).firstKey();
                     showSeatMap(first);
                     updateCart();
                 });
@@ -148,7 +157,7 @@ public class SelectSeatController {
         locoBox.getChildren().addAll(locoIcon != null ? locoIcon : locoFallback, locoText);
         carriageBox.getChildren().add(locoBox);
 
-        for (var entry : carriageMap.entrySet()) {
+        for (var entry : allCarriageMap.entrySet()) {
             int num = entry.getKey();
             List<Seat> seats = entry.getValue();
             boolean sel = num == selectedCarriage;
@@ -159,17 +168,12 @@ public class SelectSeatController {
             box.setPadding(new Insets(4, 8, 4, 8));
             box.getStyleClass().add(sel ? "carriage-box-selected" : "carriage-box");
 
-            boolean soldOut = seats.isEmpty();
             String iconPath;
-            if (soldOut) {
-                iconPath = "/iuh/fit/img/Toa_Het_Slot.png";
-            } else {
-                iconPath = dom == SeatType.SOFT_SLEEPER
-                        ? "/iuh/fit/img/Toa_Giuong_Nam.png"
-                        : "/iuh/fit/img/Toa_Ghe_Mem.png";
-            }
+            iconPath = dom == SeatType.SOFT_SLEEPER
+                    ? "/iuh/fit/img/Toa_Giuong_Nam.png"
+                    : "/iuh/fit/img/Toa_Ghe_Mem.png";
             ImageView icon = loadIcon(iconPath, 58, 40);
-            Label fb = new Label(soldOut ? "FULL" : "TOA");
+            Label fb = new Label("TOA");
             fb.setStyle("-fx-font-size:12px; -fx-font-weight: bold;");
 
             Label lbl = new Label(String.valueOf(num));
@@ -190,7 +194,7 @@ public class SelectSeatController {
         selectedCarriage = num;
         buildCarriageMap();
 
-        List<Seat> seats = carriageMap.get(num);
+        List<Seat> seats = allCarriageMap.get(num);
         if (seats == null || seats.isEmpty()) return;
 
         SeatType dom = dominant(seats);
@@ -213,9 +217,29 @@ public class SelectSeatController {
                 case 0 -> 0; case 1 -> 1; case 2 -> 3; default -> 4;
             };
             Button btn = new Button(String.valueOf(seat.getSeatNumber()));
-            btn.getStyleClass().add("seat-btn-available");
+            
+            boolean isBooked = bookedSeatIds.contains(seat.getSeatID());
+            boolean isSelected = getActiveSeats().stream().anyMatch(s -> s.getSeatID().equals(seat.getSeatID()));
+            
+            if (isBooked) {
+                // Ghế đã đặt - đỏ, không click được
+                btn.getStyleClass().add("seat-btn-booked");
+                btn.setDisable(true);
+                btn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-cursor: not-allowed;");
+            } else if (isSelected) {
+                // Ghế đang chọn - xanh lá
+                btn.getStyleClass().add("seat-btn-selected");
+                btn.setStyle("-fx-background-color: #28a745; -fx-text-fill: white;");
+            } else {
+                // Ghế trống - xám, clickable
+                btn.getStyleClass().add("seat-btn-available");
+                btn.setStyle("-fx-background-color: #a0a0a0; -fx-text-fill: white;");
+            }
+            
             btn.setPrefSize(48, 42);
-            btn.setOnAction(e -> toggleSeat(seat, btn));
+            if (!isBooked) {
+                btn.setOnAction(e -> toggleSeat(seat, btn));
+            }
             seatGrid.add(btn, col, row);
             seatBtnMap.put(seat.getSeatID(), btn);
         }
@@ -230,9 +254,10 @@ public class SelectSeatController {
         // Restore ghế đã chọn
         getActiveSeats().forEach(s -> {
             Button b = seatBtnMap.get(s.getSeatID());
-            if (b != null) {
+            if (b != null && !bookedSeatIds.contains(s.getSeatID())) {
                 b.getStyleClass().remove("seat-btn-available");
                 b.getStyleClass().add("seat-btn-selected");
+                b.setStyle("-fx-background-color: #28a745; -fx-text-fill: white;");
             }
         });
 
@@ -242,6 +267,11 @@ public class SelectSeatController {
     }
 
     private void toggleSeat(Seat seat, Button btn) {
+        // Không thể chọn ghế đã đặt
+        if (bookedSeatIds.contains(seat.getSeatID())) {
+            return;
+        }
+        
         List<Seat> active = getActiveSeats();
         boolean already = active.stream()
                 .anyMatch(s -> s.getSeatID().equals(seat.getSeatID()));
@@ -249,6 +279,7 @@ public class SelectSeatController {
             active.removeIf(s -> s.getSeatID().equals(seat.getSeatID()));
             btn.getStyleClass().remove("seat-btn-selected");
             btn.getStyleClass().add("seat-btn-available");
+            btn.setStyle("-fx-background-color: #a0a0a0; -fx-text-fill: white;");
         } else {
             if (active.size() >= MAX) {
                 showError("Tối đa " + MAX + " ghế!"); return;
@@ -257,6 +288,7 @@ public class SelectSeatController {
             active.add(seat);
             btn.getStyleClass().remove("seat-btn-available");
             btn.getStyleClass().add("seat-btn-selected");
+            btn.setStyle("-fx-background-color: #28a745; -fx-text-fill: white;");
         }
         updateCount();
         updateCart();
@@ -335,6 +367,7 @@ public class SelectSeatController {
             if (b != null) {
                 b.getStyleClass().remove("seat-btn-selected");
                 b.getStyleClass().add("seat-btn-available");
+                b.setStyle("-fx-background-color: #a0a0a0; -fx-text-fill: white;");
             }
             updateCart(); updateCount();
         });

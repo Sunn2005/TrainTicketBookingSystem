@@ -103,6 +103,9 @@ public class SocketServer {
         if (trimmed.toUpperCase().startsWith("GET_SEATS|")) {
             return handleGetSeats(trimmed);
         }
+        if (trimmed.toUpperCase().startsWith("GET_ALL_SEATS_INFO|")) {
+            return handleGetAllSeatsInfo(trimmed);
+        }
         if (trimmed.toUpperCase().startsWith("GET_CUSTOMER|")) {
             return handleGetCustomer(trimmed);
         }
@@ -215,6 +218,18 @@ public class SocketServer {
         if (parts.length < 2) return "ERROR|Invalid format";
         try {
             java.util.List<model.entity.Seat> res = ticketController.getAvailableSeats(parts[1]);
+            return objectMapper.writeValueAsString(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleGetAllSeatsInfo(String command) {
+        String[] parts = command.split("\\|");
+        if (parts.length < 2) return "ERROR|Invalid format";
+        try {
+            dto.SeatsInfoResponse res = ticketController.getSeatsInfoForSchedule(parts[1]);
             return objectMapper.writeValueAsString(res);
         } catch (Exception e) {
             e.printStackTrace();

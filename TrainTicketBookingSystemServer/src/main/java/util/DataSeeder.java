@@ -92,7 +92,7 @@ public class DataSeeder {
             java.util.List<Carriage> carriages = new java.util.ArrayList<>();
             int carIndex = 1;
             for (Train t : java.util.List.of(tr1, tr2, tr3, tr4, tr5)) {
-                for (int i = 1; i <= 2; i++) {
+                for (int i = 1; i <= 10; i++) {
                     Carriage car = new Carriage(String.format("CAR-%03d", carIndex++), t, i, new java.util.ArrayList<>());
                     em.persist(car);
                     carriages.add(car);
@@ -105,16 +105,14 @@ public class DataSeeder {
             int seatIndex = 1;
 
             for (Carriage car : carriages) {
-                for (int i = 1; i <= 4; i++) {
+                for (int i = 1; i <= 10; i++) {
 
                     SeatType type;
 
-                    // Nếu là toa số 1 → toàn ghế mềm
-                    if (car.getCarriageNumber() == 1) {
+                    // Toa 1-2: SOFT_SEAT, Toa 3-10: SOFT_SLEEPER (áp dụng cho tất cả tàu)
+                    if (car.getCarriageNumber() <= 2) {
                         type = SeatType.SOFT_SEAT;
-                    }
-                    // Nếu là toa số 2 → toàn giường mềm
-                    else {
+                    } else {
                         type = SeatType.SOFT_SLEEPER;
                     }
 
@@ -149,11 +147,11 @@ public class DataSeeder {
             em.persist(sch1); em.persist(sch2); em.persist(sch3); em.persist(sch4); em.persist(sch5);
 
             // 10. Ticket
-            Ticket tk1 = new Ticket("TIC-001", u3, c1, sch1, seats.get(0), "0%", 1800000, 1800000, now, TicketStatus.PAID);
-            Ticket tk2 = new Ticket("TIC-002", u4, c2, sch1, seats.get(1), "10%", 1800000, 1620000, now, TicketStatus.PENDING);
-            Ticket tk3 = new Ticket("TIC-003", u5, c3, sch2, seats.get(4), "15%", 1800000, 1530000, now, TicketStatus.PAID);
-            Ticket tk4 = new Ticket("TIC-004", u3, c4, sch5, seats.get(16), "25%", 1000000, 750000, now.minusDays(2), TicketStatus.USED);
-            Ticket tk5 = new Ticket("TIC-005", u4, c5, sch4, seats.get(12), "0%", 900000, 900000, now, TicketStatus.CANCELLED);
+            Ticket tk1 = new Ticket("TICKET-001", u3, c1, sch1, seats.get(0), "0%", 1800000, 1800000, now, TicketStatus.PAID);
+            Ticket tk2 = new Ticket("TICKET-002", u4, c2, sch1, seats.get(1), "10%", 1800000, 1620000, now, TicketStatus.PENDING);
+            Ticket tk3 = new Ticket("TICKET-003", u5, c3, sch2, seats.get(4), "15%", 1800000, 1530000, now, TicketStatus.PAID);
+            Ticket tk4 = new Ticket("TICKET-004", u3, c4, sch5, seats.get(16), "25%", 1000000, 750000, now.minusDays(2), TicketStatus.USED);
+            Ticket tk5 = new Ticket("TICKET-005", u4, c5, sch4, seats.get(12), "0%", 900000, 900000, now, TicketStatus.CANCELLED);
             em.persist(tk1); em.persist(tk2); em.persist(tk3); em.persist(tk4); em.persist(tk5);
 
             // 11. Payment
