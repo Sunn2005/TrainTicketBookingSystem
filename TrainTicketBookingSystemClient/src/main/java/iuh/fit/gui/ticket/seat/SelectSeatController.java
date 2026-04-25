@@ -378,7 +378,11 @@ public class SelectSeatController {
 
     @FXML
     private void onNext() {
-        navigateTo("/iuh/fit/gui/ticket/passenger/passenger-info-view.fxml");
+        if (ctx.isExchangeMode()) {
+            navigateTo("/iuh/fit/gui/ticket/exchange/exchange-confirm-view.fxml");
+        } else {
+            navigateTo("/iuh/fit/gui/ticket/passenger/passenger-info-view.fxml");
+        }
     }
 
     @FXML

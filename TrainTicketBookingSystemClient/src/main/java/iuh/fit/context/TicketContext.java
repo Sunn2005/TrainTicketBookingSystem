@@ -268,5 +268,13 @@ public final class TicketContext {
             return calcOutboundPrice(distance) + calcReturnPrice(distance);
         }
     }
+    // ── Exchange mode ─────────────────────────────────────────────────────────
+    private boolean exchangeMode     = false;
+    private String  exchangeTicketId = "";
+
+    public boolean isExchangeMode()              { return exchangeMode; }
+    public void    setExchangeMode(boolean v)    { this.exchangeMode = v; }
+    public String  getExchangeTicketId()         { return exchangeTicketId; }
+    public void    setExchangeTicketId(String v) { this.exchangeTicketId = v; }
 }
 
