@@ -7,6 +7,7 @@ import dto.SellTicketRequest;
 import iuh.fit.dto.SeatsInfoResponse;
 import model.entity.Seat;
 import model.entity.Station;
+import model.entity.Ticket;
 import model.entity.enums.PaymentStatus;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,6 +94,10 @@ public class TicketClientService {
 
     public ActionResponse cancelTicket(String ticketId, String reason) {
         return delegate.cancelTicket(ticketId, reason);
+    }
+
+    public Ticket getTicketById(String ticketId) {
+        return delegate.getTicketById(ticketId);
     }
 
     public ActionResponse exchangeTicket(String ticketId, String newScheduleId, String newSeatId) {

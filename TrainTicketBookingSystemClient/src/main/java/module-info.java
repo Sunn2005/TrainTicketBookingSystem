@@ -19,6 +19,7 @@ module iuh.fit.trainticketbookingsystemclient {
     opens iuh.fit.gui.ticket.passenger to javafx.fxml;
     opens iuh.fit.gui.ticket.confirm to javafx.fxml;
     opens iuh.fit.dto to com.fasterxml.jackson.databind;
+    opens iuh.fit.gui.ticket.cancel to javafx.fxml;
 
     exports iuh.fit;
     exports iuh.fit.service;

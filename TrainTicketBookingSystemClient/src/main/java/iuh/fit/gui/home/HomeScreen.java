@@ -119,16 +119,19 @@ public class HomeScreen {
         ));
     }
 
+
     @FXML
     private void showCancelTicketScreen() {
         setActiveButton(cancelTicketButton);
-        contentContainer.getChildren().setAll(createSampleScreen(
-                "Huy ve",
-                "Man hinh mau cho huy ve va tinh phi hoan.",
-                "Yeu cau huy", "7",
-                "Da duyet", "31",
-                "Hoan tien", "14,700,000 VND"
-        ));
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource(
+                    "/iuh/fit/gui/ticket/cancel/cancel-ticket-view.fxml"));
+            contentContainer.getChildren().setAll((Node) loader.load());
+        } catch (Exception e) {
+            e.printStackTrace();
+            contentContainer.getChildren().setAll(
+                    new Label("Không thể tải màn hình hủy vé: " + e.getMessage()));
+        }
     }
 
     @FXML
