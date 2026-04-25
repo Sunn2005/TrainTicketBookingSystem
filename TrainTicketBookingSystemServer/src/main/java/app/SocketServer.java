@@ -7,10 +7,13 @@ import controller.TicketController;
 import controller.CustomerController;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import dto.ActionResponse;
 import model.entity.Station;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.LoginResponse;
 import dto.SellTicketRequest;
+import model.entity.Ticket;
+
 import java.util.List;
 
 import java.io.BufferedReader;
@@ -137,7 +140,38 @@ public class SocketServer {
         if ("QUIT".equalsIgnoreCase(trimmed)) {
             return "BYE";
         }
+        if (trimmed.toUpperCase().startsWith("GET_TICKET|")) {
+            return handleGetTicket(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("CANCEL_TICKET|")) {
+            return handleCancelTicket(trimmed);
+        }
         return "RECEIVED: " + trimmed;
+    }
+    private String handleGetTicket(String command) {
+        String[] parts = command.split("\\|");
+        if (parts.length < 2) return "ERROR|Invalid format";
+        try {
+            Ticket ticket = ticketController.getTicketById(parts[1].trim());
+            if (ticket == null) return "ERROR|Không tìm thấy vé";
+            return objectMapper.writeValueAsString(ticket);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleCancelTicket(String command) {
+        String[] parts = command.split("\\|");
+        if (parts.length < 3) return "ERROR|Invalid format";
+        try {
+            ActionResponse result = ticketController.cancelTicket(
+                    parts[1].trim(), parts[2].trim());
+            return objectMapper.writeValueAsString(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
     }
 
     private String handleLogin(String command) {

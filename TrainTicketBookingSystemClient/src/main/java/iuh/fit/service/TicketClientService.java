@@ -92,14 +92,37 @@ public class TicketClientService {
         }
     }
 
-    public ActionResponse cancelTicket(String ticketId, String reason) {
-        return delegate.cancelTicket(ticketId, reason);
-    }
-
     public Ticket getTicketById(String ticketId) {
-        return delegate.getTicketById(ticketId);
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST, SocketClient.PORT, "GET_TICKET|" + ticketId);
+            if (response == null || response.startsWith("ERROR")
+                    || "No response".equals(response)) {
+                System.err.println("Lỗi lấy vé: " + response);
+                return null;
+            }
+            return objectMapper.readValue(response, Ticket.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
+    public ActionResponse cancelTicket(String ticketId, String cccd) {
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST, SocketClient.PORT,
+                    "CANCEL_TICKET|" + ticketId + "|" + cccd);
+            if (response == null || response.startsWith("ERROR")
+                    || "No response".equals(response)) {
+                return ActionResponse.fail("Lỗi hủy vé: " + response);
+            }
+            return objectMapper.readValue(response, ActionResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ActionResponse.fail("Lỗi kết nối: " + e.getMessage());
+        }
+    }
     public ActionResponse exchangeTicket(String ticketId, String newScheduleId, String newSeatId) {
         return delegate.exchangeTicket(ticketId, newScheduleId, newSeatId);
     }
