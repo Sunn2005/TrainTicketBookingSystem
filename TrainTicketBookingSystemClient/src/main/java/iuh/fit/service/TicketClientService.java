@@ -6,6 +6,7 @@ import dto.ScheduleInfoResponse;
 import dto.SellTicketRequest;
 import model.entity.Seat;
 import model.entity.Station;
+import model.entity.Ticket;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,5 +39,8 @@ public class TicketClientService {
 
     public ActionResponse cancelTicket(String ticketId, String cccd) {
         return delegate.cancelTicket(ticketId, cccd);
+    }
+    public Ticket getTicketById(String ticketId) {
+        return delegate.getTicketById(ticketId);
     }
 }

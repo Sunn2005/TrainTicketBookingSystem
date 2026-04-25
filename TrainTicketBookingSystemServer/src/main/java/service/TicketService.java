@@ -445,4 +445,21 @@ public class TicketService {
     private String generateId(String prefix) {
         return prefix + "-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
     }
+    public Ticket getTicketById(String ticketId) {
+        return ticketDAO.findByID(ticketId).map(ticket -> {
+            // Ép load lazy fields
+            ticket.getCustomer().getFullName();
+            ticket.getCustomer().getCustomerID();
+            ticket.getSchedule().getDepartureTime();
+            ticket.getSchedule().getArrivalTime();
+            ticket.getSchedule().getRoute().getDepartureStation().getStationName();
+            ticket.getSchedule().getRoute().getArrivalStation().getStationName();
+            ticket.getSchedule().getTrain().getTrainName();
+            ticket.getSchedule().getTrain().getTrainID();
+            ticket.getSeat().getSeatNumber();
+            ticket.getSeat().getSeatType().name();
+            ticket.getSeat().getCarriage().getCarriageNumber();
+            return ticket;
+        }).orElse(null);
+    }
 }

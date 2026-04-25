@@ -1,4 +1,4 @@
-package iuh.fit.gui.ticket.cancle;
+package iuh.fit.gui.ticket.cancel;
 
 import dto.ActionResponse;
 import iuh.fit.service.TicketClientService;
@@ -124,6 +124,7 @@ public class CancelTicketController {
             case PENDING   -> "status-badge-pending";
             case CANCELLED -> "status-badge-cancelled";
             case USED      -> "status-badge-used";
+            case EXPIRED   -> "status-badge-expired";
         });
 
         // ── Train info ──

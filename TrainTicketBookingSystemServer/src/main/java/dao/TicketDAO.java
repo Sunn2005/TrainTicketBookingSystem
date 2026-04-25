@@ -1,5 +1,4 @@
 package dao;
-
 import model.entity.Ticket;
 import model.entity.enums.TicketStatus;
 

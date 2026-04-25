@@ -291,3 +291,164 @@
 /* ── Status ───────────────────────────────────── */
 .status-error { -fx-font-size: 12px; -fx-text-fill: #dc2626; }
 .section-big-title { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: -color-text-title; }
+
+/* ══ Cancel page ══════════════════════════════ */
+.cancel-page-header {
+    -fx-background-color: -color-primary;
+    -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.18), 8, 0, 0, 3);
+}
+.cancel-page-title {
+    -fx-font-size: 24px; -fx-font-weight: bold;
+    -fx-text-fill: -color-text-on-primary;
+}
+.cancel-page-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-subtle-on-primary;
+}
+
+.cancel-card {
+    -fx-background-color: -color-bg-card;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.07), 8, 0, 0, 2);
+}
+.cancel-card-title {
+    -fx-font-size: 14px; -fx-font-weight: bold;
+    -fx-text-fill: -color-text-title;
+}
+
+/* Ticket info bar */
+.ticket-info-bar {
+    -fx-background-color: -color-bg-placeholder;
+    -fx-background-radius: 8;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+.ticket-train-name {
+    -fx-font-size: 15px; -fx-font-weight: bold;
+    -fx-text-fill: -color-text-title;
+}
+.ticket-route {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-muted;
+}
+.ticket-time {
+    -fx-font-size: 13px; -fx-font-weight: bold;
+    -fx-text-fill: #e05252;
+}
+
+/* Info grid */
+.info-label {
+    -fx-font-size: 12px; -fx-font-weight: bold;
+    -fx-text-fill: -color-text-secondary;
+}
+.info-value {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-accent;
+    -fx-font-weight: bold;
+}
+.info-value-price {
+    -fx-font-size: 14px; -fx-font-weight: bold;
+    -fx-text-fill: #1a6dc8;
+}
+
+/* Status badges */
+.status-badge-paid {
+    -fx-background-color: #dcfce7;
+    -fx-text-fill: #16a34a;
+    -fx-font-size: 12px; -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 4 12 4 12;
+    -fx-border-color: #86efac;
+    -fx-border-radius: 20; -fx-border-width: 1;
+}
+.status-badge-pending {
+    -fx-background-color: #fef9c3;
+    -fx-text-fill: #ca8a04;
+    -fx-font-size: 12px; -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 4 12 4 12;
+    -fx-border-color: #fde047;
+    -fx-border-radius: 20; -fx-border-width: 1;
+}
+.status-badge-cancelled {
+    -fx-background-color: #fee2e2;
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 12px; -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 4 12 4 12;
+    -fx-border-color: #fca5a5;
+    -fx-border-radius: 20; -fx-border-width: 1;
+}
+.status-badge-used {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
+    -fx-font-size: 12px; -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 4 12 4 12;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 20; -fx-border-width: 1;
+}
+
+/* Policy box */
+.cancel-policy-box {
+    -fx-background-color: #fffbeb;
+    -fx-background-radius: 10;
+    -fx-border-color: #fcd34d;
+    -fx-border-radius: 10;
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(234,179,8,0.15), 6, 0, 0, 2);
+}
+.policy-title {
+    -fx-font-size: 14px; -fx-font-weight: bold;
+    -fx-text-fill: #92400e;
+}
+.policy-time {
+    -fx-font-size: 13px; -fx-font-weight: bold;
+    -fx-text-fill: #b45309;
+}
+.policy-fee  {
+    -fx-font-size: 12px;
+    -fx-text-fill: #78350f;
+}
+.policy-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #92400e;
+}
+.policy-fee-amount {
+    -fx-font-size: 14px; -fx-font-weight: bold;
+    -fx-text-fill: #dc2626;
+}
+.policy-refund {
+    -fx-font-size: 14px; -fx-font-weight: bold;
+    -fx-text-fill: #16a34a;
+}
+
+/* Danger button */
+.btn-danger {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: white;
+    -fx-font-size: 13px; -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-padding: 9 20 9 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.3), 6, 0, 0, 2);
+}
+.btn-danger:hover    { -fx-background-color: #b91c1c; }
+.btn-danger:disabled {
+    -fx-background-color: #ccc; -fx-text-fill: #888;
+    -fx-effect: none;
+}
+.status-badge-expired {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
+    -fx-font-size: 12px; -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 4 12 4 12;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 20; -fx-border-width: 1;
+}

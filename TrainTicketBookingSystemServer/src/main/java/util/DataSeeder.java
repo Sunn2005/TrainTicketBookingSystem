@@ -105,11 +105,11 @@ public class DataSeeder {
             }
 
             // 8. Customer
-            Customer c1 = new Customer("CUS-001", "Trần Khách Một", CustomerType.ADULT);
-            Customer c2 = new Customer("CUS-002", "Lê Khách Sinh Viên", CustomerType.STUDENT);
-            Customer c3 = new Customer("CUS-003", "Phạm Lão Thành", CustomerType.ELDERLY);
-            Customer c4 = new Customer("CUS-004", "Vũ Khách Trẻ Em", CustomerType.CHILD);
-            Customer c5 = new Customer("CUS-005", "Hồ Khách Hai", CustomerType.ADULT);
+            Customer c1 = new Customer("012345678901", "Trần Khách Một",    CustomerType.ADULT);
+            Customer c2 = new Customer("012345678902", "Lê Khách Sinh Viên", CustomerType.STUDENT);
+            Customer c3 = new Customer("012345678903", "Phạm Lão Thành",    CustomerType.ELDERLY);
+            Customer c4 = new Customer("012345678904", "Vũ Khách Trẻ Em",   CustomerType.CHILD);
+            Customer c5 = new Customer("012345678905", "Hồ Khách Hai",      CustomerType.ADULT);
             em.persist(c1); em.persist(c2); em.persist(c3); em.persist(c4); em.persist(c5);
 
             // 9. Schedule

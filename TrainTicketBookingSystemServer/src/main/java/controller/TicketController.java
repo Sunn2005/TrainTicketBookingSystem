@@ -4,6 +4,7 @@ import dto.ActionResponse;
 import dto.SellTicketRequest;
 import model.entity.Schedule;
 import model.entity.Seat;
+import model.entity.Ticket;
 import model.entity.enums.PaymentStatus;
 import service.TicketService;
 import dto.ScheduleInfoResponse;
@@ -49,5 +50,7 @@ public class TicketController {
     public ActionResponse updatePaymentStatus(String paymentId, PaymentStatus status) {
         return ticketService.updatePaymentStatus(paymentId, status);
     }
-
+    public Ticket getTicketById(String ticketId) {
+        return ticketService.getTicketById(ticketId);
+    }
 }
