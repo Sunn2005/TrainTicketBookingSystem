@@ -400,7 +400,6 @@ public class SelectSeatController {
 
     @FXML
     private void onNext() {
-<<<<<<< HEAD
         if (ctx.getCurrentStep() == TicketContext.BookingStep.OUTBOUND_SEAT && ctx.isRoundTrip()) {
             // Chuyển sang tìm chuyến về
             ctx.setCurrentStep(TicketContext.BookingStep.RETURN_SEARCH);
@@ -408,11 +407,6 @@ public class SelectSeatController {
         } else {
             // Chuyển sang nhập thông tin khách hàng
             ctx.setCurrentStep(TicketContext.BookingStep.PASSENGER_INFO);
-=======
-        if (ctx.isExchangeMode()) {
-            navigateTo("/iuh/fit/gui/ticket/exchange/exchange-confirm-view.fxml");
-        } else {
->>>>>>> hieu
             navigateTo("/iuh/fit/gui/ticket/passenger/passenger-info-view.fxml");
         }
     }
