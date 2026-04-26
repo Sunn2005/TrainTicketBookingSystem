@@ -33,6 +33,9 @@ public final class TicketContext {
     private ScheduleInfoResponse outboundSchedule;
     private ScheduleInfoResponse returnSchedule;
 
+    private boolean exchangeMode     = false;
+    private String  exchangeTicketId = "";
+
     private final List<Seat> outboundSeats = new ArrayList<>();
     private final List<Seat> returnSeats = new ArrayList<>();
     private final List<PassengerInfo> passengers = new ArrayList<>();
@@ -73,6 +76,11 @@ public final class TicketContext {
         // Return current distance from selected schedule
         return currentDistance;
     }
+
+    public boolean isExchangeMode()              { return exchangeMode; }
+    public void    setExchangeMode(boolean v)    { this.exchangeMode = v; }
+    public String  getExchangeTicketId()         { return exchangeTicketId; }
+    public void    setExchangeTicketId(String v) { this.exchangeTicketId = v; }
 
     public static double calcPrice(double distance, SeatType seatType, CustomerType customerType) {
         return getInstance().calculatePrice(distance, seatType, customerType);

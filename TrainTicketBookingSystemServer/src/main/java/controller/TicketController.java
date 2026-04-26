@@ -3,6 +3,7 @@ package controller;
 import dto.ActionResponse;
 import dto.SellRoundTripRequest;
 import dto.SellTicketRequest;
+import model.entity.Payment;
 import model.entity.Schedule;
 import model.entity.Seat;
 import model.entity.Ticket;
@@ -54,6 +55,10 @@ public class TicketController {
 
     public ActionResponse exchangeTicket(String ticketId, String newScheduleId, String newSeatId) {
         return ticketService.exchangeTicket(ticketId, newScheduleId, newSeatId);
+    }
+
+    public Payment getPaymentByTicketId(String ticketId) {
+        return ticketService.getPaymentByTicketId(ticketId);
     }
 
     public ActionResponse updatePaymentStatus(String paymentId, PaymentStatus status) {

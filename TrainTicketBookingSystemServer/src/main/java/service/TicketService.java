@@ -341,77 +341,141 @@ public class TicketService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            Ticket ticket = em.find(Ticket.class, ticketId);
-            if (ticket == null) {
-                return ActionResponse.fail("Không tìm thấy Vé: " + ticketId);
-            }
-            if (ticket.getTicketStatus() != TicketStatus.PAID) {
-                return ActionResponse.fail("Chỉ được đổi khi vé đã thanh toán (PAID).");
-            }
 
-            // Kiểm tra đổi 1 lần duy nhất (Ta đánh dấu trạng thái bằng chữ 'EXCHANGED' trong cột discount - hoặc một cờ tuỳ chỉnh)
-            if ("EXCHANGED".equalsIgnoreCase(ticket.getDiscount())) {
+            Ticket ticket = em.find(Ticket.class, ticketId);
+            if (ticket == null)
+                return ActionResponse.fail("Không tìm thấy Vé: " + ticketId);
+
+            if (ticket.getTicketStatus() != TicketStatus.PAID)
+                return ActionResponse.fail("Chỉ được đổi khi vé đã thanh toán (PAID).");
+
+            if ("EXCHANGED".equalsIgnoreCase(ticket.getDiscount()))
                 return ActionResponse.fail("Vé này đã được đổi 1 lần trước đó, không thể đổi thêm.");
-            }
 
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime departureTime = ticket.getSchedule().getDepartureTime();
-            if (now.isAfter(departureTime) || now.isEqual(departureTime)) {
+
+            if (now.isAfter(departureTime) || now.isEqual(departureTime))
                 return ActionResponse.fail("Không thể đổi vé sau khi tàu đã khởi hành.");
-            }
 
             long minutesToDeparture = ChronoUnit.MINUTES.between(now, departureTime);
 
-            if (minutesToDeparture < 60) {
+            if (minutesToDeparture < 60)
                 return ActionResponse.fail("Không thể đổi vé trước giờ khởi hành dưới 1 tiếng.");
-            }
 
-            double feePercentage = 0;
-            if (minutesToDeparture < 240) {         // Từ 1h -> dưới 4h (4*60=240)
+            double feePercentage;
+            if (minutesToDeparture < 240) {
                 feePercentage = 0.20;
-            } else if (minutesToDeparture < 1440) { // Từ 4h -> dưới 24h (24*60=1440)
+            } else if (minutesToDeparture < 1440) {
                 feePercentage = 0.10;
-            } else {                                // Từ 24h trở lên
+            } else {
                 feePercentage = 0.05;
             }
 
             double exchangeFee = ticket.getPrice() * feePercentage;
 
             Schedule newSchedule = em.find(Schedule.class, newScheduleId);
-            if (newSchedule == null || newSchedule.getScheduleStatus() == model.entity.enums.ScheduleStatus.DISABLED) {
+            if (newSchedule == null
+                    || newSchedule.getScheduleStatus() == model.entity.enums.ScheduleStatus.DISABLED)
                 return ActionResponse.fail("Không tìm thấy lịch trình mới hoặc lịch trình đã bị vô hiệu hóa.");
-            }
 
             Seat newSeat = em.find(Seat.class, newSeatId);
-            if (newSeat == null) {
+            if (newSeat == null)
                 return ActionResponse.fail("Không tìm thấy thông tin ghế mới: " + newSeatId);
-            }
 
-            if (!newSeat.getCarriage().getTrain().getTrainID().equals(newSchedule.getTrain().getTrainID())) {
+            if (!newSeat.getCarriage().getTrain().getTrainID()
+                    .equals(newSchedule.getTrain().getTrainID()))
                 return ActionResponse.fail("Ghế đổi không nằm trên tàu của chuyến đi mới.");
-            }
 
-            if (ticketDAO.isSeatBooked(newScheduleId, newSeatId)) {
+            if (ticketDAO.isSeatBooked(newScheduleId, newSeatId))
                 return ActionResponse.fail("Ghế mới đã có người đặt, vui lòng chọn ghế trống khác.");
-            }
 
+            // ── Tính giá vé mới ──────────────────────────────────────────
+            double newDistance = newSchedule.getRoute().getDistance();
+            double newSeatFee  = 0;
+            if (newSeat.getSeatType() == model.entity.enums.SeatType.SOFT_SEAT) {
+                newSeatFee = this.basePrice.getSoftSeatFee();
+            } else if (newSeat.getSeatType() == model.entity.enums.SeatType.SOFT_SLEEPER) {
+                newSeatFee = this.basePrice.getSoftSleeperFee();
+            }
+            double newTicketPrice = newDistance * this.basePrice.getPricePerDistance() + newSeatFee;
+
+            // ── Tính chênh lệch ───────────────────────────────────────────
+            double priceDiff   = newTicketPrice - ticket.getPrice();
+            double extraCharge = Math.max(0,  priceDiff); // vé mới đắt hơn → trả thêm
+            double refundDiff  = Math.max(0, -priceDiff); // vé mới rẻ hơn → được hoàn chênh lệch
+
+            // ── Tổng thực tế phải trả / được hoàn ────────────────────────
+            // netCharge > 0 → khách phải trả thêm
+            // netCharge < 0 → khách được hoàn lại tiền
+            double netCharge = exchangeFee - refundDiff + extraCharge;
+
+            // ── Cập nhật vé ───────────────────────────────────────────────
             ticket.setSchedule(newSchedule);
             ticket.setSeat(newSeat);
-            ticket.setDiscount("EXCHANGED"); // Đánh dấu là đã đổi lần đầu
-
-            // Xử lý giá vé mới và phí đổi vé tuỳ chọn
-            // Tuỳ nghiệp vụ hiện tại: Khách hàng có thể trả tiền phí bằng tiền mặt ở quầy
-            // Dưới đây chỉ in thông báo ra Message, ko thay đổi Amount Payment 1-1 cũ
+            ticket.setDiscount("EXCHANGED");
             em.merge(ticket);
 
             tx.commit();
-            return ActionResponse.success(String.format("Đổi vé thành công. Phí đổi vé là: %,.0f VNĐ (%.0f%% giá vé).", exchangeFee, feePercentage * 100));
+
+            // ── Trả về message theo từng trường hợp ──────────────────────
+            if (priceDiff == 0) {
+                // Vé mới bằng giá → chỉ tính phí đổi
+                return ActionResponse.success(String.format(
+                        "Đổi vé thành công. " +
+                                "Phí đổi vé: %,.0f VNĐ (%.0f%%). " +
+                                "Không có chênh lệch giá. " +
+                                "Tổng phải trả: %,.0f VNĐ.",
+                        exchangeFee, feePercentage * 100, netCharge));
+
+            } else if (priceDiff > 0) {
+                // Vé mới đắt hơn → phí + chênh lệch
+                return ActionResponse.success(String.format(
+                        "Đổi vé thành công. " +
+                                "Phí đổi vé: %,.0f VNĐ (%.0f%%). " +
+                                "Chênh lệch giá phải trả thêm: %,.0f VNĐ. " +
+                                "Tổng phải trả: %,.0f VNĐ.",
+                        exchangeFee, feePercentage * 100,
+                        extraCharge, netCharge));
+
+            } else {
+                // Vé mới rẻ hơn → hoàn chênh lệch, trừ phí
+                if (netCharge > 0) {
+                    // Phí > hoàn → vẫn phải trả thêm
+                    return ActionResponse.success(String.format("Đổi vé thành công. " +
+                                    "Phí đổi vé: %,.0f VNĐ (%.0f%%). " +
+                                    "Hoàn chênh lệch giá: %,.0f VNĐ. " +
+                                    "Tổng phải trả: %,.0f VNĐ.",
+                            exchangeFee, feePercentage * 100,
+                            refundDiff, netCharge));
+                } else {
+                    // Hoàn > phí → khách được nhận lại tiền
+                    return ActionResponse.success(String.format(
+                            "Đổi vé thành công. " +
+                                    "Phí đổi vé: %,.0f VNĐ (%.0f%%). " +
+                                    "Hoàn chênh lệch giá: %,.0f VNĐ. " +
+                                    "Được hoàn lại: %,.0f VNĐ.",
+                            exchangeFee, feePercentage * 100,
+                            refundDiff, Math.abs(netCharge)));
+                }
+            }
+
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();
             return ActionResponse.fail("Lỗi khi đổi vé: " + e.getMessage());
         } finally {
             em.close();
         }
+    }
+    public Payment getPaymentByTicketId(String ticketId) {
+        List<Payment> payments = paymentDAO.findPaymentsByTicketId(ticketId);
+        if (payments == null || payments.isEmpty()) return null;
+        Payment payment = payments.get(payments.size() - 1);
+        payment.getPaymentStatus();
+        payment.getPaymentMethod();
+        payment.getAmount();
+        payment.getPaymentTime();
+        return payment;
     }
 
     public ActionResponse updatePaymentStatus(String paymentId, PaymentStatus status) {

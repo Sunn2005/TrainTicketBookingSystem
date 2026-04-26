@@ -452,3 +452,27 @@
     -fx-border-color: #cbd5e1;
     -fx-border-radius: 20; -fx-border-width: 1;
 }
+
+/* ══ Exchange page ════════════════════════════════════════════════════════ */
+.exchange-step-active {
+    -fx-background-color: #0077c8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 5 16 5 16;
+}
+.exchange-step-inactive {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #888;
+    -fx-background-radius: 20;
+    -fx-padding: 5 16 5 16;
+}
+/* ══ Exchange result ══ */
+.exchange-result-box {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.1), 12, 0, 0, 3);
+}

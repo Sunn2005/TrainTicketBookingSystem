@@ -398,16 +398,21 @@ public class SelectSeatController {
         return row;
     }
 
+
     @FXML
     private void onNext() {
-        if (ctx.getCurrentStep() == TicketContext.BookingStep.OUTBOUND_SEAT && ctx.isRoundTrip()) {
-            // Chuyển sang tìm chuyến về
-            ctx.setCurrentStep(TicketContext.BookingStep.RETURN_SEARCH);
-            navigateTo("/iuh/fit/gui/ticket/search/search-schedule-view.fxml");
+        if (ctx.isExchangeMode()) {
+            navigateTo("/iuh/fit/gui/ticket/exchange/exchange-confirm-view.fxml");
         } else {
-            // Chuyển sang nhập thông tin khách hàng
-            ctx.setCurrentStep(TicketContext.BookingStep.PASSENGER_INFO);
-            navigateTo("/iuh/fit/gui/ticket/passenger/passenger-info-view.fxml");
+            if (ctx.getCurrentStep() == TicketContext.BookingStep.OUTBOUND_SEAT && ctx.isRoundTrip()) {
+                // Chuyển sang tìm chuyến về
+                ctx.setCurrentStep(TicketContext.BookingStep.RETURN_SEARCH);
+                navigateTo("/iuh/fit/gui/ticket/search/search-schedule-view.fxml");
+            } else {
+                // Chuyển sang nhập thông tin khách hàng
+                ctx.setCurrentStep(TicketContext.BookingStep.PASSENGER_INFO);
+                navigateTo("/iuh/fit/gui/ticket/passenger/passenger-info-view.fxml");
+            }
         }
     }
 

@@ -39,6 +39,9 @@ public class PassengerInfoController {
     private static final NumberFormat CURRENCY =
             NumberFormat.getNumberInstance(new Locale("vi", "VN"));
 
+    private static final String FULLNAME_REGEX = "^[\\p{L} ]+$";
+    private static final String CCCD_REGEX = "^\\d{12}$";
+
     @FXML
     private void initialize() {
         payGroup = new ToggleGroup();
@@ -175,7 +178,7 @@ public class PassengerInfoController {
             } else {
                 info.setCccd(n);
                 boolean isDup = checkDupCccd(cccdFld, n, info);
-                if ((n.length() == 9 || n.length() == 12) && !isDup) {
+                if (n.length() == 12 && !isDup) {
                     java.util.concurrent.CompletableFuture.runAsync(() -> {
                         try {
                             Customer c = customerClientService.getCustomerById(n);
@@ -214,7 +217,7 @@ public class PassengerInfoController {
     }
 
     private boolean checkDupCccd(TextField fld, String cccd, PassengerInfo cur) {
-        if (cccd.length() < 9) { fld.setStyle(""); statusLabel.setText(""); return false; }
+        if (cccd.length() != 12) { fld.setStyle(""); statusLabel.setText(""); return false; }
         boolean dup = ctx.getPassengers().stream()
                 .filter(p -> p != cur)
                 .anyMatch(p -> cccd.equals(p.getCccd()));
@@ -266,11 +269,11 @@ public class PassengerInfoController {
         // Validate
         for (int i = 0; i < ctx.getPassengers().size(); i++) {
             PassengerInfo p = ctx.getPassengers().get(i);
-            if (p.getName() == null || p.getName().trim().isEmpty()) {
-                showError("Hành khách " + (i+1) + ": Vui lòng nhập họ tên."); return;
+            if (p.getName() == null || p.getName().trim().isEmpty() || !p.getName().matches(FULLNAME_REGEX)) {
+                showError("Hành khách " + (i+1) + ": Họ tên chỉ được chứa chữ cái và khoảng trắng."); return;
             }
-            if (p.getCccd() == null || p.getCccd().trim().length() < 9) {
-                showError("Hành khách " + (i+1) + ": CCCD tối thiểu 9 số."); return;
+            if (p.getCccd() == null || !p.getCccd().matches(CCCD_REGEX)) {
+                showError("Hành khách " + (i+1) + ": CCCD phải là 12 chữ số."); return;
             }
         }
         // Kiểm tra CCCD trùng

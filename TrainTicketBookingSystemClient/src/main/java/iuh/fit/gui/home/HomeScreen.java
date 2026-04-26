@@ -122,13 +122,15 @@ public class HomeScreen {
     @FXML
     private void showExchangeTicketScreen() {
         setActiveButton(exchangeTicketButton);
-        contentContainer.getChildren().setAll(createSampleScreen(
-                "Doi ve",
-                "Man hinh mau cho doi ve theo ma dat cho.",
-                "Yeu cau moi", "9",
-                "Dang xu ly", "5",
-                "Da hoan tat", "42"
-        ));
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource(
+                    "/iuh/fit/gui/ticket/exchange/exchange-ticket-view.fxml"));
+            contentContainer.getChildren().setAll((Node) loader.load());
+        } catch (Exception e) {
+            e.printStackTrace();
+            contentContainer.getChildren().setAll(
+                    new Label("Không thể tải màn hình đổi vé: " + e.getMessage()));
+        }
     }
 
 

@@ -7,6 +7,7 @@ import dto.SellRoundTripRequest;
 import dto.SellRoundTripResponse;
 import dto.SellTicketRequest;
 import iuh.fit.dto.SeatsInfoResponse;
+import model.entity.Payment;
 import model.entity.Seat;
 import model.entity.Station;
 import model.entity.Ticket;
@@ -143,8 +144,34 @@ public class TicketClientService {
             return ActionResponse.fail("Lỗi kết nối: " + e.getMessage());
         }
     }
+
     public ActionResponse exchangeTicket(String ticketId, String newScheduleId, String newSeatId) {
-        return delegate.exchangeTicket(ticketId, newScheduleId, newSeatId);
+        try {
+            String message = "EXCHANGE_TICKET|" + ticketId + "|" + newScheduleId + "|" + newSeatId;
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, message);
+            if (response == null || response.startsWith("ERROR")
+                    || "No response".equals(response)) {
+                return ActionResponse.fail("Lỗi đổi vé: " + response);
+            }
+            return objectMapper.readValue(response, ActionResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ActionResponse.fail("Lỗi kết nối: " + e.getMessage());
+        }
+    }
+    public Payment getPaymentByTicketId(String ticketId) {
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST, SocketClient.PORT, "GET_PAYMENT|" + ticketId);
+            if (response == null || response.startsWith("ERROR") || "No response".equals(response)) {
+                System.err.println("Lỗi lấy payment: " + response);
+                return null;
+            }
+            return objectMapper.readValue(response, Payment.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public ActionResponse updatePaymentStatus(String ticketId, PaymentStatus status) {
