@@ -282,6 +282,7 @@ public class PassengerInfoController {
 
          boolean isQr = qrRadio.isSelected();
          ctx.setQrPayment(isQr);
+         ctx.setCurrentStep(TicketContext.BookingStep.CONFIRM);
          navigateTo("/iuh/fit/gui/ticket/confirm/confirm-view.fxml");
     }
 

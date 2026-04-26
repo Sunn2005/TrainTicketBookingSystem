@@ -1,6 +1,7 @@
 package controller;
 
 import dto.ActionResponse;
+import dto.SellRoundTripRequest;
 import dto.SellTicketRequest;
 import model.entity.Schedule;
 import model.entity.Seat;
@@ -41,6 +42,10 @@ public class TicketController {
 
     public ActionResponse sellTicket(SellTicketRequest request) {
         return ticketService.sellTicket(request);
+    }
+
+    public ActionResponse sellRoundTrip(SellRoundTripRequest request) {
+        return ticketService.sellRoundTrip(request);
     }
 
     public ActionResponse cancelTicket(String ticketId, String cccd) {

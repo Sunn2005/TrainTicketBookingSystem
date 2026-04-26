@@ -105,7 +105,7 @@ public class DataSeeder {
             int seatIndex = 1;
 
             for (Carriage car : carriages) {
-                for (int i = 1; i <= 10; i++) {
+                for (int i = 1; i <= 12; i++) {
 
                     SeatType type;
 
@@ -139,12 +139,32 @@ public class DataSeeder {
 
             // 9. Schedule
             LocalDateTime now = LocalDateTime.now();
+
+            // Các chuyến tàu Sài Gòn -> Hà Nội (rt1)
             Schedule sch1 = new Schedule("SCH-001", tr1, rt1, now.plusDays(1), now.plusDays(2).plusHours(10), ScheduleStatus.ENABLED);
+            Schedule sch6 = new Schedule("SCH-006", tr1, rt1, now.plusDays(1).plusHours(8), now.plusDays(2).plusHours(18), ScheduleStatus.ENABLED);
+            Schedule sch7 = new Schedule("SCH-007", tr1, rt1, now.plusDays(2).plusHours(10), now.plusDays(3).plusHours(20), ScheduleStatus.ENABLED);
+            Schedule sch8 = new Schedule("SCH-008", tr1, rt1, now.plusDays(3), now.plusDays(4).plusHours(10), ScheduleStatus.ENABLED);
+            Schedule sch9 = new Schedule("SCH-009", tr1, rt1, now.plusDays(4).plusHours(14), now.plusDays(6), ScheduleStatus.ENABLED);
+            Schedule sch10 = new Schedule("SCH-010", tr1, rt1, now.plusDays(5), now.plusDays(6).plusHours(10), ScheduleStatus.ENABLED);
+
+            // Các chuyến tàu Hà Nội -> Sài Gòn (rt2)
             Schedule sch2 = new Schedule("SCH-002", tr2, rt2, now.plusDays(2), now.plusDays(3).plusHours(8), ScheduleStatus.ENABLED);
+            Schedule sch11 = new Schedule("SCH-011", tr2, rt2, now.plusDays(1).plusHours(6), now.plusDays(2).plusHours(16), ScheduleStatus.ENABLED);
+            Schedule sch12 = new Schedule("SCH-012", tr2, rt2, now.plusDays(2).plusHours(12), now.plusDays(4), ScheduleStatus.ENABLED);
+            Schedule sch13 = new Schedule("SCH-013", tr2, rt2, now.plusDays(3).plusHours(8), now.plusDays(4).plusHours(18), ScheduleStatus.ENABLED);
+            Schedule sch14 = new Schedule("SCH-014", tr2, rt2, now.plusDays(4), now.plusDays(5).plusHours(10), ScheduleStatus.ENABLED);
+            Schedule sch15 = new Schedule("SCH-015", tr2, rt2, now.plusDays(5).plusHours(16), now.plusDays(7).plusHours(2), ScheduleStatus.ENABLED);
+
+            // Các chuyến tàu khác
             Schedule sch3 = new Schedule("SCH-003", tr3, rt3, now.plusDays(1).plusHours(5), now.plusDays(1).plusHours(20), ScheduleStatus.ENABLED);
             Schedule sch4 = new Schedule("SCH-004", tr4, rt4, now.plusDays(3), now.plusDays(4), ScheduleStatus.ENABLED);
             Schedule sch5 = new Schedule("SCH-005", tr5, rt5, now.minusDays(1), now.plusHours(8), ScheduleStatus.ENABLED);
+
+            // Persist tất cả schedules
             em.persist(sch1); em.persist(sch2); em.persist(sch3); em.persist(sch4); em.persist(sch5);
+            em.persist(sch6); em.persist(sch7); em.persist(sch8); em.persist(sch9); em.persist(sch10);
+            em.persist(sch11); em.persist(sch12); em.persist(sch13); em.persist(sch14); em.persist(sch15);
 
             // 10. Ticket
             Ticket tk1 = new Ticket("TICKET-001", u3, c1, sch1, seats.get(0), "0%", 1800000, 1800000, now, TicketStatus.PAID);

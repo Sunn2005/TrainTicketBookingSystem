@@ -12,9 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class TicketContext {
+    public enum BookingStep {
+        OUTBOUND_SEARCH, OUTBOUND_SEAT, RETURN_SEARCH, RETURN_SEAT, PASSENGER_INFO, CONFIRM, PAYMENT
+    }
+
     private static final TicketContext INSTANCE = new TicketContext();
 
     private BasePrice basePrice;
+    private BookingStep currentStep = BookingStep.OUTBOUND_SEARCH;
 
     private String departureStationId;
     private String departureStationName;
@@ -61,6 +66,7 @@ public final class TicketContext {
         outboundSeats.clear();
         returnSeats.clear();
         passengers.clear();
+        currentStep = BookingStep.OUTBOUND_SEARCH;
     }
 
     public double getDistance() {
@@ -197,6 +203,14 @@ public final class TicketContext {
 
     public void setCurrentDistance(double currentDistance) {
         this.currentDistance = currentDistance;
+    }
+
+    public BookingStep getCurrentStep() {
+        return currentStep;
+    }
+
+    public void setCurrentStep(BookingStep currentStep) {
+        this.currentStep = currentStep;
     }
 
     public static final class PassengerInfo {

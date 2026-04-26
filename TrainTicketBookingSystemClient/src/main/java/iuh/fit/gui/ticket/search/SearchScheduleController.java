@@ -67,7 +67,38 @@ public class SearchScheduleController {
             returnDatePicker.setDisable(!n);
             if (!n) returnDatePicker.setValue(null);
         });
-        loadStations();
+
+        // Configure dựa trên step
+        if (ctx.getCurrentStep() == TicketContext.BookingStep.RETURN_SEARCH) {
+            configureForReturnSearch();
+        }
+
+        // Kiểm tra step để cấu hình UI
+        if (ctx.getCurrentStep() == TicketContext.BookingStep.RETURN_SEARCH) {
+            configureForReturnSearch();
+        } else {
+            loadStations();
+        }
+    }
+
+    private void configureForReturnSearch() {
+        // Disable tất cả field, chỉ hiện chuyến về
+        departureCombo.setDisable(true);
+        arrivalCombo.setDisable(true);
+        departureDatePicker.setDisable(true);
+        returnDatePicker.setDisable(true);
+        oneWayRadio.setDisable(true);
+        roundTripRadio.setDisable(true);
+        searchButton.setDisable(true);
+
+        // Set giá trị từ context (đảo ngược ga)
+        departureCombo.setValue(ctx.getArrivalStationName());
+        arrivalCombo.setValue(ctx.getDepartureStationName());
+        departureDatePicker.setValue(ctx.getReturnDate());
+        roundTripRadio.setSelected(true);
+
+        // Load stations và tìm chuyến về
+        loadStationsForReturn();
     }
 
     private void loadStations() {
@@ -97,35 +128,72 @@ public class SearchScheduleController {
         }).start();
     }
 
+    private void loadStationsForReturn() {
+        new Thread(() -> {
+            try {
+                List<Station> stations = ticketService.getAllStations();
+                Platform.runLater(() -> {
+                    ObservableList<String> names = FXCollections.observableArrayList();
+                    for (Station s : stations) {
+                        stationNameToId.put(s.getStationName(), s.getStationID());
+                        names.add(s.getStationName());
+                    }
+                    departureCombo.setItems(names);
+                    arrivalCombo.setItems(names);
+                    // Tự động tìm chuyến về
+                    onSearch();
+                });
+            } catch (Exception e) {
+                Platform.runLater(() ->
+                        showError(searchStatusLabel, "Không tải được ga: " + e.getMessage()));
+            }
+        }).start();
+    }
+
     @FXML
     private void onSearch() {
-        String depId  = stationNameToId.get(departureCombo.getValue());
-        String arrId  = stationNameToId.get(arrivalCombo.getValue());
-        LocalDate depDate = departureDatePicker.getValue();
-        boolean isRound   = roundTripRadio.isSelected();
-        LocalDate retDate = returnDatePicker.getValue();
+        String depId, arrId;
+        LocalDate searchDate;
+        boolean isReturnSearch = ctx.getCurrentStep() == TicketContext.BookingStep.RETURN_SEARCH;
 
-        if (depId == null || arrId == null || depDate == null) {
+        if (isReturnSearch) {
+            // Tìm chuyến về: đảo ngược ga, dùng ngày về
+            depId = ctx.getArrivalStationId();
+            arrId = ctx.getDepartureStationId();
+            searchDate = ctx.getReturnDate();
+        } else {
+            // Tìm chuyến đi
+            depId = stationNameToId.get(departureCombo.getValue());
+            arrId = stationNameToId.get(arrivalCombo.getValue());
+            searchDate = departureDatePicker.getValue();
+        }
+
+        LocalDate retDate = returnDatePicker.getValue();
+        boolean isRound = roundTripRadio.isSelected();
+
+        if (depId == null || arrId == null || searchDate == null) {
             showError(searchStatusLabel, "Vui lòng chọn đầy đủ thông tin."); return;
         }
         if (depId.equals(arrId)) {
             showError(searchStatusLabel, "Ga đi và ga đến không được trùng."); return;
         }
-        if (isRound && retDate == null) {
+        if (!isReturnSearch && isRound && retDate == null) {
             showError(searchStatusLabel, "Vui lòng chọn ngày về."); return;
         }
 
-        // Lưu vào context
-        ctx.setDepartureStationId(depId);
-        ctx.setDepartureStationName(departureCombo.getValue());
-        ctx.setArrivalStationId(arrId);
-        ctx.setArrivalStationName(arrivalCombo.getValue());
-        ctx.setDepartureDate(depDate);
-        ctx.setReturnDate(isRound ? retDate : null);
-        ctx.setRoundTrip(isRound);
-        ctx.getOutboundSeats().clear();
-        ctx.getReturnSeats().clear();
-        ctx.getPassengers().clear();
+        // Lưu vào context chỉ khi tìm chuyến đi
+        if (!isReturnSearch) {
+            ctx.setDepartureStationId(depId);
+            ctx.setDepartureStationName(departureCombo.getValue());
+            ctx.setArrivalStationId(arrId);
+            ctx.setArrivalStationName(arrivalCombo.getValue());
+            ctx.setDepartureDate(searchDate);
+            ctx.setReturnDate(isRound ? retDate : null);
+            ctx.setRoundTrip(isRound);
+            ctx.getOutboundSeats().clear();
+            ctx.getReturnSeats().clear();
+            ctx.getPassengers().clear();
+        }
 
         searchButton.setDisable(true);
         searchButton.setText("Đang tìm...");
@@ -134,37 +202,43 @@ public class SearchScheduleController {
 
         new Thread(() -> {
             try {
-                List<ScheduleInfoResponse> go =
-                        ticketService.getSchedulesWithAvailableSeats(depId, arrId, depDate);
-                List<ScheduleInfoResponse> ret = isRound && retDate != null
-                        ? ticketService.getSchedulesWithAvailableSeats(arrId, depId, retDate)
-                        : new ArrayList<>();
+                List<ScheduleInfoResponse> schedules = ticketService.getSchedulesWithAvailableSeats(depId, arrId, searchDate);
 
                 Platform.runLater(() -> {
                     searchButton.setDisable(false);
                     searchButton.setText("Tìm kiếm");
 
-                    if (go.isEmpty() && ret.isEmpty()) {
+                    if (schedules.isEmpty()) {
                         showError(searchStatusLabel, "Không tìm thấy chuyến tàu phù hợp.");
                         return;
                     }
 
-                    goList  = go;
-                    retList = ret;
                     scheduleSegmentMap.clear();
-                    go.forEach(s  -> scheduleSegmentMap.put(s.getScheduleId(), "outbound"));
-                    ret.forEach(s -> scheduleSegmentMap.put(s.getScheduleId(), "return"));
+                    if (isReturnSearch) {
+                        retList = schedules;
+                        retList.forEach(s -> scheduleSegmentMap.put(s.getScheduleId(), "return"));
+                    } else {
+                        goList = schedules;
+                        goList.forEach(s -> scheduleSegmentMap.put(s.getScheduleId(), "outbound"));
+                    }
 
-                    String header = "Chiều đi: ngày " + depDate.format(DATEFMT)
-                            + "  " + ctx.getDepartureStationName()
-                            + " → " + ctx.getArrivalStationName();
-                    if (isRound && retDate != null)
-                        header += "   |   Chiều về: ngày " + retDate.format(DATEFMT);
+                    String header;
+                    if (isReturnSearch) {
+                        header = "Chiều về: ngày " + ctx.getReturnDate().format(DATEFMT)
+                                + "  " + ctx.getArrivalStationName()
+                                + " → " + ctx.getDepartureStationName();
+                    } else {
+                        header = "Chiều đi: ngày " + ctx.getDepartureDate().format(DATEFMT)
+                                + "  " + ctx.getDepartureStationName()
+                                + " → " + ctx.getArrivalStationName();
+                        if (isRound && retDate != null)
+                            header += "   |   Chiều về: ngày " + retDate.format(DATEFMT);
+                    }
                     resultHeaderLabel.setText(header);
                     resultHeaderBox.setVisible(true);
                     resultHeaderBox.setManaged(true);
 
-                    buildSections(isRound);
+                    buildSections(isReturnSearch);
                     trainScrollPane.setVisible(true);
                     trainScrollPane.setManaged(true);
                 });
@@ -178,44 +252,48 @@ public class SearchScheduleController {
         }).start();
     }
 
-    private void buildSections(boolean isRound) {
+    private void buildSections(boolean isReturnSearch) {
         trainSectionsBox.getChildren().clear();
         trainSectionsBox.setSpacing(20);
 
-        if (!goList.isEmpty()) {
-            String lblText = "TUYẾN " + ctx.getDepartureStationName().toUpperCase() + " → " + ctx.getArrivalStationName().toUpperCase() + ", NGÀY " + ctx.getDepartureDate().format(DATEFMT);
-            Label title = new Label(lblText.toUpperCase());
-            title.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0077c8;");
-            
-            HBox titleBox = new HBox(title);
-            titleBox.setPadding(new Insets(15, 10, 15, 10));
-            titleBox.setStyle("-fx-background-color: #e8f4f8; -fx-border-color: #0077c8; -fx-border-width: 0 0 0 4px;");
+        if (isReturnSearch) {
+            // Chỉ hiện chuyến về
+            if (!retList.isEmpty()) {
+                String lblText = "TUYẾN " + ctx.getArrivalStationName().toUpperCase() + " → " + ctx.getDepartureStationName().toUpperCase() + ", NGÀY " + ctx.getReturnDate().format(DATEFMT);
+                Label title = new Label(lblText.toUpperCase());
+                title.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0077c8;");
+                
+                HBox titleBox = new HBox(title);
+                titleBox.setPadding(new Insets(15, 10, 15, 10));
+                titleBox.setStyle("-fx-background-color: #e8f4f8; -fx-border-color: #0077c8; -fx-border-width: 0 0 0 4px;");
 
-            VBox cards = new VBox(10);
-            cards.setAlignment(Pos.TOP_CENTER);
-            goList.forEach(s -> cards.getChildren().add(buildCard(s, "outbound")));
-            VBox sec = new VBox(10, titleBox, cards);
-            sec.setPadding(new Insets(10));
-            sec.setStyle("-fx-background-color: transparent;");
-            trainSectionsBox.getChildren().add(sec);
-        }
+                VBox cards = new VBox(10);
+                cards.setAlignment(Pos.TOP_CENTER);
+                retList.forEach(s -> cards.getChildren().add(buildCard(s, "return")));
+                VBox sec = new VBox(10, titleBox, cards);
+                sec.setPadding(new Insets(10));
+                sec.setStyle("-fx-background-color: transparent;");
+                trainSectionsBox.getChildren().add(sec);
+            }
+        } else {
+            // Hiện chuyến đi
+            if (!goList.isEmpty()) {
+                String lblText = "TUYẾN " + ctx.getDepartureStationName().toUpperCase() + " → " + ctx.getArrivalStationName().toUpperCase() + ", NGÀY " + ctx.getDepartureDate().format(DATEFMT);
+                Label title = new Label(lblText.toUpperCase());
+                title.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0077c8;");
+                
+                HBox titleBox = new HBox(title);
+                titleBox.setPadding(new Insets(15, 10, 15, 10));
+                titleBox.setStyle("-fx-background-color: #e8f4f8; -fx-border-color: #0077c8; -fx-border-width: 0 0 0 4px;");
 
-        if (isRound && !retList.isEmpty()) {
-            String lblText = "TUYẾN " + ctx.getArrivalStationName().toUpperCase() + " → " + ctx.getDepartureStationName().toUpperCase() + ", NGÀY " + ctx.getReturnDate().format(DATEFMT);
-            Label title = new Label(lblText.toUpperCase());
-            title.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0077c8;");
-
-            HBox titleBox = new HBox(title);
-            titleBox.setPadding(new Insets(15, 10, 15, 10));
-            titleBox.setStyle("-fx-background-color: #e8f4f8; -fx-border-color: #0077c8; -fx-border-width: 0 0 0 4px;");
-
-            VBox cards = new VBox(10);
-            cards.setAlignment(Pos.TOP_CENTER);
-            retList.forEach(s -> cards.getChildren().add(buildCard(s, "return")));
-            VBox sec = new VBox(10, titleBox, cards);
-            sec.setPadding(new Insets(10));
-            sec.setStyle("-fx-background-color: transparent;");
-            trainSectionsBox.getChildren().add(sec);
+                VBox cards = new VBox(10);
+                cards.setAlignment(Pos.TOP_CENTER);
+                goList.forEach(s -> cards.getChildren().add(buildCard(s, "outbound")));
+                VBox sec = new VBox(10, titleBox, cards);
+                sec.setPadding(new Insets(10));
+                sec.setStyle("-fx-background-color: transparent;");
+                trainSectionsBox.getChildren().add(sec);
+            }
         }
     }
 
@@ -318,19 +396,19 @@ public class SearchScheduleController {
         if ("outbound".equals(segment)) {
             ctx.setOutboundSchedule(s);
             ctx.getOutboundSeats().clear();
+            ctx.setCurrentStep(TicketContext.BookingStep.OUTBOUND_SEAT);
         } else {
             ctx.setReturnSchedule(s);
             ctx.getReturnSeats().clear();
+            ctx.setCurrentStep(TicketContext.BookingStep.RETURN_SEAT);
         }
         ctx.getPassengers().clear();
 
         // Rebuild để highlight
-        buildSections(ctx.isRoundTrip());
+        buildSections(ctx.getCurrentStep() == TicketContext.BookingStep.RETURN_SEARCH);
 
-        // Chuyển sang SelectSeat nếu đã chọn đủ
-        boolean ready = ctx.getOutboundSchedule() != null
-                && (!ctx.isRoundTrip() || ctx.getReturnSchedule() != null);
-        if (ready) navigateTo("/iuh/fit/gui/ticket/seat/select-seat-view.fxml");
+        // Chuyển sang SelectSeat
+        navigateTo("/iuh/fit/gui/ticket/seat/select-seat-view.fxml");
     }
 
     private void navigateTo(String fxml) {

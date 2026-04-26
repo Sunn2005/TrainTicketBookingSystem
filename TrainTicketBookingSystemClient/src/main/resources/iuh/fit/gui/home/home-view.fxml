@@ -70,6 +70,15 @@
                             </VBox>
                         </content>
                     </TitledPane>
+
+                    <TitledPane styleClass="menu-group" text="Quản lý tài khoản">
+                        <content>
+                            <VBox spacing="8.0" styleClass="menu-content">
+                                <Button fx:id="createAccountButton" maxWidth="1.7976931348623157E308" onAction="#showCreateAccountScreen" styleClass="menu-button" text="Cấp tài khoản mới"/>
+                                <Button fx:id="updatePasswordButton" maxWidth="1.7976931348623157E308" onAction="#showUpdatePasswordScreen" styleClass="menu-button" text="Cấp mật khẩu mới"/>
+                            </VBox>
+                        </content>
+                    </TitledPane>
                 </panes>
             </Accordion>
 

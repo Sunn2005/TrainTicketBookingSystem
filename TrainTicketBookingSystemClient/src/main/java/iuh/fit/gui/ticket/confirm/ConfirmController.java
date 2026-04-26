@@ -269,8 +269,14 @@ public class ConfirmController {
         qrImage.setManaged(false);
 
         try {
-            ActionResponse response = ticketService.sellTicket(
-                    PaymentFlowSupport.buildRequest(ctx, true));
+            ActionResponse response;
+            if (ctx.isRoundTrip()) {
+                response = ticketService.sellRoundTrip(
+                        PaymentFlowSupport.buildRoundTripRequest(ctx, true));
+            } else {
+                response = ticketService.sellTicket(
+                        PaymentFlowSupport.buildRequest(ctx, true));
+            }
             System.out.println("Resone total: "+response.getTotal());
             if (!response.isSuccess()) {
                 showError(response.getMessage());
@@ -326,6 +332,7 @@ public class ConfirmController {
 
     @FXML
     private void onConfirmCashPayment() {
+        ctx.setCurrentStep(TicketContext.BookingStep.PAYMENT);
         try {
             String received = cashReceivedField.getText();
             if (received == null || received.isEmpty()) {
@@ -338,7 +345,13 @@ public class ConfirmController {
                 showError("Tiền nhân viên nhập chưa đủ!");
                 return;
             }
-            ActionResponse response = ticketService.sellTicket(PaymentFlowSupport.buildRequest(ctx, false));
+            ActionResponse response;
+            if (ctx.isRoundTrip()) {
+                response = ticketService.sellRoundTrip(
+                        PaymentFlowSupport.buildRoundTripRequest(ctx, false));
+            } else {
+                response = ticketService.sellTicket(PaymentFlowSupport.buildRequest(ctx, false));
+            }
             if (!response.isSuccess()) {
                 showError(response.getMessage());
                 return;
@@ -362,6 +375,7 @@ public class ConfirmController {
 
     @FXML
     private void onConfirmQrPayment() {
+        ctx.setCurrentStep(TicketContext.BookingStep.PAYMENT);
         if (currentPaymentIds.isEmpty()) {
             createQrPayment();
             return;
@@ -409,6 +423,7 @@ public class ConfirmController {
     @FXML
     private void onNewTicket() {
         ctx.reset();
+        ctx.setCurrentStep(TicketContext.BookingStep.OUTBOUND_SEARCH);
         navigateTo("/iuh/fit/gui/ticket/search/search-schedule-view.fxml");
     }
 

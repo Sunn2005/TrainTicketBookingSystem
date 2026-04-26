@@ -2,6 +2,7 @@ package iuh.fit.gui.home;
 
 import iuh.fit.App;
 import iuh.fit.constance.AppTheme;
+import iuh.fit.context.TicketContext;
 import iuh.fit.context.UserContext;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -37,6 +38,8 @@ public class HomeScreen {
     @FXML
     private Label roleLabel;
 
+    private final TicketContext ctx = TicketContext.getInstance();
+
     @FXML
     private Label dateLabel;
 
@@ -67,6 +70,12 @@ public class HomeScreen {
     @FXML
     private Button customerUpdateButton;
 
+    @FXML
+    private Button createAccountButton;
+
+    @FXML
+    private Button updatePasswordButton;
+
     private Timeline clockTimeline;
     private List<Button> menuButtons;
 
@@ -82,7 +91,9 @@ public class HomeScreen {
                 scheduleButton,
                 coachButton,
                 customerListButton,
-                customerUpdateButton
+                customerUpdateButton,
+                createAccountButton,
+                updatePasswordButton
         );
 
         showSellTicketScreen();
@@ -97,6 +108,7 @@ public class HomeScreen {
     private void showSellTicketScreen() {
         setActiveButton(sellTicketButton);
         try {
+            ctx.setCurrentStep(TicketContext.BookingStep.OUTBOUND_SEARCH);
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
                     "/iuh/fit/gui/ticket/search/search-schedule-view.fxml"));
             contentContainer.getChildren().setAll((Node) loader.load());
@@ -180,6 +192,34 @@ public class HomeScreen {
                 "Da xu ly", "13",
                 "Con lai", "3"
         ));
+    }
+
+    @FXML
+    private void showCreateAccountScreen() {
+        setActiveButton(createAccountButton);
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource(
+                    "/iuh/fit/gui/user/create-account/create-account-view.fxml"));
+            contentContainer.getChildren().setAll((Node) loader.load());
+        } catch (Exception e) {
+            e.printStackTrace();
+            contentContainer.getChildren().setAll(
+                    new Label("Không thể tải màn hình tạo tài khoản: " + e.getMessage()));
+        }
+    }
+
+    @FXML
+    private void showUpdatePasswordScreen() {
+        setActiveButton(updatePasswordButton);
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource(
+                    "/iuh/fit/gui/user/update-password/update-password-view.fxml"));
+            contentContainer.getChildren().setAll((Node) loader.load());
+        } catch (Exception e) {
+            e.printStackTrace();
+            contentContainer.getChildren().setAll(
+                    new Label("Không thể tải màn hình cập nhật mật khẩu: " + e.getMessage()));
+        }
     }
 
     private Node createSampleScreen(

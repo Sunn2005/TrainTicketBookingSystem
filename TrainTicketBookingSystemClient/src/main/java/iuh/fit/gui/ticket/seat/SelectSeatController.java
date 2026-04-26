@@ -63,12 +63,20 @@ public class SelectSeatController {
 
     @FXML
     private void initialize() {
-        // Hiện tab khứ hồi
-        if (ctx.isRoundTrip() && ctx.getReturnSchedule() != null) {
-            segmentTabBox.setVisible(true);
-            segmentTabBox.setManaged(true);
+        // Ẩn tab vì sequential
+        segmentTabBox.setVisible(false);
+        segmentTabBox.setManaged(false);
+
+        // Ẩn nextBtn ban đầu
+        nextBtn.setVisible(false);
+        nextBtn.setManaged(false);
+
+        // Load segment dựa trên step
+        if (ctx.getCurrentStep() == TicketContext.BookingStep.OUTBOUND_SEAT) {
+            loadSegment("outbound");
+        } else if (ctx.getCurrentStep() == TicketContext.BookingStep.RETURN_SEAT) {
+            loadSegment("return");
         }
-        loadSegment("outbound");
     }
 
     @FXML private void onTabOutbound() { loadSegment("outbound"); }
@@ -91,6 +99,13 @@ public class SelectSeatController {
                         + " → " + schedule.getArrivalStationName()
                         + "  " + (schedule.getDepartureTime() != null
                         ? schedule.getDepartureTime().format(SHORT) : "--"));
+
+        // Set text cho nextBtn dựa trên step
+        if (ctx.getCurrentStep() == TicketContext.BookingStep.OUTBOUND_SEAT && ctx.isRoundTrip()) {
+            nextBtn.setText("Tiếp theo: Chọn ghế về →");
+        } else {
+            nextBtn.setText("Tiếp theo: Nhập thông tin →");
+        }
 
         seatSection.setVisible(false); seatSection.setManaged(false);
         carriageBox.getChildren().clear();
@@ -299,10 +314,17 @@ public class SelectSeatController {
         int cnt = active.size();
         countLabel.setText(cnt > 0 ? "Đã chọn " + cnt + "/" + MAX + " ghế" : "");
 
-        boolean outDone = !ctx.getOutboundSeats().isEmpty();
-        boolean retDone = !ctx.isRoundTrip() || !ctx.getReturnSeats().isEmpty();
-        nextBtn.setVisible(outDone && retDone);
-        nextBtn.setManaged(outDone && retDone);
+        boolean shouldShowNext;
+        if (ctx.getCurrentStep() == TicketContext.BookingStep.OUTBOUND_SEAT) {
+            shouldShowNext = !ctx.getOutboundSeats().isEmpty();
+        } else if (ctx.getCurrentStep() == TicketContext.BookingStep.RETURN_SEAT) {
+            shouldShowNext = !ctx.getReturnSeats().isEmpty();
+        } else {
+            shouldShowNext = !ctx.getOutboundSeats().isEmpty();
+        }
+
+        nextBtn.setVisible(shouldShowNext);
+        nextBtn.setManaged(shouldShowNext);
     }
 
     private void updateCart() {
@@ -378,7 +400,15 @@ public class SelectSeatController {
 
     @FXML
     private void onNext() {
-        navigateTo("/iuh/fit/gui/ticket/passenger/passenger-info-view.fxml");
+        if (ctx.getCurrentStep() == TicketContext.BookingStep.OUTBOUND_SEAT && ctx.isRoundTrip()) {
+            // Chuyển sang tìm chuyến về
+            ctx.setCurrentStep(TicketContext.BookingStep.RETURN_SEARCH);
+            navigateTo("/iuh/fit/gui/ticket/search/search-schedule-view.fxml");
+        } else {
+            // Chuyển sang nhập thông tin khách hàng
+            ctx.setCurrentStep(TicketContext.BookingStep.PASSENGER_INFO);
+            navigateTo("/iuh/fit/gui/ticket/passenger/passenger-info-view.fxml");
+        }
     }
 
     @FXML

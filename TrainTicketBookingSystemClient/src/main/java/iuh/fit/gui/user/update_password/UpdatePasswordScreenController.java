@@ -1,4 +1,4 @@
-package iuh.fit.gui.user;
+package iuh.fit.gui.user.update_password;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -3,6 +3,8 @@ package iuh.fit.service;
 import controller.TicketController;
 import dto.ActionResponse;
 import dto.ScheduleInfoResponse;
+import dto.SellRoundTripRequest;
+import dto.SellRoundTripResponse;
 import dto.SellTicketRequest;
 import iuh.fit.dto.SeatsInfoResponse;
 import model.entity.Seat;
@@ -10,6 +12,7 @@ import model.entity.Station;
 import model.entity.Ticket;
 import model.entity.enums.PaymentStatus;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -21,7 +24,10 @@ import java.util.List;
 public class TicketClientService {
     private final TicketController delegate;
     private final SocketClient socketClient = new SocketClient();
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     public TicketClientService() {
         this.delegate = new TicketController();
@@ -86,6 +92,20 @@ public class TicketClientService {
                 return ActionResponse.fail("Lỗi khi bán vé: " + response);
             }
             return objectMapper.readValue(response, ActionResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ActionResponse.fail("Lỗi khi kết nối tới server: " + e.getMessage());
+        }
+    }
+
+    public ActionResponse sellRoundTrip(SellRoundTripRequest request) {
+        try {
+            String json = objectMapper.writeValueAsString(request);
+            String response = socketClient.sendMessage(SocketClient.HOST, SocketClient.PORT, "SELL_ROUND_TRIP|" + json);
+            if (response == null || response.startsWith("ERROR")) {
+                return ActionResponse.fail("Lỗi khi bán vé khứ hồi: " + response);
+            }
+            return objectMapper.readValue(response, SellRoundTripResponse.class);
         } catch (Exception e) {
             e.printStackTrace();
             return ActionResponse.fail("Lỗi khi kết nối tới server: " + e.getMessage());

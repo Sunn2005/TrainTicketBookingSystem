@@ -8,6 +8,7 @@ import controller.CustomerController;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import dto.ActionResponse;
+import dto.SellRoundTripRequest;
 import model.entity.Station;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.LoginResponse;
@@ -126,7 +127,11 @@ public class SocketServer {
             } catch (Exception e) {
                 return "ERROR: Server error when fetching stations";
             }
-        }        if (trimmed.toUpperCase().startsWith("SELL_TICKET|")) {
+        }
+        if (trimmed.toUpperCase().startsWith("SELL_ROUND_TRIP|")) {
+            return handleSellRoundTrip(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("SELL_TICKET|")) {
             return handleSellTicket(trimmed);
         }
         if (trimmed.toUpperCase().startsWith("UPDATE_PAYMENT_STATUS|")) {
@@ -277,6 +282,18 @@ public class SocketServer {
             SellTicketRequest request = objectMapper.readValue(payload, SellTicketRequest.class);
             dto.ActionResponse result = ticketController.sellTicket(request);
             System.out.println("handle sell ticket: "+result.getTotal());
+            return objectMapper.writeValueAsString(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleSellRoundTrip(String command) {
+        try {
+            String payload = command.substring(command.indexOf('|') + 1);
+            SellRoundTripRequest request = objectMapper.readValue(payload, SellRoundTripRequest.class);
+            dto.ActionResponse result = ticketController.sellRoundTrip(request);
             return objectMapper.writeValueAsString(result);
         } catch (Exception e) {
             e.printStackTrace();

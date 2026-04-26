@@ -2,6 +2,8 @@ package service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.ActionResponse;
+import dto.SellRoundTripRequest;
+import dto.SellRoundTripResponse;
 import dto.SellTicketRequest;
 import model.entity.*;
 import util.JPAUtil;
@@ -84,8 +86,15 @@ public class TicketService {
             double totalFinalPrice = 0.0;
             List<String> ticketIds = new ArrayList<>();
             List<String> paymentIds = new ArrayList<>();
+            Set<String> selectedSeatKeys = new HashSet<>();
 
             for (SellTicketRequest.TicketDetail detail : request.getTickets()) {
+                if (detail.getSeatId() != null) {
+                    String selectionKey = detail.getScheduleId() + ":" + detail.getSeatId();
+                    if (!selectedSeatKeys.add(selectionKey)) {
+                        throw new IllegalArgumentException("Ghế " + detail.getSeatId() + " đã được chọn nhiều lần trong đơn hàng.");
+                    }
+                }
                 Schedule schedule = em.find(Schedule.class, detail.getScheduleId());
                 if (schedule == null || schedule.getScheduleStatus() == model.entity.enums.ScheduleStatus.DISABLED) {
                     throw new IllegalArgumentException("Không tìm thấy lịch trình hoặc lịch trình đã bị vô hiệu hóa.");
@@ -103,7 +112,16 @@ public class TicketService {
                         throw new IllegalArgumentException("Seat does not belong to schedule's train.");
                     }
 
-                    if (ticketDAO.isSeatBooked(detail.getScheduleId(), detail.getSeatId())) {
+                    Long bookedCount = em.createQuery(
+                                    "SELECT COUNT(t) FROM Ticket t "
+                                            + "WHERE t.schedule.scheduleID = :scheduleId "
+                                            + "AND t.seat.seatID = :seatId "
+                                            + "AND t.ticketStatus <> :cancelledStatus", Long.class)
+                            .setParameter("scheduleId", detail.getScheduleId())
+                            .setParameter("seatId", detail.getSeatId())
+                            .setParameter("cancelledStatus", TicketStatus.CANCELLED)
+                            .getSingleResult();
+                    if (bookedCount != null && bookedCount > 0) {
                         throw new IllegalStateException("Ghế đã có người đặt trên chuyến này.");
                     }
                 }
@@ -205,7 +223,12 @@ public class TicketService {
             if (tx.isActive()) {
                 tx.rollback();
             }
-            return ActionResponse.fail("Cannot create ticket. Data constraint was violated.");
+            String message = "Cannot create ticket. Data constraint was violated.";
+            if (e.getCause() != null && e.getCause().getMessage() != null &&
+                    e.getCause().getMessage().toLowerCase().contains("uk_ticket_schedule_seat")) {
+                message = "Ghế đã có người đặt trên chuyến này. Vui lòng chọn ghế khác.";
+            }
+            return ActionResponse.fail(message);
         } catch (Exception e) {
             if (tx.isActive()) {
                 tx.rollback();
@@ -214,6 +237,38 @@ public class TicketService {
         } finally {
             em.close();
         }
+    }
+
+    public ActionResponse sellRoundTrip(SellRoundTripRequest request) {
+        if (request == null) {
+            return ActionResponse.fail("Request is required.");
+        }
+        if (request.getOutboundTickets() == null || request.getOutboundTickets().isEmpty()) {
+            return ActionResponse.fail("Cần cung cấp thông tin chiều đi.");
+        }
+        if (request.getReturnTickets() == null || request.getReturnTickets().isEmpty()) {
+            return ActionResponse.fail("Cần cung cấp thông tin chiều về.");
+        }
+
+        SellTicketRequest combinedRequest = request.toSellTicketRequest();
+        ActionResponse result = sellTicket(combinedRequest);
+        if (!result.isSuccess()) {
+            return result;
+        }
+
+        List<String> outboundTicketIds = new ArrayList<>();
+        List<String> returnTicketIds = new ArrayList<>();
+        if (result.getTicketIds() != null && !result.getTicketIds().isBlank()) {
+            String[] ids = result.getTicketIds().split(",\\s*");
+            for (int i = 0; i < ids.length; i++) {
+                if (i < request.getOutboundTickets().size()) {
+                    outboundTicketIds.add(ids[i]);
+                } else {
+                    returnTicketIds.add(ids[i]);
+                }
+            }
+        }
+        return SellRoundTripResponse.from(result, outboundTicketIds, returnTicketIds);
     }
 
     public ActionResponse cancelTicket(String ticketId, String cccd) {

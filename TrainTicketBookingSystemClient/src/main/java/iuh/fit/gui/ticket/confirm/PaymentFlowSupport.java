@@ -1,5 +1,6 @@
 package iuh.fit.gui.ticket.confirm;
 
+import dto.SellRoundTripRequest;
 import dto.SellTicketRequest;
 import iuh.fit.context.UserContext;
 import iuh.fit.context.TicketContext;
@@ -69,6 +70,44 @@ final class PaymentFlowSupport {
         }
         SellTicketRequest req =  new SellTicketRequest(sellerId != null ? sellerId : "", qrPayment, details);
         System.out.println("ticket sell request: " + req.getTickets());
+        return req;
+    }
+
+    static SellRoundTripRequest buildRoundTripRequest(TicketContext ctx, boolean qrPayment) {
+        String sellerId = UserContext.getInstance().getUserID();
+        List<SellRoundTripRequest.TicketDetail> outbound = new ArrayList<>();
+        List<SellRoundTripRequest.TicketDetail> inbound = new ArrayList<>();
+
+        for (int i = 0; i < ctx.getOutboundSeats().size(); i++) {
+            PassengerInfo p = i < ctx.getPassengers().size() ? ctx.getPassengers().get(i) : null;
+            outbound.add(new SellRoundTripRequest.TicketDetail(
+                    ctx.getOutboundSchedule().getScheduleId(),
+                    ctx.getOutboundSeats().get(i).getSeatID(),
+                    p != null ? safe(p.getName()) : "",
+                    p != null ? safe(p.getCccd()) : "",
+                    p != null ? p.getType() : CustomerType.ADULT
+            ));
+        }
+        if (ctx.getReturnSchedule() != null) {
+            for (int i = 0; i < ctx.getReturnSeats().size(); i++) {
+                PassengerInfo p = i < ctx.getPassengers().size() ? ctx.getPassengers().get(i) : null;
+                inbound.add(new SellRoundTripRequest.TicketDetail(
+                        ctx.getReturnSchedule().getScheduleId(),
+                        ctx.getReturnSeats().get(i).getSeatID(),
+                        p != null ? safe(p.getName()) : "",
+                        p != null ? safe(p.getCccd()) : "",
+                        p != null ? p.getType() : CustomerType.ADULT
+                ));
+            }
+        }
+
+        SellRoundTripRequest req = new SellRoundTripRequest(
+                sellerId != null ? sellerId : "",
+                qrPayment,
+                outbound,
+                inbound
+        );
+        System.out.println("ticket sell round-trip request: " + req.getOutboundTickets().size() + " outbound, " + req.getReturnTickets().size() + " return");
         return req;
     }
 
