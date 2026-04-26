@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="iuh.fit.gui.ticket.exchange.ExchangeConfirmController"
+            stylesheets="@../ticket.css">
+
+    <VBox spacing="0" style="-fx-background-color:#f5f7fa;">
+
+        <!-- Header -->
+        <VBox style="-fx-background-color:#0077c8;-fx-padding:20 30 20 30;">
+            <Label text="ĐỔI VÉ TÀU"
+                   style="-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:white;"/>
+            <Label text="Xác nhận thông tin đổi vé"
+                   style="-fx-font-size:13px;-fx-text-fill:rgba(255,255,255,0.8);"/>
+        </VBox>
+
+        <!-- Step bar -->
+        <HBox alignment="CENTER" spacing="8"
+              style="-fx-background-color:white;-fx-border-color:#e0e0e0;
+                     -fx-border-width:0 0 1 0;-fx-padding:14 0 14 0;">
+            <Label fx:id="stepLookup" text="1  Tra cứu vé"/>
+            <Label text="───" style="-fx-text-fill:#ccc;"/>
+            <Label fx:id="stepChoose" text="2  Chọn chuyến mới"/>
+            <Label text="───" style="-fx-text-fill:#ccc;"/>
+            <Label fx:id="stepConfirm" text="3  Xác nhận"/>
+        </HBox>
+
+        <VBox spacing="18" style="-fx-padding:28;">
+
+            <!-- Vé hiện tại -->
+            <VBox spacing="10" styleClass="cancel-card">
+                <Label text="VÉ HIỆN TẠI (sẽ bị hủy)"
+                       style="-fx-font-weight:bold;-fx-font-size:13px;-fx-text-fill:#dc2626;"/>
+                <HBox spacing="8">
+                    <Label text="Mã vé:" styleClass="info-label"/>
+                    <Label fx:id="oldTicketIdLabel" text="—"
+                           style="-fx-font-weight:bold;-fx-text-fill:#0077c8;"/>
+                </HBox>
+                <HBox spacing="8">
+                    <Label text="Ghế cũ:" styleClass="info-label"/>
+                    <Label fx:id="oldSeatLabel" text="—" styleClass="info-value"/>
+                </HBox>
+                <HBox spacing="8">
+                    <Label text="Giá vé cũ:" styleClass="info-label"/>
+                    <Label fx:id="oldPriceLabel" text="—"
+                           style="-fx-font-weight:bold;-fx-text-fill:#dc2626;"/>
+                </HBox>
+            </VBox>
+
+            <!-- Arrow -->
+            <Label text="↕  ĐỔI SANG" maxWidth="1.7976931348623157E308"
+                   alignment="CENTER"
+                   style="-fx-font-weight:bold;-fx-font-size:14px;-fx-text-fill:#0077c8;"/>
+
+            <!-- Chuyến/ghế mới -->
+            <VBox spacing="10"
+                  style="-fx-background-color:white;-fx-background-radius:10;
+                         -fx-border-color:#16a34a;-fx-border-width:2;
+                         -fx-border-radius:10;-fx-padding:20;
+                         -fx-effect:dropshadow(gaussian,rgba(22,163,74,0.15),8,0,0,2);">
+                <Label text="CHUYẾN / GHẾ MỚI"
+                       style="-fx-font-weight:bold;-fx-font-size:13px;-fx-text-fill:#16a34a;"/>
+                <HBox spacing="8">
+                    <Label text="Tàu:" styleClass="info-label"/>
+                    <Label fx:id="newTrainLabel" text="—" styleClass="info-value"/>
+                </HBox>
+                <HBox spacing="8">
+                    <Label text="Tuyến:" styleClass="info-label"/>
+                    <Label fx:id="newRouteLabel" text="—" styleClass="info-value"/>
+                </HBox>
+                <HBox spacing="8">
+                    <Label text="Khởi hành:" styleClass="info-label"/>
+                    <Label fx:id="newDepartureLabel" text="—" styleClass="info-value"/>
+                </HBox>
+                <HBox spacing="8">
+                    <Label text="Ghế mới:" styleClass="info-label"/>
+                    <Label fx:id="newSeatLabel" text="—" styleClass="info-value"/>
+                </HBox>
+                <HBox spacing="8">
+                    <Label text="Giá vé mới:" styleClass="info-label"/>
+                    <Label fx:id="newPriceLabel" text="—"
+                           style="-fx-font-weight:bold;-fx-text-fill:#16a34a;"/>
+                </HBox>
+            </VBox>
+
+            <!-- Phí đổi vé -->
+            <VBox spacing="10" styleClass="cancel-policy-box" style="-fx-padding:18;">
+                <Label text="PHÍ ĐỔI VÉ" styleClass="policy-title"/>
+                <HBox spacing="8">
+                    <Label text="Quy tắc:" styleClass="policy-label"/>
+                    <Label fx:id="feeRuleLabel" text="—" styleClass="policy-time" wrapText="true"/>
+                </HBox>
+                <HBox spacing="8">
+                    <Label text="Phí phải trả:" styleClass="policy-label"/>
+                    <Label fx:id="feeAmountLabel" text="0 đ" styleClass="policy-fee-amount"/>
+                </HBox>
+            </VBox>
+
+            <!-- Status -->
+            <Label fx:id="statusLabel" text="" wrapText="true"
+                   maxWidth="1.7976931348623157E308"/>
+
+            <!-- Buttons -->
+            <HBox spacing="10">
+                <Button fx:id="confirmBtn" text="✔  Xác nhận đổi vé"
+                        onAction="#onConfirm" styleClass="btn-primary"/>
+                <Button text="← Chọn lại ghế" onAction="#onBack"
+                        styleClass="btn-secondary"/>
+                <Button text="✕ Hủy bỏ" onAction="#onCancel"
+                        styleClass="btn-secondary"/>
+            </HBox>
+
+            <!-- ══ KẾT QUẢ ══ -->
+            <VBox fx:id="resultBox" styleClass="cancel-card" spacing="16"
+                  alignment="CENTER" visible="false" managed="false">
+                <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+
+                <Label fx:id="resultIcon" styleClass="result-icon"/>
+                <Label fx:id="resultTitle" styleClass="result-title"/>
+                <Label fx:id="resultMessage" styleClass="result-message"
+                       wrapText="true" style="-fx-text-alignment:center;"/>
+                <Separator/>
+                <HBox spacing="10" alignment="CENTER">
+                    <Button text="← Về trang chủ" styleClass="btn-primary"
+                            onAction="#onCancel" minWidth="200"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

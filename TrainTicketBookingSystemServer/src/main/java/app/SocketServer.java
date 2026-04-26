@@ -1,6 +1,4 @@
 package app;
-
-
 import controller.UserController;
 import controller.StationController;
 import controller.TicketController;
@@ -153,32 +151,32 @@ public class SocketServer {
         if (trimmed.toUpperCase().startsWith("GET_PAYMENT|"))  return handleGetPayment(trimmed); // ← MỚI
         return "RECEIVED: " + trimmed;
     }
-    private String handleGetPayment(String command) {
-        String[] parts = command.split("\\|");
-        if (parts.length < 2) return "ERROR|Invalid format. Expected: GET_PAYMENT|ticketId";
-        try {
-            Payment payment = ticketController.getPaymentByTicketId(parts[1].trim());
-            if (payment == null) return "ERROR|Không tìm thấy payment cho vé này";
-            return objectMapper.writeValueAsString(payment);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "ERROR|" + e.getMessage();
+        private String handleGetPayment(String command) {
+            String[] parts = command.split("\\|");
+            if (parts.length < 2) return "ERROR|Invalid format. Expected: GET_PAYMENT|ticketId";
+            try {
+                Payment payment = ticketController.getPaymentByTicketId(parts[1].trim());
+                if (payment == null) return "ERROR|Không tìm thấy payment cho vé này";
+                return objectMapper.writeValueAsString(payment);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "ERROR|" + e.getMessage();
+            }
         }
-    }
-    private String handleExchangeTicket(String command) {
-        String[] parts = command.split("\\|");
-        if (parts.length < 4) return "ERROR|Invalid format. Expected: EXCHANGE_TICKET|ticketId|newScheduleId|newSeatId";
-        try {
-            ActionResponse result = ticketController.exchangeTicket(
-                    parts[1].trim(),
-                    parts[2].trim(),
-                    parts[3].trim());
-            return objectMapper.writeValueAsString(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "ERROR|" + e.getMessage();
+        private String handleExchangeTicket(String command) {
+            String[] parts = command.split("\\|");
+            if (parts.length < 4) return "ERROR|Invalid format. Expected: EXCHANGE_TICKET|ticketId|newScheduleId|newSeatId";
+            try {
+                ActionResponse result = ticketController.exchangeTicket(
+                        parts[1].trim(),
+                        parts[2].trim(),
+                        parts[3].trim());
+                return objectMapper.writeValueAsString(result);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "ERROR|" + e.getMessage();
+            }
         }
-    }
     private String handleGetTicket(String command) {
         String[] parts = command.split("\\|");
         if (parts.length < 2) return "ERROR|Invalid format";
