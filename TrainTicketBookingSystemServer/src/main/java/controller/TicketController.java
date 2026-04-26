@@ -3,6 +3,7 @@ package controller;
 import dto.ActionResponse;
 import dto.SellRoundTripRequest;
 import dto.SellTicketRequest;
+import model.entity.Payment;
 import model.entity.Schedule;
 import model.entity.Seat;
 import model.entity.Ticket;
@@ -68,4 +69,7 @@ public class TicketController {
         return ticketService.getTicketById(ticketId);
     }
 
+    public Payment getPaymentByTicketId(String ticketId) {
+        return ticketService.getPaymentByTicketId(ticketId);
+    }
 }
