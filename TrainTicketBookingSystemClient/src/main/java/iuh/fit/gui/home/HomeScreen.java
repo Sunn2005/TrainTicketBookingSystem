@@ -198,6 +198,24 @@ public class HomeScreen {
 
     @FXML
     private void showCreateAccountScreen() {
+        String role = UserContext.getInstance().getRole();
+        if (!"ADMIN".equalsIgnoreCase(role)) {
+            setActiveButton(createAccountButton);
+            // Hiện thông báo không có quyền
+            VBox denied = new VBox(16);
+            denied.setAlignment(javafx.geometry.Pos.CENTER);
+            denied.setStyle("-fx-background-color:#f8faff;");
+            Label icon = new Label("🔒");
+            icon.setStyle("-fx-font-size:64px;");
+            Label title = new Label("Không có quyền truy cập");
+            title.setStyle("-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#dc2626;");
+            Label msg = new Label("Chỉ tài khoản ADMIN mới được quản lý tài khoản.");
+            msg.setStyle("-fx-font-size:14px;-fx-text-fill:#555;");
+            denied.getChildren().addAll(icon, title, msg);
+            contentContainer.getChildren().setAll(denied);
+            return;
+        }
+
         setActiveButton(createAccountButton);
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
@@ -209,9 +227,25 @@ public class HomeScreen {
                     new Label("Không thể tải màn hình tạo tài khoản: " + e.getMessage()));
         }
     }
-
     @FXML
     private void showUpdatePasswordScreen() {
+        String role = UserContext.getInstance().getRole();
+        if (!"ADMIN".equalsIgnoreCase(role)) {
+            setActiveButton(updatePasswordButton);
+            // Hiện thông báo không có quyền
+            VBox denied = new VBox(16);
+            denied.setAlignment(javafx.geometry.Pos.CENTER);
+            denied.setStyle("-fx-background-color:#f8faff;");
+            Label icon = new Label("🔒");
+            icon.setStyle("-fx-font-size:64px;");
+            Label title = new Label("Không có quyền truy cập");
+            title.setStyle("-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#dc2626;");
+            Label msg = new Label("Chỉ tài khoản ADMIN mới được quản lý tài khoản.");
+            msg.setStyle("-fx-font-size:14px;-fx-text-fill:#555;");
+            denied.getChildren().addAll(icon, title, msg);
+            contentContainer.getChildren().setAll(denied);
+            return;
+        }
         setActiveButton(updatePasswordButton);
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(

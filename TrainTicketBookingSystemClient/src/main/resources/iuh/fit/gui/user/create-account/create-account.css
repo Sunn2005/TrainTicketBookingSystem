@@ -1,0 +1,232 @@
+/* ══════════════════════════════════════════════
+   CREATE ACCOUNT - CSS
+   Màu chủ đạo từ AppTheme
+   ══════════════════════════════════════════════ */
+
+/* ── Page root ────────────────────────────────── */
+.ca-page-root {
+    -fx-background-color: -color-bg-content;
+}
+
+/* ── Header ───────────────────────────────────── */
+.ca-header {
+    -fx-background-color: -color-primary;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 8, 0, 0, 3);
+}
+.ca-header-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-on-primary;
+}
+.ca-header-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-subtle-on-primary;
+}
+
+/* ── Card ─────────────────────────────────────── */
+.ca-card {
+    -fx-background-color: -color-bg-card;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(gaussian, -color-shadow-soft, 8, 0, 0, 2);
+}
+.ca-card-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-title;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0 0 8 0;
+}
+
+/* ── Field label ──────────────────────────────── */
+.ca-field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-muted;
+}
+.ca-field-required {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-muted;
+}
+
+/* ── Form field ───────────────────────────────── */
+.ca-form-field {
+    -fx-font-size: 13px;
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-border-width: 1;
+    -fx-padding: 8 12 8 12;
+    -fx-text-fill: -color-text-accent;
+}
+.ca-form-field:focused {
+    -fx-border-color: -color-border-focus;
+    -fx-background-color: -color-bg-card;
+}
+.ca-form-field-error {
+    -fx-border-color: #dc2626;
+    -fx-border-width: 1.5;
+}
+
+/* ── ComboBox ─────────────────────────────────── */
+.ca-combo {
+    -fx-font-size: 13px;
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-border-width: 1;
+}
+.ca-combo:focused {
+    -fx-border-color: -color-border-focus;
+}
+.ca-combo .list-cell {
+    -fx-text-fill: -color-text-accent;
+    -fx-font-size: 13px;
+}
+
+/* ── Buttons ──────────────────────────────────── */
+.ca-btn-primary {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: -color-text-on-primary;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-padding: 9 20 9 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 6, 0, 0, 2);
+}
+.ca-btn-primary:hover {
+    -fx-background-color: #0f2050;
+}
+.ca-btn-primary:pressed {
+    -fx-background-color: #0a163a;
+}
+.ca-btn-primary:disabled {
+    -fx-background-color: #ccc;
+    -fx-text-fill: #888;
+    -fx-effect: none;
+}
+
+.ca-btn-secondary {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-muted;
+    -fx-font-size: 13px;
+    -fx-background-radius: 4;
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+}
+.ca-btn-secondary:hover {
+    -fx-background-color: -color-bg-placeholder;
+}
+
+/* ── Status ───────────────────────────────────── */
+.ca-status-error {
+    -fx-font-size: 12px;
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: bold;
+}
+.ca-status-success {
+    -fx-font-size: 12px;
+    -fx-text-fill: #16a34a;
+    -fx-font-weight: bold;
+}
+
+/* ── TableView ────────────────────────────────── */
+.ca-table {
+    -fx-background-color: -color-bg-card;
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+.ca-table .column-header {
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 0 0 1 0;
+}
+.ca-table .column-header .label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-title;
+}
+.ca-table .table-row-cell {
+    -fx-background-color: -color-bg-card;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-width: 0 0 1 0;
+}
+.ca-table .table-row-cell:hover {
+    -fx-background-color: -color-bg-placeholder;
+}
+.ca-table .table-row-cell:selected {
+    -fx-background-color: -color-border-placeholder;
+}
+.ca-table .table-cell {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-accent;
+    -fx-padding: 8 12 8 12;
+}
+
+/* ── Status badge trong table ─────────────────── */
+.ca-status-active {
+    -fx-text-fill: #16a34a;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+.ca-status-inactive {
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+/* ── Role badge ───────────────────────────────── */
+.ca-role-manager {
+    -fx-text-fill: -color-text-title;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+.ca-role-employee {
+    -fx-text-fill: -color-text-muted;
+    -fx-font-size: 12px;
+}
+
+/* ── Scroll ───────────────────────────────────── */
+.ca-scroll {
+    -fx-background-color: transparent;
+    -fx-background: -color-bg-content;
+    -fx-border-color: transparent;
+}
+.ca-scroll > .viewport {
+    -fx-background-color: -color-bg-content;
+}
+
+/* ── Access denied ────────────────────────────── */
+.ca-denied-box {
+    -fx-background-color: -color-bg-content;
+}
+.ca-denied-icon {
+    -fx-font-size: 64px;
+}
+.ca-denied-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #dc2626;
+}
+.ca-denied-msg {
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-text-muted;
+}
+/* Error label dưới field */
+.ca-error-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #dc2626;
+    -fx-padding: 0 0 0 2;
+}
