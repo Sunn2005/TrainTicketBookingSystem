@@ -43,7 +43,8 @@ public class UserService {
         }
     }
 
-    public ActionResponse createUser(String userName, String password, String fullName, String roleId) {
+    public ActionResponse createUser(String userName, String password,
+                                     String fullName, String email, String roleId) {
         EntityManager em = JPAUtil.getEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -61,6 +62,7 @@ public class UserService {
             User user = new User();
             user.setUserID(generateId("USER"));
             user.setUserName(userName);
+            user.setEmail(email);
             user.setPassword(password); // in real system, should hash password
             user.setFullName(fullName);
             user.setRole(role);
@@ -100,7 +102,9 @@ public class UserService {
             em.close();
         }
     }
-
+    public List<User> getAllUsers() {
+        return userDAO.findAllWithRole();
+    }
     public ActionResponse changeStatus(String userId, UserStatus status) {
         EntityManager em = JPAUtil.getEntityManager();
         EntityTransaction tx = em.getTransaction();

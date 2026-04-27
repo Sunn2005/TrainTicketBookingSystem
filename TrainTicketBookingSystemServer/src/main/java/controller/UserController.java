@@ -1,6 +1,7 @@
 package controller;
 
 import dto.*;
+import model.entity.User;
 import model.entity.enums.UserStatus;
 import service.UserService;
 
@@ -28,10 +29,13 @@ public class UserController {
     /**
      * API Tạo mới User
      */
-    public ActionResponse createUser(String userName, String password, String fullName, String roleId) {
-        return userService.createUser(userName, password, fullName, roleId);
+    public ActionResponse createUser(String userName, String password,
+                                     String fullName, String email, String roleId) {
+        return userService.createUser(userName, password, fullName, email, roleId);
     }
-
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
     /**
      * API Đổi mật khẩu
      */
@@ -45,7 +49,6 @@ public class UserController {
     public ActionResponse changeStatus(String userId, UserStatus status) {
         return userService.changeStatus(userId, status);
     }
-
     /**
      * API Thay đổi Tên đầy đủ
      */

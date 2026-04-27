@@ -98,6 +98,18 @@ public class SocketServer {
         if (trimmed.toUpperCase().startsWith("RESET_PASSWORD|")) {
             return handleResetPassword(trimmed);
         }
+        if ("GET_ALL_USERS".equalsIgnoreCase(trimmed)) {
+            return handleGetAllUsers();
+        }
+        if (trimmed.toUpperCase().startsWith("CREATE_USER|")) {
+            return handleCreateUser(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("CHANGE_STATUS|")) {
+            return handleChangeStatus(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("CHANGE_ROLE|")) {
+            return handleChangeRole(trimmed);
+        }
         if ("PING".equalsIgnoreCase(trimmed)) {
             return "PONG";
         }
@@ -269,6 +281,60 @@ public class SocketServer {
             dto.ActionResponse res = userController.resetPassword(parts[1], parts[2]);
             return res.isSuccess() ? "SUCCESS|" + res.getMessage() : "ERROR|" + res.getMessage();
         } catch (Exception e) {
+            return "ERROR|" + e.getMessage();
+        }
+    }
+    private String handleGetAllUsers() {
+        try {
+            List<model.entity.User> users = userController.getAllUsers();
+            return objectMapper.writeValueAsString(users);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleCreateUser(String command) {
+        // CREATE_USER|username|password|fullName|email|roleId
+        String[] parts = command.split("\\|", 6);
+        if (parts.length < 6)
+            return "ERROR|Sai định dạng";
+        try {
+            dto.ActionResponse res = userController.createUser(
+                    parts[1].trim(), parts[2].trim(),
+                    parts[3].trim(), parts[4].trim(), parts[5].trim());
+            return objectMapper.writeValueAsString(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleChangeStatus(String command) {
+        // CHANGE_STATUS|userId|status
+        String[] parts = command.split("\\|", 3);
+        if (parts.length < 3) return "ERROR|Sai định dạng";
+        try {
+            model.entity.enums.UserStatus status =
+                    model.entity.enums.UserStatus.valueOf(parts[2].trim().toUpperCase());
+            dto.ActionResponse res = userController.changeStatus(parts[1].trim(), status);
+            return objectMapper.writeValueAsString(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleChangeRole(String command) {
+        // CHANGE_ROLE|adminId|targetUserId|newRoleName
+        String[] parts = command.split("\\|", 4);
+        if (parts.length < 4) return "ERROR|Sai định dạng";
+        try {
+            dto.ActionResponse res = userController.changeUserRole(
+                    parts[1].trim(), parts[2].trim(), parts[3].trim());
+            return objectMapper.writeValueAsString(res);
+        } catch (Exception e) {
+            e.printStackTrace();
             return "ERROR|" + e.getMessage();
         }
     }

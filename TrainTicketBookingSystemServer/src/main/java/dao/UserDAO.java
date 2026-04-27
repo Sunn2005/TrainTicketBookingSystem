@@ -1,6 +1,8 @@
 package dao;
 
 import model.entity.User;
+
+import java.util.List;
 import java.util.Optional;
 
 public class UserDAO extends BaseDAO<User, String> {
@@ -27,6 +29,18 @@ public class UserDAO extends BaseDAO<User, String> {
                     .setParameter("userName", userName)
                     .getResultStream()
                     .findFirst();
+        } finally {
+            em.close();
+        }
+    }
+    public List<User> findAllWithRole() {
+        jakarta.persistence.EntityManager em = util.JPAUtil.getEntityManager();
+        try {
+            List<User> users = em.createQuery(
+                            "SELECT u FROM User u LEFT JOIN FETCH u.role ORDER BY u.createDate DESC",
+                            User.class)
+                    .getResultList();
+            return users;
         } finally {
             em.close();
         }
