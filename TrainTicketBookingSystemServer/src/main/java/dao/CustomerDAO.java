@@ -4,6 +4,9 @@ import model.entity.Customer;
 import util.JPAUtil;
 import jakarta.persistence.EntityManager;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class CustomerDAO extends BaseDAO<Customer, String> {
@@ -23,4 +26,27 @@ public class CustomerDAO extends BaseDAO<Customer, String> {
             em.close();
         }
     }
+
+    public List<Customer> findCustomersBookedBetween(LocalDate from, LocalDate to) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            LocalDateTime fromDate = from.atStartOfDay();
+            LocalDateTime toDate =
+                    to.atTime(LocalTime.MAX);
+
+            String jpql = """
+            SELECT DISTINCT t.customer
+            FROM Ticket t
+            WHERE t.createAt BETWEEN :from AND :to
+        """;
+
+            return em.createQuery(jpql, Customer.class)
+                    .setParameter("from", fromDate)
+                    .setParameter("to", toDate)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
 }

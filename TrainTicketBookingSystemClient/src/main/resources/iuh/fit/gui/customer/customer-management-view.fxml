@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="iuh.fit.gui.customer.CustomerManagementScreenController"
+      spacing="0"
+      styleClass="cm-page-root"
+      stylesheets="@customer-management.css">
+
+    <!-- HEADER -->
+    <VBox styleClass="cm-header" spacing="4">
+        <padding>
+            <Insets top="20" right="28" bottom="18" left="28"/>
+        </padding>
+
+        <Label text="Danh Sách Khách Hàng"
+               styleClass="cm-header-title"/>
+
+        <Label text="Tra cứu và quản lý thông tin khách hàng"
+               styleClass="cm-header-subtitle"/>
+    </VBox>
+
+    <!-- CONTENT -->
+    <ScrollPane fitToWidth="true"
+                VBox.vgrow="ALWAYS"
+                styleClass="cm-scroll">
+
+        <VBox spacing="18">
+            <padding>
+                <Insets top="24" right="28" bottom="28" left="28"/>
+            </padding>
+
+            <!-- TOP SUMMARY -->
+            <HBox spacing="16">
+
+                <VBox HBox.hgrow="ALWAYS"
+                      styleClass="cm-card"
+                      spacing="10">
+
+                    <Label text="Tổng khách hàng"
+                           styleClass="cm-card-label"/>
+
+                    <Label fx:id="totalCustomerLabel"
+                           text="0"
+                           styleClass="cm-total-number"/>
+                </VBox>
+
+                <VBox spacing="12"
+                      prefWidth="360">
+
+                    <VBox styleClass="cm-card" spacing="6">
+                        <Label text="Từ ngày"
+                               styleClass="cm-card-label"/>
+                        <DatePicker fx:id="fromDatePicker"
+                                    styleClass="cm-date"/>
+                    </VBox>
+
+                    <VBox styleClass="cm-card" spacing="6">
+                        <Label text="Đến ngày"
+                               styleClass="cm-card-label"/>
+                        <DatePicker fx:id="toDatePicker"
+                                    styleClass="cm-date"/>
+                    </VBox>
+                </VBox>
+
+            </HBox>
+
+            <!-- SEARCH -->
+            <VBox styleClass="cm-card" spacing="14">
+
+                <Label text="Tìm kiếm khách hàng"
+                       styleClass="cm-section-title"/>
+
+                <HBox spacing="12">
+
+                    <ComboBox fx:id="searchTypeCombo"
+                              prefWidth="180"
+                              styleClass="cm-combo"/>
+
+                    <TextField fx:id="keywordField"
+                               promptText="Nhập CCCD / tên khách hàng"
+                               HBox.hgrow="ALWAYS"
+                               styleClass="cm-field"/>
+
+                    <Button text="Tìm kiếm"
+                            onAction="#onSearch"
+                            fx:id="searchBtn"
+                            styleClass="cm-btn-primary"/>
+
+                    <Button text="Làm mới"
+                            onAction="#onRefresh"
+                            fx:id="refreshBtn"
+                            styleClass="cm-btn-secondary"/>
+                </HBox>
+            </VBox>
+
+            <!-- TABLE -->
+            <VBox styleClass="cm-card" spacing="12">
+
+                <Label text="DANH SÁCH KHÁCH HÀNG"
+                       styleClass="cm-section-title"/>
+
+                <TableView fx:id="customerTable"
+                           prefHeight="420"
+                           styleClass="cm-table">
+
+                    <columns>
+                        <TableColumn fx:id="colId"
+                                     text="Mã KH"
+                                     prefWidth="220"/>
+
+                        <TableColumn fx:id="colName"
+                                     text="Họ tên"
+                                     prefWidth="430"/>
+
+                        <TableColumn fx:id="colType"
+                                     text="Loại"
+                                     prefWidth="220"/>
+                    </columns>
+
+                    <placeholder>
+                        <Label text="Không có dữ liệu khách hàng"
+                               style="-fx-text-fill:#9aa3c7; -fx-font-size:13px;"/>
+                    </placeholder>
+
+                </TableView>
+
+            </VBox>
+
+        </VBox>
+
+    </ScrollPane>
+
+</VBox>

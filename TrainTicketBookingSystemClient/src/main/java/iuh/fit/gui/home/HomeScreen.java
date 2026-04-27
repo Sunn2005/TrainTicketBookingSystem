@@ -172,17 +172,36 @@ public class HomeScreen {
         ));
     }
 
+//    @FXML
+//    private void showCustomerListScreen() {
+//        setActiveButton(customerListButton);
+//        contentContainer.getChildren().setAll(createSampleScreen(
+//                "Danh sach khach hang",
+//                "Man hinh mau tra cuu va loc khach hang.",
+//                "Tong KH", "5,280",
+//                "Moi tuan nay", "126",
+//                "VIP", "420"
+//        ));
+//    }
+
     @FXML
     private void showCustomerListScreen() {
         setActiveButton(customerListButton);
-        contentContainer.getChildren().setAll(createSampleScreen(
-                "Danh sach khach hang",
-                "Man hinh mau tra cuu va loc khach hang.",
-                "Tong KH", "5,280",
-                "Moi tuan nay", "126",
-                "VIP", "420"
-        ));
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    App.class.getResource(
+                            "/iuh/fit/gui/customer/customer-management-view.fxml"
+                    )
+            );
+            contentContainer.getChildren().setAll((Node) loader.load());
+        } catch (Exception e) {
+            e.printStackTrace();
+            contentContainer.getChildren().setAll(
+                    new Label("Không thể tải màn hình khách hàng: " + e.getMessage())
+            );
+        }
     }
+
 
     @FXML
     private void showCustomerUpdateScreen() {
