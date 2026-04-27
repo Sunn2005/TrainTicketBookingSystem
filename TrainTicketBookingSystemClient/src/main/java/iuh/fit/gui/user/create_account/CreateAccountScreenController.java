@@ -39,6 +39,7 @@ public class CreateAccountScreenController {
 	@FXML private TableColumn<User, String> colRole;
 	@FXML private TableColumn<User, String> colStatus;
 	@FXML private TableColumn<User, String> colAction;
+	@FXML private Label tableStatusLabel;
 
 	private final UserClientService        userService = new UserClientService();
 	private final ObservableList<User>     userList    = FXCollections.observableArrayList();
@@ -139,15 +140,17 @@ public class CreateAccountScreenController {
 		userTable.setItems(userList);
 	}
 
-	// ── Load danh sách user ───────────────────────────────────────────
 	private void loadUsers() {
 		new Thread(() -> {
 			List<User> users = userService.getAllUsers();
-			Platform.runLater(() -> userList.setAll(users));
+			Platform.runLater(() -> {
+				// Lọc bỏ null
+				userList.setAll(users.stream()
+						.filter(u -> u != null && u.getUserName() != null)
+						.toList());
+			});
 		}).start();
 	}
-
-	// ── Đổi trạng thái từ bảng ───────────────────────────────────────
 	private void toggleStatus(User user) {
 		UserStatus newStatus = user.getUserStatus() == UserStatus.ACTIVE
 				? UserStatus.INACTIVE : UserStatus.ACTIVE;
@@ -158,11 +161,20 @@ public class CreateAccountScreenController {
 				if (resp.isSuccess()) {
 					user.setUserStatus(newStatus);
 					userTable.refresh();
-					showFormSuccess("Đã "
+					// Dùng Alert thay vì label để không nhầm với form
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setTitle("Cập nhật thành công");
+					alert.setHeaderText(null);
+					alert.setContentText("Đã "
 							+ (newStatus == UserStatus.ACTIVE ? "kích hoạt" : "vô hiệu hóa")
 							+ " tài khoản: " + user.getUserName());
+					alert.showAndWait();
 				} else {
-					showFormError(resp.getMessage());
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Lỗi");
+					alert.setHeaderText(null);
+					alert.setContentText(resp.getMessage());
+					alert.showAndWait();
 				}
 			});
 		}).start();
