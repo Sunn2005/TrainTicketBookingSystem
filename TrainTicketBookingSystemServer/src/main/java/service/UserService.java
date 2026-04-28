@@ -63,7 +63,7 @@ public class UserService {
             user.setUserID(generateId("USER"));
             user.setUserName(userName);
             user.setEmail(email);
-            user.setPassword(password); // in real system, should hash password
+            user.setPassword(password);
             user.setFullName(fullName);
             user.setRole(role);
             user.setUserStatus(UserStatus.ACTIVE);

@@ -209,7 +209,7 @@ public class ExchangeTicketController {
 
     // ── UI Helpers ────────────────────────────────────────────────────────────
     private void setStep(int step) {
-        String active   = "-fx-background-color:#0077c8;-fx-text-fill:white;"
+        String active   = "-fx-background-color: -color-primary;-fx-text-fill:white;"
                 + "-fx-font-weight:bold;-fx-background-radius:20;-fx-padding:5 16 5 16;";
         String inactive = "-fx-background-color:#e0e0e0;-fx-text-fill:#888;"
                 + "-fx-background-radius:20;-fx-padding:5 16 5 16;";

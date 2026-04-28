@@ -101,6 +101,27 @@ public class UserClientService {
     }
 
     public ActionResponse resetPassword(String targetUserId, String newPassword) {
-        return delegate.resetPassword(targetUserId, newPassword);
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST, SocketClient.PORT,
+                    "RESET_PASSWORD|" + targetUserId + "|" + newPassword);
+
+            if (response == null) {
+                return ActionResponse.fail("Lỗi kết nối");
+            }
+            if (response.startsWith("SUCCESS|")) {
+                return ActionResponse.success(response.substring("SUCCESS|".length()));
+            }
+            if (response.startsWith("ERROR|")) {
+                return ActionResponse.fail(response.substring("ERROR|".length()));
+            }
+            if (response.startsWith("ERROR")) {
+                return ActionResponse.fail(response);
+            }
+            return ActionResponse.fail("Phản hồi không hợp lệ từ server");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ActionResponse.fail("Lỗi kết nối: " + e.getMessage());
+        }
     }
 }

@@ -1,5 +1,8 @@
 package iuh.fit.gui.user.update_password;
 
+import dto.ActionResponse;
+import iuh.fit.service.UserClientService;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,9 +17,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import model.entity.User;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class UpdatePasswordScreenController {
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -39,12 +47,13 @@ public class UpdatePasswordScreenController {
 	@FXML
 	private Button confirmButton;
 
+	private final UserClientService userService = new UserClientService();
 	private final ObservableList<PendingUser> pendingUsers = FXCollections.observableArrayList();
 
 	@FXML
 	private void initialize() {
 		setupListView();
-		setupPendingUsers();
+		loadPendingUsers();
 		setFormEnabled(false);
 		clearStatus();
 	}
@@ -73,19 +82,56 @@ public class UpdatePasswordScreenController {
 			return;
 		}
 
-		showSuccess("Đã cập nhật mật khẩu cho " + selectedUser.username() + " thành công.");
-		confirmPasswordField.clear();
-		newPasswordField.clear();
-		showSuccessDialog(selectedUser.username());
+		new Thread(() -> {
+			ActionResponse response = userService.resetPassword(selectedUser.userId(), newPassword);
+			Platform.runLater(() -> {
+				if (response != null && response.isSuccess()) {
+					showSuccess("Đã cập nhật mật khẩu cho " + selectedUser.username() + " thành công.");
+					confirmPasswordField.clear();
+					newPasswordField.clear();
+					showSuccessDialog(selectedUser.username());
+				} else {
+					String message = response != null ? response.getMessage() : "Không thể cập nhật mật khẩu.";
+					showError(message);
+				}
+			});
+		}).start();
 	}
 
-	private void setupPendingUsers() {
-		pendingUsers.setAll(
-				new PendingUser("User001", "Nguyễn Văn A", "Manager", LocalDate.now().minusDays(5)),
-				new PendingUser("User002", "Nguyễn Văn B", "Employee", LocalDate.now().minusDays(4)),
-				new PendingUser("User003", "Trần Thị C", "Employee", LocalDate.now().minusDays(3)),
-				new PendingUser("User004", "Lê Văn D", "Employee", LocalDate.now().minusDays(2))
-		);
+	private void loadPendingUsers() {
+		new Thread(() -> {
+			List<User> users = userService.getAllUsers();
+			List<PendingUser> mappedUsers = users.stream()
+					.filter(Objects::nonNull)
+					.filter(this::isEmployeeOrManager)
+					.map(this::toPendingUser)
+					.collect(Collectors.toList());
+
+			Platform.runLater(() -> {
+				pendingUsers.setAll(mappedUsers);
+				if (mappedUsers.isEmpty()) {
+					showError("Không có tài khoản Employee/Manager để hiển thị.");
+				} else {
+					clearStatus();
+				}
+			});
+		}).start();
+	}
+
+	private boolean isEmployeeOrManager(User user) {
+		if (user.getRole() == null || user.getRole().getRoleName() == null) {
+			return false;
+		}
+		String roleName = user.getRole().getRoleName().toUpperCase(Locale.ROOT);
+		return "EMPLOYEE".equals(roleName) || "MANAGER".equals(roleName);
+	}
+
+	private PendingUser toPendingUser(User user) {
+		String username = user.getUserName() == null ? "" : user.getUserName();
+		String fullName = user.getFullName() == null ? "" : user.getFullName();
+		String roleName = user.getRole() != null && user.getRole().getRoleName() != null ? user.getRole().getRoleName() : "";
+		LocalDate requestDate = user.getCreateDate() != null ? user.getCreateDate().toLocalDate() : LocalDate.now();
+		return new PendingUser(user.getUserID(), username, fullName, roleName, requestDate);
 	}
 
 	private void setupListView() {
@@ -136,7 +182,7 @@ public class UpdatePasswordScreenController {
 		alert.showAndWait();
 	}
 
-	private record PendingUser(String username, String fullName, String role, LocalDate requestDate) {
+	private record PendingUser(String userId, String username, String fullName, String role, LocalDate requestDate) {
 	}
 
 	private static final class PendingUserCell extends ListCell<PendingUser> {

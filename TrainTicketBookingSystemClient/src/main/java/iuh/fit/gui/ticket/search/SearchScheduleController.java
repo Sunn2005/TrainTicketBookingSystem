@@ -28,6 +28,7 @@ import java.util.*;
 
 public class SearchScheduleController {
 
+    @FXML private VBox       sellHeaderBox;
     @FXML private HBox       resultHeaderBox;
     @FXML private Label      resultHeaderLabel;
     @FXML private ScrollPane trainScrollPane;
@@ -57,6 +58,10 @@ public class SearchScheduleController {
 
     @FXML
     private void initialize() {
+        if (sellHeaderBox != null) {
+            sellHeaderBox.setVisible(true);
+            sellHeaderBox.setManaged(true);
+        }
         departureDatePicker.setValue(LocalDate.now());
         tripToggle = new ToggleGroup();
         oneWayRadio.setToggleGroup(tripToggle);
@@ -237,6 +242,11 @@ public class SearchScheduleController {
                     resultHeaderLabel.setText(header);
                     resultHeaderBox.setVisible(true);
                     resultHeaderBox.setManaged(true);
+
+                    if (sellHeaderBox != null) {
+                        sellHeaderBox.setVisible(false);
+                        sellHeaderBox.setManaged(false);
+                    }
 
                     buildSections(isReturnSearch);
                     trainScrollPane.setVisible(true);

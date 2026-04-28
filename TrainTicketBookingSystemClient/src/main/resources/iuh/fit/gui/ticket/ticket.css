@@ -2,7 +2,13 @@
    TICKET MODULE - Shared CSS
    ══════════════════════════════════════════════ */
 
+
 .page-root { -fx-background-color: -color-bg-content; }
+
+.sell-page-header {
+    -fx-background-color: -color-primary;
+    -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.18), 8, 0, 0, 3);
+}
 
 /* ── Scroll ───────────────────────────────────── */
 .main-scroll {
@@ -13,7 +19,7 @@
 .main-scroll > .viewport { -fx-background-color: -color-bg-content; }
 
 /* ── Result header ────────────────────────────── */
-.result-header { -fx-background-color: #1a6dc8; }
+.result-header { -fx-background-color: -color-primary; }
 .result-header-text {
     -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white;
 }
@@ -31,7 +37,7 @@
 
 /* ── Segment tabs ─────────────────────────────── */
 .segment-tab-active {
-    -fx-background-color: #1a6dc8;
+    -fx-background-color: -color-primary;
     -fx-text-fill: white;
     -fx-font-size: 13px; -fx-font-weight: bold;
     -fx-background-radius: 0; -fx-border-radius: 0;
@@ -39,7 +45,7 @@
 }
 .segment-tab {
     -fx-background-color: #e8f0fb;
-    -fx-text-fill: #1a6dc8;
+    -fx-text-fill: -color-primary;
     -fx-font-size: 13px; -fx-font-weight: bold;
     -fx-background-radius: 0; -fx-border-radius: 0;
     -fx-border-color: #b0c8f0; -fx-border-width: 0 0 2 0;
@@ -49,8 +55,8 @@
 
 /* ── Section titles ───────────────────────────── */
 .section-segment-title {
-    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8;
-    -fx-border-color: #1a6dc8; -fx-border-width: 0 0 0 3;
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-primary;
+    -fx-border-color: -color-primary; -fx-border-width: 0 0 0 3;
     -fx-padding: 2 0 2 8;
 }
 .section-segment-title-return {
@@ -75,7 +81,7 @@
 }
 .train-card:hover { -fx-background-color: #777; }
 .train-card-selected {
-    -fx-background-color: #1a6dc8;
+    -fx-background-color: -color-primary;
     -fx-background-radius: 12;
     -fx-effect: dropshadow(gaussian, rgba(26,109,200,0.45), 10, 0, 0, 3);
 }
@@ -108,16 +114,16 @@
 }
 .carriage-box:hover { -fx-background-color: #c8dff8; }
 .carriage-box-selected {
-    -fx-background-color: #1a6dc8; -fx-background-radius: 6;
+    -fx-background-color: -color-primary; -fx-background-radius: 6;
     -fx-border-color: #0f4a8a; -fx-border-radius: 6; -fx-border-width: 1.5;
 }
-.carriage-icon-soft    { -fx-text-fill: #1a6dc8; -fx-font-size: 26px; }
+.carriage-icon-soft    { -fx-text-fill: -color-primary; -fx-font-size: 26px; }
 .carriage-icon-sleeper { -fx-text-fill: #7c3aed; -fx-font-size: 26px; }
 .carriage-number     { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; -fx-font-weight: bold; }
 .carriage-number-sel { -fx-font-size: 11px; -fx-text-fill: white; -fx-font-weight: bold; }
 
 /* ── Seat map ─────────────────────────────────── */
-.seat-map-title { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+.seat-map-title { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-primary; }
 .seat-map-container {
     -fx-background-color: white;
     -fx-border-color: #c0d0e8; -fx-border-width: 1.5;
@@ -137,7 +143,7 @@
     -fx-border-radius: 4; -fx-border-width: 1;
 }
 .legend-label { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }
-.selected-count-label { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+.selected-count-label { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-primary; }
 
 /* ── Passenger card ───────────────────────────── */
 .passenger-card {
@@ -146,7 +152,7 @@
     -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.06), 4, 0, 0, 1);
 }
 .passenger-card-header {
-    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8;
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-primary;
     -fx-border-color: -color-border-soft; -fx-border-width: 0 0 1 0;
     -fx-padding: 0 0 8 0;
 }
@@ -162,7 +168,7 @@
     -fx-effect: dropshadow(gaussian, rgba(6,29,107,0.05), 4, 0, 0, 1);
 }
 .confirm-segment-title {
-    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8;
+    -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-primary;
     -fx-border-color: -color-border-soft; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 6 0;
 }
 .confirm-segment-title-return {
@@ -174,21 +180,21 @@
 .confirm-time   { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #e05252; }
 .confirm-pax    { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-text-accent; }
 .confirm-seat   { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }
-.confirm-price  { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+.confirm-price  { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: -color-primary; }
 .confirm-total-box {
     -fx-background-color: #f0f6ff; -fx-background-radius: 6;
     -fx-border-color: #b0c8f0; -fx-border-radius: 6; -fx-border-width: 1;
 }
 .confirm-payment    { -fx-font-size: 12px; -fx-text-fill: -color-text-muted; }
 .confirm-total-label { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: -color-text-title; }
-.confirm-total-value { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+.confirm-total-value { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: -color-primary; }
 
 /* ── Sidebar ──────────────────────────────────── */
 .sidebar {
     -fx-background-color: #f8faff;
     -fx-border-color: -color-border-soft; -fx-border-width: 0 0 0 1;
 }
-.sidebar-header { -fx-background-color: #1a6dc8; }
+.sidebar-header { -fx-background-color: -color-primary; }
 .sidebar-header-text { -fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white; }
 .sidebar-combo {
     -fx-font-size: 13px; -fx-background-color: white;
@@ -200,14 +206,14 @@
 .cart-empty-label { -fx-font-size: 13px; -fx-text-fill: #888; }
 .cart-segment-label {
     -fx-font-size: 11px; -fx-font-weight: bold;
-    -fx-text-fill: #1a6dc8; -fx-padding: 4 0 2 0;
+    -fx-text-fill: -color-primary; -fx-padding: 4 0 2 0;
 }
 .cart-segment-label-return {
     -fx-font-size: 11px; -fx-font-weight: bold;
     -fx-text-fill: #7c3aed; -fx-padding: 4 0 2 0;
 }
 .cart-seat  { -fx-font-size: 11px; -fx-text-fill: -color-text-accent; }
-.cart-price { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+.cart-price { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: -color-primary; }
 .cart-train { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #0a3d8a; }
 .cart-remove-btn {
     -fx-background-color: transparent; -fx-text-fill: #dc2626;
@@ -218,7 +224,7 @@
 .cart-remove-btn:hover { -fx-background-color: #fee2e2; }
 .cart-total-box { -fx-background-color: #f0f6ff; }
 .cart-total-label { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: -color-text-title; }
-.cart-total-value { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1a6dc8; }
+.cart-total-value { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: -color-primary; }
 
 /* ── Form ─────────────────────────────────────── */
 .field-label { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted; }
@@ -247,7 +253,7 @@
 
 /* ── Buttons ──────────────────────────────────── */
 .btn-primary {
-    -fx-background-color: #1a6dc8; -fx-text-fill: white;
+    -fx-background-color: -color-primary; -fx-text-fill: white;
     -fx-font-size: 13px; -fx-font-weight: bold;
     -fx-background-radius: 4; -fx-padding: 8 20 8 20; -fx-cursor: hand;
 }
@@ -272,7 +278,7 @@
 .btn-secondary:hover { -fx-background-color: -color-bg-placeholder; }
 
 .btn-link {
-    -fx-background-color: transparent; -fx-text-fill: #1a6dc8;
+    -fx-background-color: transparent; -fx-text-fill: -color-primary;
     -fx-font-size: 12px; -fx-cursor: hand; -fx-underline: true;
 }
 
@@ -286,7 +292,7 @@
 .result-icon    { -fx-font-size: 48px; }
 .result-title   { -fx-font-size: 20px; -fx-font-weight: bold; }
 .result-message { -fx-font-size: 13px; -fx-text-fill: -color-text-accent; }
-.result-qr      { -fx-font-size: 12px; -fx-text-fill: #1a6dc8; }
+.result-qr      { -fx-font-size: 12px; -fx-text-fill: -color-primary; }
 
 /* ── Status ───────────────────────────────────── */
 .status-error { -fx-font-size: 12px; -fx-text-fill: #dc2626; }
@@ -353,7 +359,7 @@
 }
 .info-value-price {
     -fx-font-size: 14px; -fx-font-weight: bold;
-    -fx-text-fill: #1a6dc8;
+    -fx-text-fill: -color-primary;
 }
 
 /* Status badges */
