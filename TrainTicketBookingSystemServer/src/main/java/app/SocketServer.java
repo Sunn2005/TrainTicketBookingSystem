@@ -16,6 +16,7 @@ import dto.LoginResponse;
 import dto.SellTicketRequest;
 import model.entity.Ticket;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import java.io.BufferedReader;
@@ -132,6 +133,9 @@ public class SocketServer {
             } catch (Exception e) {
                 return "ERROR: Server error when fetching customers";
             }
+        }
+        if (trimmed.toUpperCase().startsWith("GET_CUSTOMERS_BOOKED_BETWEEN|")) {
+            return handleGetCustomersBookedBetween(trimmed);
         }
         if ("GET_ALL_STATIONS".equalsIgnoreCase(trimmed)) {
             try {
@@ -459,5 +463,27 @@ public class SocketServer {
             return "";
         }
         return value.replace('|', '/');
+    }
+
+    private String handleGetCustomersBookedBetween(String command) {
+        try {
+            String[] parts = command.split("\\|");
+
+            if (parts.length < 3) {
+                return "ERROR|Invalid format";
+            }
+
+            LocalDate from = LocalDate.parse(parts[1].trim());
+            LocalDate to   = LocalDate.parse(parts[2].trim());
+
+            List<model.entity.Customer> customers =
+                    customerController.getCustomersBookedBetween(from, to);
+
+            return objectMapper.writeValueAsString(customers);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
     }
 }

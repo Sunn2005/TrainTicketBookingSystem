@@ -1,6 +1,8 @@
 package controller;
 import model.entity.Customer;
 import service.CustomerService;
+
+import java.time.LocalDate;
 import java.util.List;
 public class CustomerController {
     private final CustomerService customerService;
@@ -31,5 +33,9 @@ public class CustomerController {
      */
     public List<Customer> getAllCustomers() {
         return customerService.getAllCustomers();
+    }
+
+    public List<Customer> getCustomersBookedBetween(LocalDate from, LocalDate to) {
+        return customerService.getCustomersBookedBetween(from, to);
     }
 }

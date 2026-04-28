@@ -3,6 +3,7 @@ package service;
 import dao.CustomerDAO;
 import model.entity.Customer;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class CustomerService {
@@ -36,5 +37,9 @@ public class CustomerService {
      */
     public List<Customer> getAllCustomers() {
         return customerDAO.findAll();
+    }
+
+    public List<Customer> getCustomersBookedBetween(LocalDate from, LocalDate to) {
+        return customerDAO.findCustomersBookedBetween(from, to);
     }
 }

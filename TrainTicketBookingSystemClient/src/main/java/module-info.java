@@ -23,6 +23,7 @@ module iuh.fit.trainticketbookingsystemclient {
     opens iuh.fit.gui.user.update_password to javafx.fxml;
     opens iuh.fit.gui.user.create_account to javafx.fxml;
     opens iuh.fit.gui.ticket.exchange to javafx.fxml;
+    opens iuh.fit.gui.customer to javafx.fxml;
 
     exports iuh.fit;
     exports iuh.fit.service;

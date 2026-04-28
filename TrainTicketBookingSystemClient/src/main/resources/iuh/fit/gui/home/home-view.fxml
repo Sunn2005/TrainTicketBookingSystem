@@ -65,7 +65,7 @@
                     <TitledPane styleClass="menu-group" text="Quản lý khách hàng">
                         <content>
                             <VBox spacing="8.0" styleClass="menu-content">
-                                <Button fx:id="customerListButton" maxWidth="1.7976931348623157E308" onAction="#showCustomerListScreen" styleClass="menu-button" text="Danh sach khách hàng"/>
+                                <Button fx:id="customerListButton" maxWidth="1.7976931348623157E308" onAction="#showCustomerListScreen" styleClass="menu-button" text="Danh sách khách hàng"/>
                                 <Button fx:id="customerUpdateButton" maxWidth="1.7976931348623157E308" onAction="#showCustomerUpdateScreen" styleClass="menu-button" text="Tra cứu thông tin khách hàng"/>
                             </VBox>
                         </content>
