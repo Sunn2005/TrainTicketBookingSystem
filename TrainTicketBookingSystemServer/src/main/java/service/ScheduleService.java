@@ -52,8 +52,9 @@ public class ScheduleService {
                 throw new RuntimeException("Route not found");
             }
 
+            // Trong hàm createSchedule
             Schedule schedule = new Schedule();
-            schedule.setScheduleID("SCH_" + UUID.randomUUID().toString().substring(0, 8));
+            schedule.setScheduleID(generateNextScheduleID(em)); // Sử dụng hàm tự sinh mã
             schedule.setTrain(train);
             schedule.setRoute(route);
             schedule.setDepartureTime(request.getDepartureTime());
@@ -152,5 +153,24 @@ public class ScheduleService {
     }
     public String findRouteIdByStations(String depStationId, String arrStationId) {
         return scheduleDAO.findRouteIdByStations(depStationId, arrStationId);
+    }
+    private String generateNextScheduleID(EntityManager em) {
+        try {
+            // Lấy mã SCH lớn nhất hiện có
+            String jpql = "SELECT s.scheduleID FROM Schedule s WHERE s.scheduleID LIKE 'SCH-%' ORDER BY s.scheduleID DESC";
+            List<String> results = em.createQuery(jpql, String.class)
+                    .setMaxResults(1)
+                    .getResultList();
+
+            if (results.isEmpty()) {
+                return "SCH-001";
+            }
+
+            String lastID = results.get(0); // Ví dụ: "SCH-005"
+            int lastNumber = Integer.parseInt(lastID.split("-")[1]);
+            return String.format("SCH-%03d", lastNumber + 1);
+        } catch (Exception e) {
+            return "SCH-" + java.util.UUID.randomUUID().toString().substring(0, 5);
+        }
     }
 }

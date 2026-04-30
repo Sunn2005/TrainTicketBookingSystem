@@ -13,7 +13,7 @@
     <!-- HEADER -->
     <HBox alignment="CENTER_LEFT" spacing="20" styleClass="sm-header">
         <VBox HBox.hgrow="ALWAYS" spacing="4">
-            <Label text="Lịch Trình Chuyến Tàu" styleClass="sm-header-title"/>
+            <Label text="🚂 Lịch Trình Chuyến Tàu" styleClass="sm-header-title"/>
             <Label text="Quản lý lịch trình, tìm kiếm và theo dõi các chuyến tàu" styleClass="sm-header-subtitle"/>
         </VBox>
         <Button text="➕ Thêm Lịch Trình" onAction="#onAddSchedule" styleClass="sm-btn-add"/>
@@ -91,25 +91,25 @@
                     <columns>
                         <TableColumn fx:id="colScheduleId"
                                      text="Mã Lịch Trình"
-                                     prefWidth="140"/>
+                                     prefWidth="130"/>
                         <TableColumn fx:id="colTrain"
                                      text="Tàu"
-                                     prefWidth="130"/>
+                                     prefWidth="120"/>
                         <TableColumn fx:id="colRoute"
                                      text="Tuyến Đường"
-                                     prefWidth="180"/>
+                                     prefWidth="160"/>
                         <TableColumn fx:id="colDeparture"
                                      text="Khởi Hành"
-                                     prefWidth="160"/>
+                                     prefWidth="150"/>
                         <TableColumn fx:id="colArrival"
                                      text="Dự Kiến Đến"
-                                     prefWidth="160"/>
+                                     prefWidth="150"/>
                         <TableColumn fx:id="colStatus"
                                      text="Trạng Thái"
-                                     prefWidth="110"/>
+                                     prefWidth="100"/>
                         <TableColumn fx:id="colAction"
                                      text="Thao Tác"
-                                     prefWidth="170"/>
+                                     prefWidth="180"/>
                     </columns>
                     <placeholder>
                         <Label text="Không có lịch trình"
