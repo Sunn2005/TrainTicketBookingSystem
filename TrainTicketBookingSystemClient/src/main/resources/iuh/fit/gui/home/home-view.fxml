@@ -57,7 +57,7 @@
                         <content>
                             <VBox spacing="8.0" styleClass="menu-content">
                                 <Button fx:id="scheduleButton" maxWidth="1.7976931348623157E308" onAction="#showScheduleScreen" styleClass="menu-button" text="Lịch trình"/>
-                                <Button fx:id="coachButton" maxWidth="1.7976931348623157E308" onAction="#showCoachScreen" styleClass="menu-button" text="Thêm chuyến tàu"/>
+                                <Button fx:id="coachButton" maxWidth="1.7976931348623157E308" onAction="#showCoachScreen" styleClass="menu-button" text="Quản lý tàu"/>
                             </VBox>
                         </content>
                     </TitledPane>

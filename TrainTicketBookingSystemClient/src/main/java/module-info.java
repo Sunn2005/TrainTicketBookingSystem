@@ -24,6 +24,9 @@ module iuh.fit.trainticketbookingsystemclient {
     opens iuh.fit.gui.user.create_account to javafx.fxml;
     opens iuh.fit.gui.ticket.exchange to javafx.fxml;
     opens iuh.fit.gui.customer to javafx.fxml;
+    opens iuh.fit.gui.schedule to javafx.fxml;
+    opens iuh.fit.gui.train to javafx.fxml;
+    opens iuh.fit.gui.scheduleandtrain to javafx.fxml;
 
     exports iuh.fit;
     exports iuh.fit.service;

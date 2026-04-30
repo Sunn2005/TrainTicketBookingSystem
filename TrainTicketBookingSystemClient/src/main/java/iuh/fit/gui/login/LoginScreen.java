@@ -41,9 +41,9 @@ public class LoginScreen {
     @FXML
     protected void onLoginButtonClick() {
         //String username = usernameField.getText();
-        String username = "admin1";
+        String username = "QL001";
         //String password = passwordField.getText();
-        String password = "admin123";
+        String password = "QL001@";
 
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
             welcomeText.setText("Nhap day du username va password.");

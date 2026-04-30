@@ -1,19 +1,13 @@
 package app;
 
 
-import controller.UserController;
-import controller.StationController;
-import controller.TicketController;
-import controller.CustomerController;
+import controller.*;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import dto.ActionResponse;
-import dto.SellRoundTripRequest;
+import dto.*;
 import model.entity.Payment;
 import model.entity.Station;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dto.LoginResponse;
-import dto.SellTicketRequest;
 import model.entity.Ticket;
 
 import java.time.LocalDate;
@@ -37,6 +31,8 @@ public class SocketServer {
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     private final TicketController ticketController = new TicketController();
     private final CustomerController customerController = new CustomerController();
+    private final ScheduleController scheduleController = new ScheduleController();
+    private final TrainController trainController = new controller.TrainController();
 
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -172,6 +168,37 @@ public class SocketServer {
             return handleExchangeTicket(trimmed);
         }
         if (trimmed.toUpperCase().startsWith("GET_PAYMENT|"))  return handleGetPayment(trimmed); // ← MỚI
+
+        if ("GET_ALL_TRAINS".equalsIgnoreCase(trimmed)) {
+            return handleGetAllTrains();
+        }
+        if (trimmed.toUpperCase().startsWith("GET_TRAIN_BY_ID|")) {
+            return handleGetTrainById(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("CREATE_TRAIN|")) {
+            return handleCreateTrain(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("UPDATE_TRAIN|")) {
+            return handleUpdateTrain(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("DELETE_TRAIN|")) {
+            return handleDeleteTrain(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("CREATE_SCHEDULE|")) {
+            return handleCreateSchedule(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("UPDATE_SCHEDULE|")) {
+            return handleUpdateSchedule(trimmed);
+        }
+        if (trimmed.toUpperCase().startsWith("DELETE_SCHEDULE|")) {
+            return handleDeleteSchedule(trimmed);
+        }
+        if ("GET_ALL_SCHEDULES".equalsIgnoreCase(trimmed)) {
+            return handleGetAllSchedules();
+        }
+        if (trimmed.toUpperCase().startsWith("GET_ROUTE_ID|")) {
+            return handleGetRouteId(trimmed);
+        }
         return "RECEIVED: " + trimmed;
     }
 
@@ -486,4 +513,140 @@ public class SocketServer {
             return "ERROR|" + e.getMessage();
         }
     }
+
+    private String handleGetAllTrains() {
+        try {
+            List<model.entity.Train> trains = trainController.getAllTrains();
+            return objectMapper.writeValueAsString(trains);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleGetTrainById(String command) {
+        String[] parts = command.split("\\|", 2);
+        if (parts.length < 2) return "ERROR|Invalid format";
+        try {
+            model.entity.Train train = trainController.getTrainById(parts[1].trim());
+            if (train == null) return "ERROR|Không tìm thấy tàu";
+            return objectMapper.writeValueAsString(train);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleCreateTrain(String command) {
+        try {
+            String payload = command.substring(command.indexOf('|') + 1);
+            dto.CreateTrainRequest request =
+                    objectMapper.readValue(payload, dto.CreateTrainRequest.class);
+            model.entity.Train train = trainController.createTrain(request);
+            return objectMapper.writeValueAsString(train);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleUpdateTrain(String command) {
+        try {
+            String payload = command.substring(command.indexOf('|') + 1);
+            System.out.println("UPDATE_TRAIN payload: " + payload);
+
+            UpdateTrainRequest request = objectMapper.readValue(payload, UpdateTrainRequest.class);
+            System.out.println("Updating train: trainID=" + request.getTrainID() +
+                    ", name=" + request.getTrainName());
+
+            trainController.updateTrain(request);
+
+            return objectMapper.writeValueAsString(
+                    dto.ActionResponse.success("Cập nhật tàu thành công"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            String errorMsg = "Lỗi cập nhật tàu: " + e.getMessage();
+            System.err.println(errorMsg);
+            try {
+                return objectMapper.writeValueAsString(
+                        dto.ActionResponse.fail(errorMsg));
+            } catch (Exception ex) {
+                return "ERROR|" + errorMsg;
+            }
+        }
+    }
+
+    private String handleDeleteTrain(String command) {
+        String[] parts = command.split("\\|", 2);
+        if (parts.length < 2) return "ERROR|Invalid format";
+        try {
+            trainController.deleteTrain(parts[1].trim());
+            return objectMapper.writeValueAsString(
+                    dto.ActionResponse.success("Xóa tàu thành công"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleCreateSchedule(String command) {
+        try {
+            String payload = command.substring(command.indexOf('|') + 1);
+            CreateScheduleRequest request = objectMapper.readValue(payload, CreateScheduleRequest.class);
+            scheduleController.createSchedule(request);
+            return objectMapper.writeValueAsString(
+                    dto.ActionResponse.success("Tạo lịch trình thành công"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleUpdateSchedule(String command) {
+        try {
+            String payload = command.substring(command.indexOf('|') + 1);
+            UpdateScheduleRequest request = objectMapper.readValue(payload, UpdateScheduleRequest.class);
+            scheduleController.updateSchedule(request);
+            return objectMapper.writeValueAsString(
+                    dto.ActionResponse.success("Cập nhật lịch trình thành công"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleGetAllSchedules() {
+        try {
+            java.util.List<model.entity.Schedule> schedules = scheduleController.getAllSchedules();
+            return objectMapper.writeValueAsString(schedules);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+    private String handleGetRouteId(String command) {
+        String[] parts = command.split("\\|", 3);
+        if (parts.length < 3) return "ERROR|Invalid format";
+        try {
+            String routeId = scheduleController.findRouteIdByStations(
+                    parts[1].trim(), parts[2].trim());
+            return routeId != null ? routeId : "ERROR|Route not found";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+    private String handleDeleteSchedule(String command) {
+        String[] parts = command.split("\\|", 2);
+        if (parts.length < 2) return "ERROR|Invalid format";
+        try {
+            scheduleController.deleteSchedule(parts[1].trim());
+            return objectMapper.writeValueAsString(
+                    dto.ActionResponse.success("Ngừng lịch trình thành công"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
 }

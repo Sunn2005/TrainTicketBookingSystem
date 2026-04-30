@@ -1,16 +1,14 @@
 package model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -25,9 +23,8 @@ public class Train {
     @Column(name = "train_name", unique = true, nullable = false)
     private String trainName;
 
-    @OneToMany(mappedBy = "train")
-    @ToString.Exclude
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @OneToMany(mappedBy = "train", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference // Cho phép serialize danh sách toa
     private List<Carriage> carriages;
 
 }

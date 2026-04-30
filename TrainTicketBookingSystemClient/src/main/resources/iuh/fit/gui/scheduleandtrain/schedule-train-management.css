@@ -1,0 +1,53 @@
+/* =====================================================
+   SCHEDULE TRAIN MAIN MANAGEMENT CSS
+   Tab styling for schedule and train management
+   ===================================================== */
+
+/* TAB PANE */
+.stm-tab-pane {
+    -fx-background-color: -color-bg-content;
+}
+
+.stm-tab-pane .tab-header-area {
+    -fx-background-color: white;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 0 0 1 0;
+}
+
+.stm-tab-pane .tab-header-background {
+    -fx-background-color: white;
+}
+
+/* TAB */
+.stm-tab {
+    -fx-padding: 0;
+}
+
+.stm-tab .tab-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 24 12 24;
+    -fx-text-fill: -color-text-muted;
+    -fx-border-color: transparent;
+}
+
+.stm-tab:selected .tab-label {
+    -fx-text-fill: -color-text-accent;
+    -fx-border-color: -color-primary;
+    -fx-border-width: 0 0 3 0;
+    -fx-padding: 12 24 9 24;
+}
+
+.stm-tab:hover .tab-label {
+    -fx-text-fill: -color-text-accent;
+}
+
+.stm-tab .tab-pane {
+    -fx-border-color: transparent;
+}
+
+.stm-tab .tab-content-area {
+    -fx-background-color: -color-bg-content;
+    -fx-border-color: transparent;
+}
+
