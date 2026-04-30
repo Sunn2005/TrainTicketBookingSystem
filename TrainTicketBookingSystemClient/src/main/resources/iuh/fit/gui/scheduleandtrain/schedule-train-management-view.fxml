@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="iuh.fit.gui.scheduleandtrain.ScheduleTrainManagementController"
+      spacing="0"
+      VBox.vgrow="ALWAYS"
+      stylesheets="@schedule-train-management.css">
+
+    <TabPane fx:id="tabPane"
+             VBox.vgrow="ALWAYS"
+             styleClass="stm-tab-pane"
+             tabClosingPolicy="UNAVAILABLE">
+
+        <Tab fx:id="scheduleTab"
+             text="Lịch Trình"
+             styleClass="stm-tab">
+        </Tab>
+
+        <Tab fx:id="trainTab"
+             text="Quản Lý Tàu"
+             styleClass="stm-tab">
+        </Tab>
+
+    </TabPane>
+
+</VBox>
+

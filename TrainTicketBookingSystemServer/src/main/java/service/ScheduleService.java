@@ -1,5 +1,6 @@
 package service;
 
+import dao.ScheduleDAO;
 import dto.CreateScheduleRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -9,11 +10,25 @@ import model.entity.Train;
 import util.JPAUtil;
 import model.entity.User;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 public class ScheduleService {
 
     public ScheduleService() {
+    }
+
+    private final ScheduleDAO scheduleDAO = new ScheduleDAO();
+
+    // Thêm method này
+    public List<Schedule> getAllSchedules() {
+        return scheduleDAO.findAll();
+    }
+
+    // Thêm method này
+    public List<Schedule> searchSchedules(String departureStationId, String arrivalStationId, LocalDate travelDate) {
+        return scheduleDAO.searchSchedules(departureStationId, arrivalStationId, travelDate);
     }
 
     public void createSchedule(CreateScheduleRequest request) {
@@ -134,5 +149,8 @@ public class ScheduleService {
         } finally {
             em.close();
         }
+    }
+    public String findRouteIdByStations(String depStationId, String arrStationId) {
+        return scheduleDAO.findRouteIdByStations(depStationId, arrStationId);
     }
 }

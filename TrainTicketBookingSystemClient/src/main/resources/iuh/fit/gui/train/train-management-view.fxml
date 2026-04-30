@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="iuh.fit.gui.train.TrainManagementController"
+      spacing="0"
+      styleClass="tm-page-root"
+      stylesheets="@train-management.css">
+
+    <!-- HEADER -->
+    <VBox styleClass="tm-header" spacing="4">
+        <padding>
+            <Insets top="20" right="28" bottom="18" left="28"/>
+        </padding>
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label text="Quản Lý Tàu Lửa"
+                   styleClass="tm-header-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="+ Thêm Tàu"
+                    onAction="#onAddTrain"
+                    fx:id="addButton"
+                    styleClass="tm-btn-add"/>
+        </HBox>
+        <Label text="Quản lý, cập nhật và xóa thông tin tàu lửa"
+               styleClass="tm-header-subtitle"/>
+    </VBox>
+
+    <!-- CONTENT -->
+    <ScrollPane fitToWidth="true"
+                VBox.vgrow="ALWAYS"
+                styleClass="tm-scroll">
+        <VBox spacing="18">
+            <padding>
+                <Insets top="24" right="28" bottom="28" left="28"/>
+            </padding>
+
+            <!-- TRAIN TABLE -->
+            <VBox styleClass="tm-card" spacing="12">
+                <Label text="DANH SÁCH TÀU"
+                       styleClass="tm-section-title"/>
+
+                <TableView fx:id="trainTable"
+                           prefHeight="300"
+                           styleClass="tm-table">
+                    <columns>
+                        <TableColumn fx:id="colTrainId"
+                                     text="Mã Tàu"
+                                     prefWidth="200"/>
+                        <TableColumn fx:id="colTrainName"
+                                     text="Tên Tàu"
+                                     prefWidth="250"/>
+                        <TableColumn fx:id="colCarriageCount"
+                                     text="Số Toa"
+                                     prefWidth="120"/>
+                        <TableColumn fx:id="colAction"
+                                     text="Thao Tác"
+                                     prefWidth="180"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Không có dữ liệu tàu"
+                               style="-fx-text-fill:#9aa3c7; -fx-font-size:13px;"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
+
+
+
+        </VBox>
+    </ScrollPane>
+
+</VBox>
+

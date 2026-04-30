@@ -33,4 +33,21 @@ public class ScheduleDAO extends BaseDAO<Schedule, String> {
             em.close();
         }
     }
+    public String findRouteIdByStations(String depStationId, String arrStationId) {
+        jakarta.persistence.EntityManager em = util.JPAUtil.getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT r.routeID FROM Route r " +
+                                    "WHERE r.departureStation.stationID = :dep " +
+                                    "AND r.arrivalStation.stationID = :arr",
+                            String.class)
+                    .setParameter("dep", depStationId)
+                    .setParameter("arr", arrStationId)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } finally {
+            em.close();
+        }
+    }
 }

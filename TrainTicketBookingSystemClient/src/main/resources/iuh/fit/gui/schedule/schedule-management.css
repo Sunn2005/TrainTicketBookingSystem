@@ -1,0 +1,228 @@
+/* =====================================================
+   SCHEDULE MANAGEMENT CSS
+   Dùng chung AppTheme variables
+   ===================================================== */
+
+/* ROOT */
+.sm-page-root {
+    -fx-background-color: -color-bg-content;
+}
+
+/* HEADER */
+.sm-header {
+    -fx-background-color: -color-primary;
+    -fx-padding: 20 28 20 28;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 8, 0, 0, 3);
+}
+
+.sm-header-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-on-primary;
+}
+
+.sm-header-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-subtle-on-primary;
+}
+
+.sm-btn-add {
+    -fx-background-color: #0b9d4e;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24 10 24;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.sm-btn-add:hover {
+    -fx-background-color: #0a7f40;
+}
+
+/* CARD */
+.sm-card {
+    -fx-background-color: -color-bg-card;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 1;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(gaussian, -color-shadow-soft, 10, 0, 0, 2);
+}
+
+/* LABEL */
+.sm-card-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-muted;
+}
+
+.sm-section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-title;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0 0 12 0;
+}
+
+/* INPUT */
+.sm-field {
+    -fx-font-size: 13px;
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 10 12 10 12;
+    -fx-text-fill: -color-text-accent;
+}
+
+.sm-field:focused {
+    -fx-background-color: white;
+    -fx-border-color: -color-border-focus;
+    -fx-border-width: 2;
+}
+
+/* COMBO */
+.sm-combo {
+    -fx-font-size: 13px;
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 10 12 10 12;
+}
+
+.sm-combo:focused {
+    -fx-border-color: -color-border-focus;
+    -fx-border-width: 2;
+}
+
+.sm-combo .list-cell {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-accent;
+    -fx-padding: 8 8 8 8;
+}
+
+/* DATEPICKER */
+.sm-date {
+    -fx-font-size: 13px;
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 10 12 10 12;
+}
+
+.sm-date:focused {
+    -fx-border-color: -color-border-focus;
+    -fx-border-width: 2;
+}
+
+/* BUTTON PRIMARY */
+.sm-btn-primary {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24 10 24;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.sm-btn-primary:hover {
+    -fx-background-color: #0f2050;
+}
+
+/* BUTTON SECONDARY */
+.sm-btn-secondary {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-muted;
+    -fx-font-size: 13px;
+    -fx-padding: 10 24 10 24;
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.sm-btn-secondary:hover {
+    -fx-background-color: -color-bg-placeholder;
+}
+
+/* TABLE */
+.sm-table {
+    -fx-background-color: white;
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+/* HEADER TABLE */
+.sm-table .column-header {
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 0 0 2 0;
+}
+
+.sm-table .column-header .label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-title;
+    -fx-padding: 10 12 10 12;
+}
+
+/* ROW */
+.sm-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #edf0ff;
+    -fx-border-width: 0 0 1 0;
+}
+
+.sm-table .table-row-cell:hover {
+    -fx-background-color: #f7f9ff;
+    -fx-cursor: hand;
+}
+
+.sm-table .table-row-cell:selected {
+    -fx-background-color: #dbe4ff;
+}
+
+/* CELL */
+.sm-table .table-cell {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-accent;
+    -fx-padding: 12 12 12 12;
+}
+
+/* SCROLL */
+.sm-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.sm-scroll > .viewport {
+    -fx-background-color: -color-bg-content;
+}
+
+/* SEPARATOR */
+.separator {
+    -fx-border-color: -color-border-soft;
+}
+
+/* SPINNER */
+.spinner {
+    -fx-font-size: 13px;
+    -fx-padding: 8 8 8 8;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: -color-bg-placeholder;
+}
+
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: #e5e7eb;
+}

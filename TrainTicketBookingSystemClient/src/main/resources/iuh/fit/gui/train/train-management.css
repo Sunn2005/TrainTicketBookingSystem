@@ -1,0 +1,196 @@
+/* =====================================================
+   TRAIN MANAGEMENT CSS
+   Dùng chung AppTheme variables
+   ===================================================== */
+
+/* ROOT */
+.tm-page-root {
+    -fx-background-color: -color-bg-content;
+}
+
+/* HEADER */
+.tm-header {
+    -fx-background-color: -color-primary;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 8, 0, 0, 3);
+}
+
+.tm-header-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-on-primary;
+}
+
+.tm-header-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-subtle-on-primary;
+}
+
+/* ADD BUTTON */
+.tm-btn-add {
+    -fx-background-color: #0b9d4e;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 16 10 16;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.tm-btn-add:hover {
+    -fx-background-color: #0a7f40;
+}
+
+/* CARD */
+.tm-card {
+    -fx-background-color: -color-bg-card;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 1;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, -color-shadow-soft, 8, 0, 0, 2);
+}
+
+/* LABEL */
+.tm-card-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-muted;
+}
+
+.tm-section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-title;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0 0 8 0;
+}
+
+.tm-section-subtitle {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-muted;
+}
+
+/* INPUT */
+.tm-field {
+    -fx-font-size: 13px;
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 9 12 9 12;
+    -fx-text-fill: -color-text-accent;
+}
+
+.tm-field:focused {
+    -fx-background-color: white;
+    -fx-border-color: -color-border-focus;
+}
+
+/* COMBO */
+.tm-combo {
+    -fx-font-size: 13px;
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-placeholder;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 9 12 9 12;
+}
+
+.tm-combo:focused {
+    -fx-border-color: -color-border-focus;
+}
+
+.tm-combo .list-cell {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-accent;
+}
+
+/* BUTTON PRIMARY */
+.tm-btn-primary {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 9 18 9 18;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.tm-btn-primary:hover {
+    -fx-background-color: #0f2050;
+}
+
+/* BUTTON SECONDARY */
+.tm-btn-secondary {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-muted;
+    -fx-font-size: 13px;
+    -fx-padding: 9 18 9 18;
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.tm-btn-secondary:hover {
+    -fx-background-color: -color-bg-placeholder;
+}
+
+/* TABLE */
+.tm-table {
+    -fx-background-color: white;
+    -fx-border-color: -color-border-soft;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+/* HEADER TABLE */
+.tm-table .column-header {
+    -fx-background-color: -color-bg-placeholder;
+    -fx-border-color: -color-border-soft;
+    -fx-border-width: 0 0 1 0;
+}
+
+.tm-table .column-header .label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-title;
+}
+
+/* ROW */
+.tm-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #edf0ff;
+    -fx-border-width: 0 0 1 0;
+}
+
+.tm-table .table-row-cell:hover {
+    -fx-background-color: #f7f9ff;
+    -fx-cursor: hand;
+}
+
+.tm-table .table-row-cell:selected {
+    -fx-background-color: #dbe4ff;
+}
+
+/* CELL */
+.tm-table .table-cell {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-accent;
+    -fx-padding: 10 12 10 12;
+}
+
+/* SCROLL */
+.tm-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.tm-scroll > .viewport {
+    -fx-background-color: -color-bg-content;
+}
+

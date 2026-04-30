@@ -151,25 +151,29 @@ public class HomeScreen {
     @FXML
     private void showScheduleScreen() {
         setActiveButton(scheduleButton);
-        contentContainer.getChildren().setAll(createSampleScreen(
-                "Lich trinh",
-                "Man hinh mau quan ly lich trinh tau chay.",
-                "Tau dang chay", "18",
-                "Cho khoi hanh", "11",
-                "Tre gio", "2"
-        ));
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource(
+                    "/iuh/fit/gui/schedule/schedule-management-view.fxml"));
+            contentContainer.getChildren().setAll((Node) loader.load());
+        } catch (Exception e) {
+            e.printStackTrace();
+            contentContainer.getChildren().setAll(
+                    new Label("Không thể tải màn hình lịch trình chuyến tàu: " + e.getMessage()));
+        }
     }
 
     @FXML
     private void showCoachScreen() {
         setActiveButton(coachButton);
-        contentContainer.getChildren().setAll(createSampleScreen(
-                "Toa tau",
-                "Man hinh mau quan ly toa, ghe va trang thai.",
-                "Tong toa", "126",
-                "Con trong", "34",
-                "Bao tri", "6"
-        ));
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource(
+                    "/iuh/fit/gui/train/train-management-view.fxml"));
+            contentContainer.getChildren().setAll((Node) loader.load());
+        } catch (Exception e) {
+            e.printStackTrace();
+            contentContainer.getChildren().setAll(
+                    new Label("Không thể tải màn hình quản lý tàu: " + e.getMessage()));
+        }
     }
 
 //    @FXML

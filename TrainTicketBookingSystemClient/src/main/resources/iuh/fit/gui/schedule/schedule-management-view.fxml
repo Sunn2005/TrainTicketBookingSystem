@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="iuh.fit.gui.schedule.ScheduleManagementController"
+      spacing="0"
+      styleClass="sm-page-root"
+      stylesheets="@schedule-management.css">
+
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="20" styleClass="sm-header">
+        <VBox HBox.hgrow="ALWAYS" spacing="4">
+            <Label text="Lịch Trình Chuyến Tàu" styleClass="sm-header-title"/>
+            <Label text="Quản lý lịch trình, tìm kiếm và theo dõi các chuyến tàu" styleClass="sm-header-subtitle"/>
+        </VBox>
+        <Button text="➕ Thêm Lịch Trình" onAction="#onAddSchedule" styleClass="sm-btn-add"/>
+    </HBox>
+
+    <!-- CONTENT -->
+    <ScrollPane fitToWidth="true"
+                VBox.vgrow="ALWAYS"
+                styleClass="sm-scroll">
+        <VBox spacing="20">
+            <padding>
+                <Insets top="28" right="28" bottom="28" left="28"/>
+            </padding>
+
+            <!-- SEARCH FORM -->
+            <VBox styleClass="sm-card" spacing="16">
+                <Label text="🔍 Tìm Kiếm Lịch Trình"
+                       styleClass="sm-section-title"/>
+
+                <HBox spacing="14" alignment="CENTER_LEFT">
+                    <VBox spacing="8" prefWidth="220">
+                        <Label text="Ga Khởi Hành"
+                               styleClass="sm-card-label"/>
+                        <ComboBox fx:id="departureStationCombo"
+                                  styleClass="sm-combo"
+                                  prefWidth="220"/>
+                    </VBox>
+
+                    <VBox spacing="8" prefWidth="220">
+                        <Label text="Ga Đến"
+                               styleClass="sm-card-label"/>
+                        <ComboBox fx:id="arrivalStationCombo"
+                                  styleClass="sm-combo"
+                                  prefWidth="220"/>
+                    </VBox>
+
+                    <VBox spacing="8" prefWidth="180">
+                        <Label text="Ngày Khởi Hành"
+                               styleClass="sm-card-label"/>
+                        <DatePicker fx:id="travelDatePicker"
+                                    styleClass="sm-date"
+                                    prefWidth="180"/>
+                    </VBox>
+
+                    <VBox spacing="8" prefWidth="140">
+                        <Label text=" "
+                               styleClass="sm-card-label"/>
+                        <Button text="Tìm Kiếm"
+                                onAction="#onSearch"
+                                fx:id="searchBtn"
+                                styleClass="sm-btn-primary"
+                                prefWidth="140"/>
+                    </VBox>
+
+                    <VBox spacing="8" prefWidth="120">
+                        <Label text=" "
+                               styleClass="sm-card-label"/>
+                        <Button text="Làm Mới"
+                                onAction="#onRefresh"
+                                fx:id="refreshBtn"
+                                styleClass="sm-btn-secondary"
+                                prefWidth="120"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- TABLE SECTION -->
+            <VBox styleClass="sm-card" spacing="14">
+                <Label text="📋 DANH SÁCH LỊCH TRÌNH"
+                       styleClass="sm-section-title"/>
+
+                <TableView fx:id="scheduleTable"
+                           prefHeight="450"
+                           styleClass="sm-table">
+                    <columns>
+                        <TableColumn fx:id="colScheduleId"
+                                     text="Mã Lịch Trình"
+                                     prefWidth="140"/>
+                        <TableColumn fx:id="colTrain"
+                                     text="Tàu"
+                                     prefWidth="130"/>
+                        <TableColumn fx:id="colRoute"
+                                     text="Tuyến Đường"
+                                     prefWidth="180"/>
+                        <TableColumn fx:id="colDeparture"
+                                     text="Khởi Hành"
+                                     prefWidth="160"/>
+                        <TableColumn fx:id="colArrival"
+                                     text="Dự Kiến Đến"
+                                     prefWidth="160"/>
+                        <TableColumn fx:id="colStatus"
+                                     text="Trạng Thái"
+                                     prefWidth="110"/>
+                        <TableColumn fx:id="colAction"
+                                     text="Thao Tác"
+                                     prefWidth="170"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Không có lịch trình"
+                               style="-fx-text-fill:#9aa3c7; -fx-font-size:13px;"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</VBox>
+
