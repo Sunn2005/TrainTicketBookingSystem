@@ -78,6 +78,8 @@ public class TicketClientService {
             if (response.startsWith("ERROR")) {
                 throw new RuntimeException("Lỗi server khi lấy thông tin ghế: " + response);
             }
+            System.out.println("---service---");
+            System.out.println(response);
             return objectMapper.readValue(response, SeatsInfoResponse.class);
         } catch (Exception e) {
             e.printStackTrace();

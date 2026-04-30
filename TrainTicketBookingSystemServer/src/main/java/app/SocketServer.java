@@ -394,11 +394,19 @@ public class SocketServer {
         }
     }
 
-    private String handleGetAllSeatsInfo(String command) {
+        private String handleGetAllSeatsInfo(String command) {
         String[] parts = command.split("\\|");
+        System.out.println("Socket server: "+ parts[0] + ": " + parts[1]);
         if (parts.length < 2) return "ERROR|Invalid format";
         try {
             dto.SeatsInfoResponse res = ticketController.getSeatsInfoForSchedule(parts[1]);
+            res.getSeats().forEach(seat -> {
+
+                System.out.println("Toa: "+ seat.getCarriage().getCarriageNumber() + "  ghe: " + seat.getSeatNumber());
+            });
+            System.out.println("Socket server - seat res: "+res.getBookedSeatIds());
+            System.out.println("Socket server - seat res: " + objectMapper.writeValueAsString(res));
+
             return objectMapper.writeValueAsString(res);
         } catch (Exception e) {
             e.printStackTrace();
