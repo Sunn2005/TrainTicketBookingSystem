@@ -401,8 +401,10 @@ public class SocketServer {
         try {
             dto.SeatsInfoResponse res = ticketController.getSeatsInfoForSchedule(parts[1]);
             res.getSeats().forEach(seat -> {
-
-                System.out.println("Toa: "+ seat.getCarriage().getCarriageNumber() + "  ghe: " + seat.getSeatNumber());
+                String carriageNum = seat.getCarriage() != null
+                        ? String.valueOf(seat.getCarriage().getCarriageNumber())
+                        : "null";
+                System.out.println("Toa: " + carriageNum + "  ghe: " + seat.getSeatNumber());
             });
             System.out.println("Socket server - seat res: "+res.getBookedSeatIds());
             System.out.println("Socket server - seat res: " + objectMapper.writeValueAsString(res));
