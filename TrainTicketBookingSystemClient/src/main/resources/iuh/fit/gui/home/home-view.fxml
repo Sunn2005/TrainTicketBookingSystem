@@ -66,7 +66,42 @@
                         <content>
                             <VBox spacing="8.0" styleClass="menu-content">
                                 <Button fx:id="customerListButton" maxWidth="1.7976931348623157E308" onAction="#showCustomerListScreen" styleClass="menu-button" text="Danh sách khách hàng"/>
-                                <Button fx:id="customerUpdateButton" maxWidth="1.7976931348623157E308" onAction="#showCustomerUpdateScreen" styleClass="menu-button" text="Tra cứu thông tin khách hàng"/>
+<!--                                <Button fx:id="customerUpdateButton" maxWidth="1.7976931348623157E308" onAction="#showCustomerUpdateScreen" styleClass="menu-button" text="Tra cứu thông tin khách hàng"/>-->
+                            </VBox>
+                        </content>
+                    </TitledPane>
+
+                    <TitledPane styleClass="menu-group" text="Thống kê doanh thu">
+                        <content>
+                            <VBox spacing="8.0" styleClass="menu-content">
+
+                                <Button text="Theo thời gian"
+                                        onAction="#showRevenueStats"
+                                        maxWidth="1.7976931348623157E308"
+                                        styleClass="menu-button"/>
+
+                                <Button text="Theo loại ghế"
+                                        onAction="#showSeatTypeStats"
+                                        maxWidth="1.7976931348623157E308"
+                                        styleClass="menu-button"/>
+
+                                <Button text="Theo lịch trình"
+                                        onAction="#showScheduleStats"
+                                        maxWidth="1.7976931348623157E308"
+                                        styleClass="menu-button"/>
+
+                            </VBox>
+                        </content>
+                    </TitledPane>
+
+                    <TitledPane styleClass="menu-group" text="Quản lý giá vé">
+                        <content>
+                            <VBox spacing="8.0" styleClass="menu-content">
+                                <Button fx:id="updatePriceButton"
+                                        maxWidth="1.7976931348623157E308"
+                                        onAction="#showUpdatePriceScreen"
+                                        styleClass="menu-button"
+                                        text="Cập nhật giá vé"/>
                             </VBox>
                         </content>
                     </TitledPane>

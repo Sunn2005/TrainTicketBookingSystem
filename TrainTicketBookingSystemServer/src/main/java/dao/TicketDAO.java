@@ -1,7 +1,9 @@
 package dao;
 
+import jakarta.persistence.EntityManager;
 import model.entity.Ticket;
 import model.entity.enums.TicketStatus;
+import util.JPAUtil;
 
 import java.util.List;
 
@@ -37,6 +39,23 @@ public class TicketDAO extends BaseDAO<Ticket, String> {
                                     + "AND t.ticketStatus <> :cancelledStatus", String.class)
                     .setParameter("scheduleId", scheduleId)
                     .setParameter("cancelledStatus", TicketStatus.CANCELLED)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Ticket> findByCustomerId(String customerId) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            String jpql = """
+                    SELECT t FROM Ticket t
+                    JOIN FETCH t.seat
+                    JOIN FETCH t.schedule
+                    WHERE t.customer.customerID = :id
+                """;
+            return em.createQuery(jpql, Ticket.class)
+                    .setParameter("id", customerId)
                     .getResultList();
         } finally {
             em.close();

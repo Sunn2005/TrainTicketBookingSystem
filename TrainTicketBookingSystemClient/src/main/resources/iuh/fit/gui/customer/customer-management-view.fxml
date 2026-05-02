@@ -46,6 +46,9 @@
                     <Label fx:id="totalCustomerLabel"
                            text="0"
                            styleClass="cm-total-number"/>
+
+                    <Label fx:id="customerTypeStatsLabel"
+                           style="-fx-font-size: 13px; -fx-text-fill: #555;" />
                 </VBox>
 
                 <VBox spacing="12"
@@ -127,6 +130,32 @@
                     </placeholder>
 
                 </TableView>
+
+                <VBox styleClass="cm-card" spacing="12">
+
+                    <Label text="DANH SÁCH VÉ ĐÃ MUA"
+                           styleClass="cm-section-title"/>
+
+                    <TableView fx:id="ticketTable"
+                               prefHeight="250"
+                               styleClass="cm-table">
+
+                        <columns>
+                            <TableColumn fx:id="colTicketId" text="Mã vé" prefWidth="150"/>
+                            <TableColumn fx:id="colSchedule" text="Chuyến tàu" prefWidth="200"/>
+                            <TableColumn fx:id="colSeat" text="Ghế" prefWidth="120"/>
+                            <TableColumn fx:id="colPrice" text="Giá" prefWidth="120"/>
+                            <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="150"/>
+                        </columns>
+
+                        <placeholder>
+                            <Label text="Không có dữ liệu vé"
+                                   style="-fx-text-fill:#9aa3c7; -fx-font-size:13px;"/>
+                        </placeholder>
+
+                    </TableView>
+
+                </VBox>
 
             </VBox>
 

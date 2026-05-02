@@ -81,15 +81,60 @@ public class UserClientService {
     }
 
     public RevenueStatisticsResponse revenueStatistics(RevenueStatisticsRequest request) {
-        return delegate.revenueStatistics(request);
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST, SocketClient.PORT,
+                    "REVENUE_STATISTICS|"
+                            + request.getManagerID() + "|"
+                            + request.getStartDate() + "|"
+                            + request.getEndDate()
+            );
+
+            if (response == null || response.startsWith("ERROR"))
+                return new RevenueStatisticsResponse(java.util.Collections.emptyMap());
+
+            return objectMapper.readValue(response, RevenueStatisticsResponse.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RevenueStatisticsResponse(java.util.Collections.emptyMap());
+        }
     }
 
     public SeatTypeRevenueResponse seatTypeRevenue(SeatTypeRevenueRequest request) {
-        return delegate.seatTypeRevenue(request);
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST, SocketClient.PORT,
+                    "SEAT_TYPE_REVENUE|" + request.getManagerID()
+            );
+
+            if (response == null || response.startsWith("ERROR"))
+                return new SeatTypeRevenueResponse(java.util.Collections.emptyList(), 0.0);
+
+            return objectMapper.readValue(response, SeatTypeRevenueResponse.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new SeatTypeRevenueResponse(java.util.Collections.emptyList(), 0.0);
+        }
     }
 
     public ScheduleStatisticsResponse scheduleStatistics(ScheduleStatisticsRequest request) {
-        return delegate.scheduleStatistics(request);
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST, SocketClient.PORT,
+                    "SCHEDULE_STATISTICS|" + request.getManagerID()
+            );
+
+            if (response == null || response.startsWith("ERROR"))
+                return new ScheduleStatisticsResponse(java.util.Collections.emptyList());
+
+            return objectMapper.readValue(response, ScheduleStatisticsResponse.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ScheduleStatisticsResponse(java.util.Collections.emptyList());
+        }
     }
 
     public ActionResponse requestPasswordReset(PasswordResetRequestDTO request) {

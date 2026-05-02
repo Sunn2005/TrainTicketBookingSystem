@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="iuh.fit.gui.price.PriceManagementController"
+      spacing="0"
+      styleClass="cm-page-root"
+      stylesheets="@price-management.css">
+
+    <!-- HEADER -->
+    <VBox styleClass="cm-header" spacing="4">
+        <padding>
+            <Insets top="20" right="28" bottom="18" left="28"/>
+        </padding>
+
+        <Label text="Cập Nhật Giá Vé"
+               styleClass="cm-header-title"/>
+
+        <Label text="Thiết lập các thông số giá và ưu đãi áp dụng cho toàn hệ thống"
+               styleClass="cm-header-subtitle"/>
+    </VBox>
+
+    <!-- CONTENT -->
+    <ScrollPane fitToWidth="true"
+                VBox.vgrow="ALWAYS"
+                styleClass="cm-scroll">
+
+        <VBox spacing="16">
+
+            <padding>
+                <Insets top="24" right="28" bottom="28" left="28"/>
+            </padding>
+
+            <!-- BODY -->
+            <HBox spacing="16">
+
+                <!-- LEFT -->
+                <VBox styleClass="cm-card"
+                      spacing="10"
+                      prefWidth="350"
+                      maxWidth="360">
+
+                    <Label text="THÔNG SỐ HIỆN TẠI"
+                           styleClass="cm-section-title"/>
+
+                    <Label fx:id="statusLabel"
+                           text="Đang tải..."
+                           styleClass="cm-status"/>
+
+                    <Label fx:id="pricePerKmLabel"/>
+                    <Label fx:id="softSeatFeeLabel"/>
+                    <Label fx:id="softSleeperFeeLabel"/>
+                    <Label fx:id="studentDiscountLabel"/>
+                    <Label fx:id="childDiscountLabel"/>
+                    <Label fx:id="elderlyDiscountLabel"/>
+
+                    <Separator/>
+
+                    <Label fx:id="updatedInfoLabel"
+                           styleClass="cm-small-text"/>
+
+                </VBox>
+
+                <!-- RIGHT -->
+                <VBox styleClass="cm-card"
+                      spacing="12"
+                      HBox.hgrow="ALWAYS">
+
+                    <Label text="CẬP NHẬT THÔNG SỐ"
+                           styleClass="cm-section-title"/>
+
+                    <!-- INPUT GROUP -->
+                    <GridPane hgap="12" vgap="10">
+
+                        <columnConstraints>
+                            <ColumnConstraints minWidth="150"/>
+                            <ColumnConstraints hgrow="ALWAYS"/>
+                        </columnConstraints>
+
+                        <!-- Row 1 -->
+                        <Label text="Đơn giá / km:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="pricePerKmField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                        <!-- Row 2 -->
+                        <Label text="Phụ thu ghế mềm:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="softSeatFeeField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <!-- Row 3 -->
+                        <Label text="Phụ thu giường nằm:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <TextField fx:id="softSleeperFeeField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <!-- Row 4 -->
+                        <Label text="Giảm sinh viên (%):" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <TextField fx:id="studentDiscountField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                        <!-- Row 5 -->
+                        <Label text="Giảm trẻ em (%):" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                        <TextField fx:id="childDiscountField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                        <!-- Row 6 -->
+                        <Label text="Giảm người cao tuổi (%):" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                        <TextField fx:id="elderlyDiscountField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                    </GridPane>
+
+                    <!-- BUTTONS -->
+                    <HBox spacing="10">
+
+                        <Button text="Khôi phục"
+                                onAction="#onReset"
+                                styleClass="cm-btn-secondary"/>
+
+                        <Button text="Lưu Cập Nhật"
+                                onAction="#onSave"
+                                styleClass="cm-btn-primary"/>
+
+                    </HBox>
+
+                </VBox>
+
+            </HBox>
+
+            <!-- SIMULATION -->
+            <VBox styleClass="cm-card" spacing="12">
+
+                <Label text="MÔ PHỎNG TÍNH GIÁ"
+                       styleClass="cm-section-title"/>
+
+                <HBox spacing="12">
+
+                    <ComboBox fx:id="routeCombo" prefWidth="300"/>
+                    <ComboBox fx:id="seatTypeCombo" prefWidth="180"/>
+                    <ComboBox fx:id="customerTypeCombo" prefWidth="180"/>
+
+                </HBox>
+
+                <HBox spacing="20">
+
+                    <Label fx:id="basePriceLabel"/>
+                    <Label fx:id="feeLabel"/>
+                    <Label fx:id="discountLabel"/>
+                    <Label fx:id="finalPriceLabel"
+                           style="-fx-font-size: 18px; -fx-text-fill: red; -fx-font-weight: bold;"/>
+
+                </HBox>
+
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</VBox>

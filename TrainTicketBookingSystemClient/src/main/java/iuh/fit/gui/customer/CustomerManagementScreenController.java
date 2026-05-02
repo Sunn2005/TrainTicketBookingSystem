@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
         import model.entity.Customer;
+import model.entity.Ticket;
 import model.entity.enums.CustomerType;
 
 import java.time.LocalDate;
@@ -26,6 +27,8 @@ public class CustomerManagementScreenController {
     @FXML private TextField keywordField;
     @FXML private Button searchBtn;
     @FXML private Button refreshBtn;
+    @FXML private Label customerTypeStatsLabel;
+
 
     // ================= TABLE =================
     @FXML private TableView<Customer> customerTable;
@@ -33,13 +36,23 @@ public class CustomerManagementScreenController {
     @FXML private TableColumn<Customer, String> colName;
     @FXML private TableColumn<Customer, String> colType;
 
+    @FXML private TableView<Ticket> ticketTable;
+    @FXML private TableColumn<Ticket, String> colTicketId;
+    @FXML private TableColumn<Ticket, String> colSchedule;
+    @FXML private TableColumn<Ticket, String> colSeat;
+    @FXML private TableColumn<Ticket, String> colPrice;
+    @FXML private TableColumn<Ticket, String> colStatus;
+
+
+    private final ObservableList<Ticket> ticketList =
+            FXCollections.observableArrayList();
+
     private final CustomerClientService customerService =
             new CustomerClientService();
 
     private final ObservableList<Customer> customerList =
             FXCollections.observableArrayList();
 
-    // =========================================================
     @FXML
     private void initialize() {
         searchTypeCombo.setItems(FXCollections.observableArrayList(
@@ -55,8 +68,21 @@ public class CustomerManagementScreenController {
         setupTable();
         loadCustomers();
 
+        customerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        ticketTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         fromDatePicker.setOnAction(e -> loadByDate());
         toDatePicker.setOnAction(e -> loadByDate());
+
+        customerTable.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldVal, selectedCustomer) -> {
+
+                    if (selectedCustomer != null) {
+                        loadTicketsByCustomer(selectedCustomer.getCustomerID());
+                    }
+                });
+
+        setupTicketTable();
     }
 
     // =========================================================
@@ -107,6 +133,7 @@ public class CustomerManagementScreenController {
                 totalCustomerLabel.setText(
                         "Tổng khách hàng: " + customers.size()
                 );
+                updateCustomerTypeStats(customers);
             });
 
         }).start();
@@ -127,6 +154,7 @@ public class CustomerManagementScreenController {
                 totalCustomerLabel.setText(
                         "Tổng khách hàng mới: " + list.size()
                 );
+                updateCustomerTypeStats(list);
             });
         }).start();
     }
@@ -157,6 +185,7 @@ public class CustomerManagementScreenController {
                 totalCustomerLabel.setText(
                         "Tổng khách hàng: " + filtered.size()
                 );
+                updateCustomerTypeStats(filtered);
             });
 
         }).start();
@@ -208,6 +237,102 @@ public class CustomerManagementScreenController {
             case CHILD -> "Trẻ em";
             case ELDERLY -> "Người cao tuổi";
         };
+    }
+
+    private void setupTicketTable() {
+
+        colTicketId.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getTicketID())
+        );
+
+        colSchedule.setCellValueFactory(cell ->
+                new SimpleStringProperty(
+                        cell.getValue().getSchedule().getScheduleID()
+                )
+        );
+
+        colSeat.setCellValueFactory(cell -> {
+            Ticket t = cell.getValue();
+
+            if (t.getSeat() == null) {
+                return new SimpleStringProperty("—");
+            }
+
+            return new SimpleStringProperty(
+                    "Ghế " + t.getSeat().getSeatNumber()
+            );
+        });
+
+        colPrice.setCellValueFactory(cell ->
+                new SimpleStringProperty(
+                        String.valueOf(cell.getValue().getFinalPrice())
+                )
+        );
+
+        colStatus.setCellValueFactory(cell -> {
+            Ticket t = cell.getValue();
+
+            if (t.getTicketStatus() == null) {
+                return new SimpleStringProperty("—");
+            }
+
+            return new SimpleStringProperty(
+                    t.getTicketStatus().name()
+            );
+        });
+
+        ticketTable.setItems(ticketList);
+    }
+
+    private void handleRowClick() {
+
+        customerTable.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldVal, selectedCustomer) -> {
+
+                    if (selectedCustomer != null) {
+                        loadTicketsByCustomer(selectedCustomer.getCustomerID());
+                    }
+                });
+    }
+
+    private void loadTicketsByCustomer(String customerId) {
+
+        new Thread(() -> {
+
+            List<Ticket> tickets =
+                    customerService.getTicketsByCustomer(customerId);
+
+            Platform.runLater(() -> {
+                ticketList.setAll(tickets);
+            });
+
+        }).start();
+    }
+
+    private void updateCustomerTypeStats(List<Customer> list) {
+
+        long adult = list.stream()
+                .filter(c -> c.getCustomerType() == CustomerType.ADULT)
+                .count();
+
+        long student = list.stream()
+                .filter(c -> c.getCustomerType() == CustomerType.STUDENT)
+                .count();
+
+        long child = list.stream()
+                .filter(c -> c.getCustomerType() == CustomerType.CHILD)
+                .count();
+
+        long elderly = list.stream()
+                .filter(c -> c.getCustomerType() == CustomerType.ELDERLY)
+                .count();
+
+        customerTypeStatsLabel.setText(
+                "Người lớn: " + adult +
+                        "      |       Sinh viên: " + student +
+                        "      |       Trẻ em: " + child +
+                        "      |       Người cao tuổi: " + elderly
+        );
     }
 
     private String safe(String val) {
