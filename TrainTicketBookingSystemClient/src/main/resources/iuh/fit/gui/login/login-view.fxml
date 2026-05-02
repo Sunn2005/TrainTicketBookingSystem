@@ -28,7 +28,7 @@
         <PasswordField fx:id="passwordField" promptText="Mật khẩu" styleClass="login-input"/>
 
         <HBox alignment="CENTER_RIGHT">
-            <Label styleClass="forgot-label" text="Quên mật khẩu?"/>
+            <Label onMouseClicked="#onForgotPasswordClick" styleClass="forgot-label" text="Quên mật khẩu?"/>
         </HBox>
 
         <Button maxWidth="1.7976931348623157E308" onAction="#onLoginButtonClick" styleClass="login-button" text="Đăng nhập"/>

@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -107,6 +108,25 @@ public class LoginScreen {
             welcomeText.setText("Da gui " + messages.size() + " message. Phan hoi cuoi: " + responses.getLast());
         } catch (IOException e) {
             welcomeText.setText("Khong doc duoc file hoac khong the ket noi server.");
+        }
+    }
+
+    @FXML
+    private void onForgotPasswordClick() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    App.class.getResource("/iuh/fit/gui/login/forgot-password-view.fxml"));
+            Scene scene = new Scene(loader.load(), 720, 540);
+            AppTheme.applyTo(scene);
+
+            Stage stage = new Stage();
+            stage.initOwner(usernameField.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Quên mật khẩu");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            welcomeText.setText("Khong the mo man hinh quen mat khau.");
         }
     }
 

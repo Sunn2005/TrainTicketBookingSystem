@@ -17,23 +17,27 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import model.entity.User;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import dto.PasswordResetRequestDTO;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class UpdatePasswordScreenController {
-	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
 	@FXML
 	private ListView<PendingUser> pendingUsersListView;
 
 	@FXML
-	private Label selectedUserLabel;
+	private Label selectedUserIdLabel;
+
+	@FXML
+	private Label selectedFullNameLabel;
+
+	@FXML
+	private Label selectedRoleLabel;
+
+	@FXML
+	private Label selectedEmailLabel;
 
 	@FXML
 	private PasswordField newPasswordField;
@@ -86,10 +90,11 @@ public class UpdatePasswordScreenController {
 			ActionResponse response = userService.resetPassword(selectedUser.userId(), newPassword);
 			Platform.runLater(() -> {
 				if (response != null && response.isSuccess()) {
-					showSuccess("Đã cập nhật mật khẩu cho " + selectedUser.username() + " thành công.");
+					showSuccess("Đã cập nhật mật khẩu cho " + selectedUser.userId() + " thành công.");
 					confirmPasswordField.clear();
 					newPasswordField.clear();
-					showSuccessDialog(selectedUser.username());
+					showSuccessDialog(selectedUser.userId());
+					loadPendingUsers();
 				} else {
 					String message = response != null ? response.getMessage() : "Không thể cập nhật mật khẩu.";
 					showError(message);
@@ -100,8 +105,8 @@ public class UpdatePasswordScreenController {
 
 	private void loadPendingUsers() {
 		new Thread(() -> {
-			List<User> users = userService.getAllUsers();
-			List<PendingUser> mappedUsers = users.stream()
+			List<PasswordResetRequestDTO> requests = userService.getPendingPasswordResets();
+			List<PendingUser> mappedUsers = requests.stream()
 					.filter(Objects::nonNull)
 					.filter(this::isEmployeeOrManager)
 					.map(this::toPendingUser)
@@ -110,7 +115,9 @@ public class UpdatePasswordScreenController {
 			Platform.runLater(() -> {
 				pendingUsers.setAll(mappedUsers);
 				if (mappedUsers.isEmpty()) {
-					showError("Không có tài khoản Employee/Manager để hiển thị.");
+					showError("Không có yêu cầu cấp lại mật khẩu.");
+					clearSelectedUserDetails();
+					setFormEnabled(false);
 				} else {
 					clearStatus();
 				}
@@ -118,20 +125,20 @@ public class UpdatePasswordScreenController {
 		}).start();
 	}
 
-	private boolean isEmployeeOrManager(User user) {
-		if (user.getRole() == null || user.getRole().getRoleName() == null) {
+	private boolean isEmployeeOrManager(PasswordResetRequestDTO request) {
+		if (request.getRole() == null) {
 			return false;
 		}
-		String roleName = user.getRole().getRoleName().toUpperCase(Locale.ROOT);
+		String roleName = request.getRole().toUpperCase(Locale.ROOT);
 		return "EMPLOYEE".equals(roleName) || "MANAGER".equals(roleName);
 	}
 
-	private PendingUser toPendingUser(User user) {
-		String username = user.getUserName() == null ? "" : user.getUserName();
-		String fullName = user.getFullName() == null ? "" : user.getFullName();
-		String roleName = user.getRole() != null && user.getRole().getRoleName() != null ? user.getRole().getRoleName() : "";
-		LocalDate requestDate = user.getCreateDate() != null ? user.getCreateDate().toLocalDate() : LocalDate.now();
-		return new PendingUser(user.getUserID(), username, fullName, roleName, requestDate);
+	private PendingUser toPendingUser(PasswordResetRequestDTO request) {
+		String userId = request.getUserID() == null ? "" : request.getUserID();
+		String fullName = request.getFullName() == null ? "" : request.getFullName();
+		String roleName = request.getRole() == null ? "" : request.getRole();
+		String email = request.getEmail() == null ? "" : request.getEmail();
+		return new PendingUser(userId, fullName, roleName, email);
 	}
 
 	private void setupListView() {
@@ -139,16 +146,26 @@ public class UpdatePasswordScreenController {
 		pendingUsersListView.setCellFactory(listView -> new PendingUserCell());
 		pendingUsersListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, selectedUser) -> {
 			if (selectedUser == null) {
-				selectedUserLabel.setText("Chưa chọn người dùng");
+				clearSelectedUserDetails();
 				setFormEnabled(false);
 				return;
 			}
-			selectedUserLabel.setText(selectedUser.username() + " - " + selectedUser.fullName());
+			selectedUserIdLabel.setText(selectedUser.userId());
+			selectedFullNameLabel.setText(selectedUser.fullName());
+			selectedRoleLabel.setText(selectedUser.role());
+			selectedEmailLabel.setText(selectedUser.email());
 			setFormEnabled(true);
 			clearStatus();
 			newPasswordField.clear();
 			confirmPasswordField.clear();
 		});
+	}
+
+	private void clearSelectedUserDetails() {
+		selectedUserIdLabel.setText("—");
+		selectedFullNameLabel.setText("—");
+		selectedRoleLabel.setText("—");
+		selectedEmailLabel.setText("—");
 	}
 
 	private void setFormEnabled(boolean enabled) {
@@ -182,7 +199,7 @@ public class UpdatePasswordScreenController {
 		alert.showAndWait();
 	}
 
-	private record PendingUser(String userId, String username, String fullName, String role, LocalDate requestDate) {
+	private record PendingUser(String userId, String fullName, String role, String email) {
 	}
 
 	private static final class PendingUserCell extends ListCell<PendingUser> {
@@ -195,7 +212,7 @@ public class UpdatePasswordScreenController {
 				return;
 			}
 
-			Label usernameLabel = new Label(item.username());
+			Label usernameLabel = new Label(item.userId());
 			usernameLabel.getStyleClass().add("user-item-username");
 
 			Label nameLabel = new Label(item.fullName() + " (" + item.role() + ")");
@@ -203,13 +220,13 @@ public class UpdatePasswordScreenController {
 
 			VBox leftBox = new VBox(2, usernameLabel, nameLabel);
 
-			Label dateLabel = new Label(item.requestDate().format(DATE_FORMAT));
-			dateLabel.getStyleClass().add("user-item-date");
+			Label metaLabel = new Label(item.email());
+			metaLabel.getStyleClass().add("user-item-meta");
 
 			Region spacer = new Region();
 			HBox.setHgrow(spacer, Priority.ALWAYS);
 
-			HBox row = new HBox(10, leftBox, spacer, dateLabel);
+			HBox row = new HBox(10, leftBox, spacer, metaLabel);
 			row.setFillHeight(true);
 
 			setContentDisplay(ContentDisplay.GRAPHIC_ONLY);

@@ -28,6 +28,12 @@
 .forgot-label {
     -fx-text-fill: -color-text-on-primary;
     -fx-font-size: 20px;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+.forgot-label:hover {
+    -fx-opacity: 0.85;
 }
 
 .login-button {

@@ -138,11 +138,50 @@ public class UserClientService {
     }
 
     public ActionResponse requestPasswordReset(PasswordResetRequestDTO request) {
-        return delegate.requestPasswordReset(request);
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST, SocketClient.PORT,
+                    "REQUEST_PASSWORD_RESET|" + request.getUserID()
+                            + "|" + request.getFullName()
+                            + "|" + request.getRole()
+                            + "|" + request.getEmail());
+
+            if (response == null) {
+                return ActionResponse.fail("Lỗi kết nối");
+            }
+            if (response.startsWith("SUCCESS|")) {
+                return ActionResponse.success(response.substring("SUCCESS|".length()));
+            }
+            if (response.startsWith("ERROR|")) {
+                return ActionResponse.fail(response.substring("ERROR|".length()));
+            }
+            if (response.startsWith("ERROR")) {
+                return ActionResponse.fail(response);
+            }
+            return ActionResponse.fail("Phản hồi không hợp lệ từ server");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ActionResponse.fail("Lỗi kết nối: " + e.getMessage());
+        }
     }
 
     public List<PasswordResetRequestDTO> getPendingPasswordResets() {
-        return delegate.getPendingPasswordResets();
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST, SocketClient.PORT, "GET_PASSWORD_RESET_REQUESTS");
+            if (response == null) {
+                return List.of();
+            }
+            if (response.startsWith("SUCCESS|")) {
+                String payload = response.substring("SUCCESS|".length());
+                return objectMapper.readValue(payload,
+                        new TypeReference<List<PasswordResetRequestDTO>>() {});
+            }
+            return List.of();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
     }
 
     public ActionResponse resetPassword(String targetUserId, String newPassword) {
