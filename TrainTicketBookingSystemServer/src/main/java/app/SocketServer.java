@@ -21,6 +21,8 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import controller.PriceController;
+import model.entity.BasePrice;
 
 public class SocketServer {
     public static final int DEFAULT_PORT = 9999;
@@ -33,6 +35,7 @@ public class SocketServer {
     private final CustomerController customerController = new CustomerController();
     private final ScheduleController scheduleController = new ScheduleController();
     private final TrainController trainController = new controller.TrainController();
+    private final PriceController priceController = new PriceController();
 
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -135,6 +138,13 @@ public class SocketServer {
         }
         if (trimmed.toUpperCase().startsWith("GET_TICKETS_BY_CUSTOMER|")) {
             return handleGetTicketsByCustomer(trimmed);
+        }
+        if ("GET_BASE_PRICE".equalsIgnoreCase(trimmed)) {
+            return handleGetBasePrice();
+        }
+
+        if (trimmed.toUpperCase().startsWith("UPDATE_BASE_PRICE|")) {
+            return handleUpdateBasePrice(trimmed);
         }
         if (trimmed.startsWith("REVENUE_STATISTICS|")) {
             return handleRevenueStatistics(trimmed);
@@ -503,6 +513,35 @@ public class SocketServer {
                 return "ERROR|Customer not found";
             }
             return objectMapper.writeValueAsString(customer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleGetBasePrice() {
+        try {
+            BasePrice price = priceController.getBasePrice();
+            return objectMapper.writeValueAsString(price);
+        } catch (Exception e) {
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleUpdateBasePrice(String command) {
+        try {
+            String payload = command.substring(command.indexOf('|') + 1);
+
+            BasePrice newPrice = objectMapper.readValue(payload, BasePrice.class);
+
+            boolean ok = priceController.updateBasePrice(newPrice);
+
+            if (ok) {
+                return "SUCCESS|Cập nhật giá vé thành công";
+            } else {
+                return "ERROR|Không thể cập nhật file JSON";
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return "ERROR|" + e.getMessage();

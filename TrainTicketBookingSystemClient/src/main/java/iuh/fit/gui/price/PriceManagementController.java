@@ -8,10 +8,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.time.LocalDateTime;
+import javafx.scene.control.Alert;
+import iuh.fit.service.PriceClientService;
+
 
 public class PriceManagementController {
 
-    private final PriceController controller = new PriceController();
+    private final PriceClientService controller = new PriceClientService();
     private BasePrice current;
 
     @FXML private Label pricePerKmLabel;
@@ -89,6 +92,14 @@ public class PriceManagementController {
         elderlyDiscountField.setText(String.valueOf((int)(current.getElderlyDiscount() * 100)));
     }
 
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     @FXML
     private void onSave() {
         try {
@@ -99,13 +110,6 @@ public class PriceManagementController {
             double childDiscount = Double.parseDouble(childDiscountField.getText());
             double elderlyDiscount = Double.parseDouble(elderlyDiscountField.getText());
 
-            if (pricePerKm < 0 || softSeatFee < 0 || softSleeperFee < 0 ||
-                    studentDiscount < 0 || childDiscount < 0 || elderlyDiscount < 0 ||
-                    studentDiscount > 100 || childDiscount > 100 || elderlyDiscount > 100) {
-                statusLabel.setText("Giá trị nhập không hợp lệ!");
-                return;
-            }
-
             BasePrice p = new BasePrice(
                     pricePerKm,
                     softSeatFee,
@@ -115,18 +119,18 @@ public class PriceManagementController {
                     elderlyDiscount / 100
             );
 
-            boolean ok = controller.updateBasePrice(p);
+            String res = controller.updateBasePrice(p);
 
-            if (ok) {
-                statusLabel.setText("Cập nhật thành công!");
+            if (res != null && res.startsWith("SUCCESS")) {
+                showAlert("Thành công", res.split("\\|")[1]);
                 loadData();
                 safeSimulate();
             } else {
-                statusLabel.setText("Cập nhật thất bại!");
+                showAlert("Thất bại", res);
             }
 
         } catch (Exception e) {
-            statusLabel.setText("Vui lòng nhập đúng định dạng số!");
+            showAlert("Lỗi", "Vui lòng nhập đúng định dạng số!");
         }
     }
 
