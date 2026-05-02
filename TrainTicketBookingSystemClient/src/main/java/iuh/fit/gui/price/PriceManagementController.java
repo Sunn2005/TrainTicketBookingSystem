@@ -110,6 +110,20 @@ public class PriceManagementController {
             double childDiscount = Double.parseDouble(childDiscountField.getText());
             double elderlyDiscount = Double.parseDouble(elderlyDiscountField.getText());
 
+            // ✅ CHECK KHÔNG ÂM
+            if (pricePerKm < 0 || softSeatFee < 0 || softSleeperFee < 0 ||
+                    studentDiscount < 0 || childDiscount < 0 || elderlyDiscount < 0) {
+
+                showAlert("Lỗi", "Các giá trị không được nhỏ hơn 0!");
+                return;
+            }
+
+            // (tuỳ chọn) check discount hợp lý
+            if (studentDiscount > 100 || childDiscount > 100 || elderlyDiscount > 100) {
+                showAlert("Lỗi", "Giảm giá không được vượt quá 100%!");
+                return;
+            }
+
             BasePrice p = new BasePrice(
                     pricePerKm,
                     softSeatFee,
@@ -129,8 +143,10 @@ public class PriceManagementController {
                 showAlert("Thất bại", res);
             }
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             showAlert("Lỗi", "Vui lòng nhập đúng định dạng số!");
+        } catch (Exception e) {
+            showAlert("Lỗi", "Có lỗi xảy ra!");
         }
     }
 
