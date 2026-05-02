@@ -2,6 +2,7 @@ package iuh.fit.gui.statistics;
 
 import dto.RevenueStatisticsRequest;
 import dto.RevenueStatisticsResponse;
+import iuh.fit.context.UserContext;
 import iuh.fit.service.UserClientService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -57,24 +58,25 @@ public class RevenueByTimeController {
     @FXML
     public void onLoad() {
 
+        if (!isManager()) {
+            showNoPermission();
+            return;
+        }
+
         RevenueStatisticsRequest req = new RevenueStatisticsRequest();
-        req.setManagerID("USER-002"); // manager của bạn
+        req.setManagerID(UserContext.getInstance().getUserID());
         req.setStartDate(fromDate.getValue());
         req.setEndDate(toDate.getValue());
-        req.setStatisticType(StatisticType.DAY);
 
         RevenueStatisticsResponse res = service.revenueStatistics(req);
 
         Map<LocalDate, Double> map = res.getResponseMap();
 
-        // set table
         table.setItems(FXCollections.observableArrayList(map.entrySet()));
 
-        // tính tổng
         double total = map.values().stream().mapToDouble(Double::doubleValue).sum();
-
         totalRevenue.setText(MoneyUtils.formatVND(total));
-        // trung bình
+
         double avg = map.isEmpty() ? 0 : total / map.size();
         avgRevenue.setText(MoneyUtils.formatVND(avg));
 
@@ -84,13 +86,23 @@ public class RevenueByTimeController {
         series.setName("Doanh thu");
 
         map.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey()) // sort theo ngày
-                .forEach(entry -> {
-                    series.getData().add(
-                            new XYChart.Data<>(entry.getKey().toString(), entry.getValue())
-                    );
-                });
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(e ->
+                        series.getData().add(new XYChart.Data<>(e.getKey().toString(), e.getValue()))
+                );
 
         lineChart.getData().add(series);
+    }
+
+    private boolean isManager() {
+        String role = UserContext.getInstance().getRole();
+        return "ROLE-002".equals(role) || "MANAGER".equalsIgnoreCase(role);
+    }
+
+    private void showNoPermission() {
+        Alert a = new Alert(Alert.AlertType.WARNING);
+        a.setTitle("Không có quyền");
+        a.setContentText("Chỉ MANAGER được xem thống kê");
+        a.showAndWait();
     }
 }
