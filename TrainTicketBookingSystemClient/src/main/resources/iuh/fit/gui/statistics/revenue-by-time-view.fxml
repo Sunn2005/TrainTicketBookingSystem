@@ -1,0 +1,132 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.layout.Priority?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="iuh.fit.gui.statistics.RevenueByTimeController"
+      spacing="0"
+      styleClass="cm-page-root"
+      stylesheets="@revenue-by-time.css">
+
+    <!-- HEADER -->
+    <VBox styleClass="cm-header" spacing="4">
+        <padding>
+            <Insets top="20" right="28" bottom="18" left="28"/>
+        </padding>
+
+        <Label text="Thống Kê Doanh Thu"
+               styleClass="cm-header-title"/>
+
+        <Label text="Phân tích doanh thu theo thời gian"
+               styleClass="cm-header-subtitle"/>
+    </VBox>
+
+    <!-- CONTENT -->
+    <ScrollPane fitToWidth="true"
+                VBox.vgrow="ALWAYS"
+                styleClass="cm-scroll">
+
+        <VBox spacing="18">
+            <padding>
+                <Insets top="24" right="28" bottom="28" left="28"/>
+            </padding>
+
+            <!-- FILTER -->
+            <HBox spacing="12">
+
+                <VBox styleClass="cm-card" spacing="6" prefWidth="450">
+                    <Label text="Từ ngày" styleClass="cm-card-label"/>
+                    <DatePicker fx:id="fromDate" styleClass="cm-date"/>
+                </VBox>
+
+                <VBox styleClass="cm-card" spacing="6" prefWidth="450">
+                    <Label text="Đến ngày" styleClass="cm-card-label"/>
+                    <DatePicker fx:id="toDate" styleClass="cm-date"/>
+                </VBox>
+
+                <VBox alignment="BOTTOM_CENTER" prefWidth="200">
+                    <Button text="Xem báo cáo"
+                            onAction="#onLoad"
+                            styleClass="cm-btn-primary"/>
+                </VBox>
+            </HBox>
+
+            <!-- SUMMARY -->
+            <HBox spacing="16">
+
+                <VBox HBox.hgrow="ALWAYS"
+                      styleClass="cm-card"
+                      spacing="10">
+
+                    <Label text="Tổng doanh thu"
+                           styleClass="cm-card-label"/>
+
+                    <Label fx:id="totalRevenue"
+                           text="0"
+                           styleClass="cm-total-number"/>
+                </VBox>
+
+                <VBox HBox.hgrow="ALWAYS"
+                      styleClass="cm-card"
+                      spacing="10">
+
+                    <Label text="Trung bình"
+                           styleClass="cm-card-label"/>
+
+                    <Label fx:id="avgRevenue"
+                           text="0"
+                           styleClass="cm-total-number"/>
+                </VBox>
+            </HBox>
+
+            <!-- CHART -->
+            <VBox styleClass="cm-card" spacing="12">
+
+                <Label text="BIỂU ĐỒ DOANH THU"
+                       styleClass="cm-section-title"/>
+
+                <LineChart fx:id="lineChart"
+                           prefHeight="480"
+                           VBox.vgrow="ALWAYS">
+
+                    <xAxis>
+                        <CategoryAxis label="Ngày"/>
+                    </xAxis>
+
+                    <yAxis>
+                        <NumberAxis label="Doanh thu"/>
+                    </yAxis>
+
+                </LineChart>
+            </VBox>
+
+            <!-- TABLE -->
+            <VBox styleClass="cm-card" spacing="12">
+
+                <Label text="BẢNG THỐNG KÊ"
+                       styleClass="cm-section-title"/>
+
+                <TableView fx:id="table"
+                           prefHeight="400"
+                           VBox.vgrow="ALWAYS"
+                           styleClass="cm-table">
+
+                    <columns>
+                        <TableColumn fx:id="colDate" text="Ngày"/>
+                        <TableColumn fx:id="colRevenue" text="Doanh thu"/>
+                    </columns>
+
+                </TableView>
+            </VBox>
+
+        </VBox>
+
+    </ScrollPane>
+
+</VBox>

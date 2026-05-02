@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import model.entity.Ticket;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -71,4 +72,28 @@ public class CustomerClientService {
             return List.of();
         }
     }
+
+    public List<Ticket> getTicketsByCustomer(String customerId) {
+        try {
+            String response = socketClient.sendMessage(
+                    SocketClient.HOST,
+                    SocketClient.PORT,
+                    "GET_TICKETS_BY_CUSTOMER|" + customerId
+            );
+
+            if (response == null || response.startsWith("ERROR")) {
+                return List.of();
+            }
+
+            return objectMapper.readValue(
+                    response,
+                    new TypeReference<List<Ticket>>() {}
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
 }

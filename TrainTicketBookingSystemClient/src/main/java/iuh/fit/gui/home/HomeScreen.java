@@ -9,6 +9,7 @@ import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -68,7 +69,10 @@ public class HomeScreen {
     private Button customerListButton;
 
     @FXML
-    private Button customerUpdateButton;
+    private Button updatePriceButton;
+
+//    @FXML
+//    private Button customerUpdateButton;
 
     @FXML
     private Button createAccountButton;
@@ -91,9 +95,10 @@ public class HomeScreen {
                 scheduleButton,
                 coachButton,
                 customerListButton,
-                customerUpdateButton,
+//                customerUpdateButton,
                 createAccountButton,
-                updatePasswordButton
+                updatePasswordButton,
+                updatePriceButton
         );
 
         showSellTicketScreen();
@@ -176,18 +181,6 @@ public class HomeScreen {
         }
     }
 
-//    @FXML
-//    private void showCustomerListScreen() {
-//        setActiveButton(customerListButton);
-//        contentContainer.getChildren().setAll(createSampleScreen(
-//                "Danh sach khach hang",
-//                "Man hinh mau tra cuu va loc khach hang.",
-//                "Tong KH", "5,280",
-//                "Moi tuan nay", "126",
-//                "VIP", "420"
-//        ));
-//    }
-
     @FXML
     private void showCustomerListScreen() {
         setActiveButton(customerListButton);
@@ -206,18 +199,54 @@ public class HomeScreen {
         }
     }
 
+    private void loadView(String fxml) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(fxml)
+            );
+
+            Parent view = loader.load();
+
+            contentContainer.getChildren().clear();
+            contentContainer.getChildren().add(view);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
-    private void showCustomerUpdateScreen() {
-        setActiveButton(customerUpdateButton);
-        contentContainer.getChildren().setAll(createSampleScreen(
-                "Cap nhat khach hang",
-                "Man hinh mau cap nhat thong tin ho so khach hang.",
-                "Yeu cau cap nhat", "16",
-                "Da xu ly", "13",
-                "Con lai", "3"
-        ));
+    private void showRevenueStats() {
+        loadView("/iuh/fit/gui/statistics/revenue-by-time-view.fxml");
     }
+
+    @FXML
+    private void showSeatTypeStats() {
+        loadView("/iuh/fit/gui/statistics/revenue-by-seat-type-view.fxml");
+    }
+
+    @FXML
+    private void showScheduleStats() {
+        loadView("/iuh/fit/gui/statistics/revenue-by-schedule-view.fxml");
+    }
+
+    @FXML
+    private void showUpdatePriceScreen() {
+        setActiveButton(updatePriceButton);
+        loadView("/iuh/fit/gui/price/price-management-view.fxml");
+    }
+
+//    @FXML
+//    private void showCustomerUpdateScreen() {
+//        setActiveButton(customerUpdateButton);
+//        contentContainer.getChildren().setAll(createSampleScreen(
+//                "Cap nhat khach hang",
+//                "Man hinh mau cap nhat thong tin ho so khach hang.",
+//                "Yeu cau cap nhat", "16",
+//                "Da xu ly", "13",
+//                "Con lai", "3"
+//        ));
+//    }
 
     @FXML
     private void showCreateAccountScreen() {

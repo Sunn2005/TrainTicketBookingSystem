@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="iuh.fit.gui.statistics.RevenueByScheduleController"
+      spacing="0"
+      styleClass="cm-page-root"
+      stylesheets="@revenue-by-time.css">
+
+    <!-- HEADER -->
+    <VBox styleClass="cm-header" spacing="4">
+        <padding>
+            <Insets top="20" right="28" bottom="18" left="28"/>
+        </padding>
+
+        <Label text="Thống Kê Doanh Thu"
+               styleClass="cm-header-title"/>
+
+        <Label text="Theo lịch trình"
+               styleClass="cm-header-subtitle"/>
+    </VBox>
+
+    <!-- CONTENT -->
+    <ScrollPane fitToWidth="true"
+                VBox.vgrow="ALWAYS"
+                styleClass="cm-scroll">
+
+        <VBox spacing="18">
+            <padding>
+                <Insets top="24" right="28" bottom="28" left="28"/>
+            </padding>
+
+            <!-- TOP ROW -->
+            <HBox spacing="16">
+
+                <!-- FILTER CARD (TRÁI) -->
+                <VBox styleClass="cm-card" spacing="8"
+                      HBox.hgrow="ALWAYS"
+                      prefWidth="300">
+
+                    <Label text="Tuyến đường"
+                           styleClass="cm-section-title"/>
+
+                    <ComboBox fx:id="cbRoute"
+                              promptText="Tất cả tuyến"
+                              styleClass="cm-combo"
+                              prefWidth="250"/>
+                </VBox>
+
+                <!-- TOTAL REVENUE CARD (PHẢI) -->
+                <VBox styleClass="cm-card" spacing="6"
+                      prefWidth="400">
+
+                    <Label text="Tổng doanh thu"
+                           styleClass="cm-card-label"/>
+
+                    <Label fx:id="lblTotalRevenue"
+                           text="0"
+                           styleClass="cm-total-number"/>
+                </VBox>
+
+            </HBox>
+
+            <!-- CHART -->
+            <VBox styleClass="cm-card" spacing="12">
+
+                <Label text="BIỂU ĐỒ DOANH THU"
+                       styleClass="cm-section-title"/>
+
+                <BarChart fx:id="barChart"
+                          prefHeight="480"
+                          VBox.vgrow="ALWAYS">
+
+                    <xAxis>
+                        <CategoryAxis label="Lịch trình"/>
+                    </xAxis>
+
+                    <yAxis>
+                        <NumberAxis label="Doanh thu"/>
+                    </yAxis>
+
+                </BarChart>
+            </VBox>
+
+            <!-- TABLE -->
+            <VBox styleClass="cm-card" spacing="12">
+
+                <Label text="CHI TIẾT"
+                       styleClass="cm-section-title"/>
+
+                <TableView fx:id="table"
+                           prefHeight="400"
+                           VBox.vgrow="ALWAYS"
+                           styleClass="cm-table">
+
+                    <columns>
+                        <TableColumn fx:id="colId" text="Mã"/>
+                        <TableColumn fx:id="colRoute" text="Tuyến"/>
+                        <TableColumn fx:id="colTotal" text="Tổng ghế"/>
+                        <TableColumn fx:id="colEmpty" text="Ghế trống"/>
+                        <TableColumn fx:id="colRevenue" text="Doanh thu"/>
+                    </columns>
+
+                </TableView>
+            </VBox>
+
+        </VBox>
+
+    </ScrollPane>
+
+</VBox>

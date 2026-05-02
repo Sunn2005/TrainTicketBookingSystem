@@ -644,4 +644,8 @@ public class TicketService {
     private String generateId(String prefix) {
         return prefix + "-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
     }
+
+    public List<Ticket> getTicketsByCustomer(String customerId) {
+        return ticketDAO.findByCustomerId(customerId);
+    }
 }

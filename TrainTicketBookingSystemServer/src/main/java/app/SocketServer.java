@@ -133,6 +133,20 @@ public class SocketServer {
         if (trimmed.toUpperCase().startsWith("GET_CUSTOMERS_BOOKED_BETWEEN|")) {
             return handleGetCustomersBookedBetween(trimmed);
         }
+        if (trimmed.toUpperCase().startsWith("GET_TICKETS_BY_CUSTOMER|")) {
+            return handleGetTicketsByCustomer(trimmed);
+        }
+        if (trimmed.startsWith("REVENUE_STATISTICS|")) {
+            return handleRevenueStatistics(trimmed);
+        }
+
+        if (trimmed.startsWith("SEAT_TYPE_REVENUE|")) {
+            return handleSeatTypeRevenue(trimmed);
+        }
+
+        if (trimmed.startsWith("SCHEDULE_STATISTICS|")) {
+            return handleScheduleStatistics(trimmed);
+        }
         if ("GET_ALL_STATIONS".equalsIgnoreCase(trimmed)) {
             try {
                 List<Station> stations = stationController.getAllStations();
@@ -653,6 +667,80 @@ public class SocketServer {
             scheduleController.deleteSchedule(parts[1].trim());
             return objectMapper.writeValueAsString(
                     dto.ActionResponse.success("Ngừng lịch trình thành công"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleGetTicketsByCustomer(String command) {
+        try {
+            String[] parts = command.split("\\|");
+            if (parts.length < 2) return "ERROR|Invalid format";
+
+            String customerId = parts[1].trim();
+
+            List<Ticket> tickets =
+                    ticketController.getTicketsByCustomer(customerId);
+
+            return objectMapper.writeValueAsString(tickets);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleRevenueStatistics(String command) {
+        try {
+            String[] parts = command.split("\\|");
+
+            RevenueStatisticsRequest req = new RevenueStatisticsRequest();
+            req.setManagerID(parts[1].trim());
+            req.setStartDate(LocalDate.parse(parts[2].trim()));
+            req.setEndDate(LocalDate.parse(parts[3].trim()));
+
+            RevenueStatisticsResponse res =
+                    userController.revenueStatistics(req);
+
+            return objectMapper.writeValueAsString(res);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleSeatTypeRevenue(String command) {
+        try {
+            String[] parts = command.split("\\|");
+
+            SeatTypeRevenueRequest req = new SeatTypeRevenueRequest();
+            req.setManagerID(parts[1].trim());
+
+            SeatTypeRevenueResponse res =
+                    userController.seatTypeRevenue(req);
+
+            return objectMapper.writeValueAsString(res);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR|" + e.getMessage();
+        }
+    }
+
+    private String handleScheduleStatistics(String command) {
+        try {
+            String[] parts = command.split("\\|");
+
+            ScheduleStatisticsRequest req = new ScheduleStatisticsRequest();
+            req.setManagerID(parts[1].trim());
+
+            ScheduleStatisticsResponse res =
+                    userController.scheduleStatistics(req);
+
+            return objectMapper.writeValueAsString(res);
+
         } catch (Exception e) {
             e.printStackTrace();
             return "ERROR|" + e.getMessage();

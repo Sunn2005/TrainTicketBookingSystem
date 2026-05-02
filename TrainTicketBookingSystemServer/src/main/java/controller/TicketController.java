@@ -73,4 +73,8 @@ public class TicketController {
         return ticketService.getTicketById(ticketId);
     }
 
+    public List<Ticket> getTicketsByCustomer(String customerId) {
+        return ticketService.getTicketsByCustomer(customerId);
+    }
+
 }
