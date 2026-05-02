@@ -23,6 +23,7 @@
 
         <Label text="Theo loại ghế"
                styleClass="cm-header-subtitle"/>
+
     </VBox>
 
     <!-- CONTENT -->
@@ -35,20 +36,34 @@
                 <Insets top="24" right="28" bottom="28" left="28"/>
             </padding>
 
-            <!-- SUMMARY -->
-            <VBox styleClass="cm-card" spacing="10">
-
-                <Label text="Tổng doanh thu"
-                       styleClass="cm-card-label"/>
-
-                <Label fx:id="totalRevenue"
-                       text="0"
-                       styleClass="cm-total-number"/>
-            </VBox>
-
-            <!-- CHART + TABLE (2 CỘT) -->
             <HBox spacing="16">
 
+                <!-- TOTAL REVENUE CARD -->
+                <VBox HBox.hgrow="ALWAYS"
+                      styleClass="cm-card"
+                      spacing="10">
+
+                    <Label text="Tổng doanh thu"
+                           styleClass="cm-card-label"/>
+
+                    <Label fx:id="totalRevenue"
+                           text="0"
+                           styleClass="cm-total-number"/>
+                </VBox>
+
+                <!-- REFRESH BUTTON CARD -->
+                <VBox alignment="CENTER_LEFT"
+                      HBox.hgrow="NEVER"
+                      prefWidth="180">
+
+                    <Button text="Làm mới"
+                            onAction="#onRefresh"
+                            styleClass="cm-btn-primary"/>
+                </VBox>
+
+            </HBox>
+
+            <HBox spacing="16">
                 <!-- PIE CHART LEFT -->
                 <VBox styleClass="cm-card" spacing="12"
                       HBox.hgrow="ALWAYS"

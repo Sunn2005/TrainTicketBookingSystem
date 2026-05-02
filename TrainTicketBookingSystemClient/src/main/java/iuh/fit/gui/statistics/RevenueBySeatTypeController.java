@@ -45,27 +45,33 @@ public class RevenueBySeatTypeController {
     }
 
     private void loadData() {
+        try {
+            SeatTypeRevenueRequest req = new SeatTypeRevenueRequest();
+            req.setManagerID("USER-002");
+            SeatTypeRevenueResponse res = service.seatTypeRevenue(req);
+            if (res == null) return;
+            var list = res.getDetails();
+            table.setItems(FXCollections.observableArrayList(list));
+            totalRevenue.setText(MoneyUtils.formatVND(res.getTotalRevenue()));
+            ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
 
-        SeatTypeRevenueRequest req = new SeatTypeRevenueRequest();
-        req.setManagerID("USER-002");
+            for (var d : list) {
+                pieData.add(new PieChart.Data(
+                        d.getSeatType().name(),
+                        d.getRevenue()
+                ));
+            }
 
-        SeatTypeRevenueResponse res = service.seatTypeRevenue(req);
+            pieChart.setData(pieData);
 
-        var list = res.getDetails();
-
-        table.setItems(FXCollections.observableArrayList(list));
-
-        totalRevenue.setText(MoneyUtils.formatVND(res.getTotalRevenue()));
-
-        ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
-
-        for (var d : list) {
-            pieData.add(new PieChart.Data(
-                    d.getSeatType().name(),
-                    d.getRevenue()
-            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            totalRevenue.setText("Lỗi tải dữ liệu");
         }
+    }
 
-        pieChart.setData(pieData);
+    @FXML
+    private void onRefresh() {
+        loadData();
     }
 }
