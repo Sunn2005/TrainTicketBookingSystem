@@ -116,16 +116,20 @@ public class SelectSeatController {
             try {
                 // Lấy tất cả ghế (available + booked)
                 SeatsInfoResponse seatsInfo = ticketService.getSeatsInfoForSchedule(schedule.getScheduleId());
-                
+                System.out.println("---ctrl---");
+                seatsInfo.getSeats().forEach(seat -> {
+                    System.out.println( "ghe: " + seat.getSeatNumber());
+                });
+
                 Platform.runLater(() -> {
                     statusLabel.setText("");
                     bookedSeatIds = new HashSet<>(seatsInfo.getBookedSeatIds() != null ? seatsInfo.getBookedSeatIds() : List.of());
-                    
+
                     // Tổ chức ghế theo toa
                     allCarriageMap = seatsInfo.getSeats().stream().collect(Collectors.groupingBy(
                             s -> s.getCarriage().getCarriageNumber(),
                             TreeMap::new, Collectors.toList()));
-                    
+
                     if (allCarriageMap.isEmpty()) {
                         showError("Không có ghế."); return;
                     }

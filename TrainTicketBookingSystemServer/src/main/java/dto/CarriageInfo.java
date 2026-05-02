@@ -3,12 +3,11 @@ package dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SeatsInfoResponse {
-    private List<SeatInfo> seats;
-    private List<String> bookedSeatIds;
+public class CarriageInfo {
+    private String carriageID;
+    private int carriageNumber;
 }

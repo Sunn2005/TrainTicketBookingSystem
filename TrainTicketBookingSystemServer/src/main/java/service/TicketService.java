@@ -2,6 +2,8 @@ package service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.ActionResponse;
+import dto.CarriageInfo;
+import dto.SeatInfo;
 import dto.SellRoundTripRequest;
 import dto.SellRoundTripResponse;
 import dto.SellTicketRequest;
@@ -575,8 +577,25 @@ public class TicketService {
 
             List<Seat> allSeats = seatDAO.findByTrainId(schedule.getTrain().getTrainID());
             List<String> bookedSeatIds = ticketDAO.getBookedSeatIds(scheduleId);
+            List<SeatInfo> seatInfos = allSeats.stream()
+                    .map(seat -> {
+                        CarriageInfo carriageInfo = null;
+                        if (seat.getCarriage() != null) {
+                            carriageInfo = new CarriageInfo(
+                                    seat.getCarriage().getCarriageID(),
+                                    seat.getCarriage().getCarriageNumber()
+                            );
+                        }
+                        return new SeatInfo(
+                                seat.getSeatID(),
+                                seat.getSeatNumber(),
+                                seat.getSeatType(),
+                                carriageInfo
+                        );
+                    })
+                    .toList();
 
-            return new dto.SeatsInfoResponse(allSeats, bookedSeatIds);
+            return new dto.SeatsInfoResponse(seatInfos, bookedSeatIds);
         } finally {
             em.close();
         }
