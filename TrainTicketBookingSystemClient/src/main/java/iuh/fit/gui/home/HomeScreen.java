@@ -101,7 +101,11 @@ public class HomeScreen {
                 updatePriceButton
         );
 
-        showSellTicketScreen();
+        if (isAdmin()) {
+            showCreateAccountScreen();
+        } else {
+            showSellTicketScreen();
+        }
 
         // Keep time in the header synced every second.
         clockTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> updateDateTime()));
@@ -111,7 +115,10 @@ public class HomeScreen {
 
     @FXML
     private void showSellTicketScreen() {
-        setActiveButton(sellTicketButton);
+        if (!ensureAccess(sellTicketButton, canAccessTicketManagement(),
+                "Chức năng này chỉ dành cho EMPLOYEE hoặc MANAGER.")) {
+            return;
+        }
         try {
             ctx.setCurrentStep(TicketContext.BookingStep.OUTBOUND_SEARCH);
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
@@ -126,7 +133,10 @@ public class HomeScreen {
 
     @FXML
     private void showExchangeTicketScreen() {
-        setActiveButton(exchangeTicketButton);
+        if (!ensureAccess(exchangeTicketButton, canAccessTicketManagement(),
+                "Chức năng này chỉ dành cho EMPLOYEE hoặc MANAGER.")) {
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
                     "/iuh/fit/gui/ticket/exchange/exchange-ticket-view.fxml"));
@@ -141,7 +151,10 @@ public class HomeScreen {
 
     @FXML
     private void showCancelTicketScreen() {
-        setActiveButton(cancelTicketButton);
+        if (!ensureAccess(cancelTicketButton, canAccessTicketManagement(),
+                "Chức năng này chỉ dành cho EMPLOYEE hoặc MANAGER.")) {
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
                     "/iuh/fit/gui/ticket/cancel/cancel-ticket-view.fxml"));
@@ -155,7 +168,10 @@ public class HomeScreen {
 
     @FXML
     private void showScheduleScreen() {
-        setActiveButton(scheduleButton);
+        if (!ensureAccess(scheduleButton, canAccessManagerOnly(),
+                "Chức năng này chỉ dành cho MANAGER.")) {
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
                     "/iuh/fit/gui/schedule/schedule-management-view.fxml"));
@@ -169,7 +185,10 @@ public class HomeScreen {
 
     @FXML
     private void showCoachScreen() {
-        setActiveButton(coachButton);
+        if (!ensureAccess(coachButton, canAccessManagerOnly(),
+                "Chức năng này chỉ dành cho MANAGER.")) {
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
                     "/iuh/fit/gui/train/train-management-view.fxml"));
@@ -183,7 +202,10 @@ public class HomeScreen {
 
     @FXML
     private void showCustomerListScreen() {
-        setActiveButton(customerListButton);
+        if (!ensureAccess(customerListButton, canAccessCustomerManagement(),
+                "Chức năng này chỉ dành cho EMPLOYEE hoặc MANAGER.")) {
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(
                     App.class.getResource(
@@ -217,58 +239,47 @@ public class HomeScreen {
 
     @FXML
     private void showRevenueStats() {
+        if (!ensureAccess(null, canAccessManagerOnly(),
+                "Chức năng này chỉ dành cho MANAGER.")) {
+            return;
+        }
         loadView("/iuh/fit/gui/statistics/revenue-by-time-view.fxml");
     }
 
     @FXML
     private void showSeatTypeStats() {
+        if (!ensureAccess(null, canAccessManagerOnly(),
+                "Chức năng này chỉ dành cho MANAGER.")) {
+            return;
+        }
         loadView("/iuh/fit/gui/statistics/revenue-by-seat-type-view.fxml");
     }
 
     @FXML
     private void showScheduleStats() {
+        if (!ensureAccess(null, canAccessManagerOnly(),
+                "Chức năng này chỉ dành cho MANAGER.")) {
+            return;
+        }
         loadView("/iuh/fit/gui/statistics/revenue-by-schedule-view.fxml");
     }
 
     @FXML
     private void showUpdatePriceScreen() {
-        setActiveButton(updatePriceButton);
+        if (!ensureAccess(updatePriceButton, canAccessManagerOnly(),
+                "Chức năng này chỉ dành cho MANAGER.")) {
+            return;
+        }
         loadView("/iuh/fit/gui/price/price-management-view.fxml");
     }
 
-//    @FXML
-//    private void showCustomerUpdateScreen() {
-//        setActiveButton(customerUpdateButton);
-//        contentContainer.getChildren().setAll(createSampleScreen(
-//                "Cap nhat khach hang",
-//                "Man hinh mau cap nhat thong tin ho so khach hang.",
-//                "Yeu cau cap nhat", "16",
-//                "Da xu ly", "13",
-//                "Con lai", "3"
-//        ));
-//    }
 
     @FXML
     private void showCreateAccountScreen() {
-        String role = UserContext.getInstance().getRole();
-        if (!"ADMIN".equalsIgnoreCase(role)) {
-            setActiveButton(createAccountButton);
-            // Hiện thông báo không có quyền
-            VBox denied = new VBox(16);
-            denied.setAlignment(javafx.geometry.Pos.CENTER);
-            denied.setStyle("-fx-background-color:#f8faff;");
-            Label icon = new Label("🔒");
-            icon.setStyle("-fx-font-size:64px;");
-            Label title = new Label("Không có quyền truy cập");
-            title.setStyle("-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#dc2626;");
-            Label msg = new Label("Chỉ tài khoản ADMIN mới được quản lý tài khoản.");
-            msg.setStyle("-fx-font-size:14px;-fx-text-fill:#555;");
-            denied.getChildren().addAll(icon, title, msg);
-            contentContainer.getChildren().setAll(denied);
+        if (!ensureAccess(createAccountButton, canAccessAccountManagement(),
+                "Chỉ tài khoản ADMIN mới được quản lý tài khoản.")) {
             return;
         }
-
-        setActiveButton(createAccountButton);
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
                     "/iuh/fit/gui/user/create-account/create-account-view.fxml"));
@@ -281,24 +292,10 @@ public class HomeScreen {
     }
     @FXML
     private void showUpdatePasswordScreen() {
-        String role = UserContext.getInstance().getRole();
-        if (!"ADMIN".equalsIgnoreCase(role)) {
-            setActiveButton(updatePasswordButton);
-            // Hiện thông báo không có quyền
-            VBox denied = new VBox(16);
-            denied.setAlignment(javafx.geometry.Pos.CENTER);
-            denied.setStyle("-fx-background-color:#f8faff;");
-            Label icon = new Label("🔒");
-            icon.setStyle("-fx-font-size:64px;");
-            Label title = new Label("Không có quyền truy cập");
-            title.setStyle("-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#dc2626;");
-            Label msg = new Label("Chỉ tài khoản ADMIN mới được quản lý tài khoản.");
-            msg.setStyle("-fx-font-size:14px;-fx-text-fill:#555;");
-            denied.getChildren().addAll(icon, title, msg);
-            contentContainer.getChildren().setAll(denied);
+        if (!ensureAccess(updatePasswordButton, canAccessAccountManagement(),
+                "Chỉ tài khoản ADMIN mới được quản lý tài khoản.")) {
             return;
         }
-        setActiveButton(updatePasswordButton);
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(
                     "/iuh/fit/gui/user/update-password/update-password-view.fxml"));
@@ -380,6 +377,61 @@ public class HomeScreen {
             button.getStyleClass().remove("menu-button-active");
         }
         activeButton.getStyleClass().add("menu-button-active");
+    }
+
+    private boolean ensureAccess(Button activeButton, boolean allowed, String message) {
+        if (activeButton != null) {
+            setActiveButton(activeButton);
+        }
+        if (allowed) {
+            return true;
+        }
+
+        VBox denied = new VBox(16);
+        denied.setAlignment(javafx.geometry.Pos.CENTER);
+        denied.setStyle("-fx-background-color:#f8faff;");
+        Label icon = new Label("🔒");
+        icon.setStyle("-fx-font-size:64px;");
+        Label title = new Label("Không có quyền truy cập");
+        title.setStyle("-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#dc2626;");
+        Label msg = new Label(message);
+        msg.setStyle("-fx-font-size:14px;-fx-text-fill:#555;");
+        denied.getChildren().addAll(icon, title, msg);
+        contentContainer.getChildren().setAll(denied);
+        return false;
+    }
+
+    private String currentRole() {
+        String role = UserContext.getInstance().getRole();
+        return role == null ? "" : role.trim();
+    }
+
+    private boolean isAdmin() {
+        return "ADMIN".equalsIgnoreCase(currentRole());
+    }
+
+    private boolean isManager() {
+        return "MANAGER".equalsIgnoreCase(currentRole());
+    }
+
+    private boolean isEmployee() {
+        return "EMPLOYEE".equalsIgnoreCase(currentRole());
+    }
+
+    private boolean canAccessAccountManagement() {
+        return isAdmin();
+    }
+
+    private boolean canAccessTicketManagement() {
+        return isEmployee() || isManager();
+    }
+
+    private boolean canAccessCustomerManagement() {
+        return isEmployee() || isManager();
+    }
+
+    private boolean canAccessManagerOnly() {
+        return isManager();
     }
 
     private void bindUserInfo() {

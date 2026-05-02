@@ -41,13 +41,11 @@ public class LoginScreen {
 
     @FXML
     protected void onLoginButtonClick() {
-        //String username = usernameField.getText();
-        String username = "admin1";
-        //String password = passwordField.getText();
-        String password = "admin123";
+        String username = usernameField.getText();
+        String password = passwordField.getText();
 
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            welcomeText.setText("Nhap day du username va password.");
+            welcomeText.setText("Nhập đầy đủ username và password.");
             return;
         }
 
