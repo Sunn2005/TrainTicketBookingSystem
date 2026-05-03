@@ -43,7 +43,7 @@ public class TicketPdfExporter {
 
     // Thư mục lưu PDF
     private static final String PDF_DIR =
-            "H:\\TrainTicketBookingSystem\\TrainTicketBookingSystemClient\\PDF\\";
+            System.getProperty("user.dir") + File.separator + "PDF" + File.separator;
 
     // ── Tạo font mới mỗi lần xuất để tránh lỗi "indirect object belongs to other PDF" ──
     private static PdfFont createRegularFont() {

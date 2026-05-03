@@ -421,10 +421,9 @@
         private void onPrintTicket() {
             try {
                 String fileName = "Ve_Tau_" + System.currentTimeMillis() + ".pdf";
-                String outputPath = "H:\\TrainTicketBookingSystem\\TrainTicketBookingSystemClient\\PDF\\" + fileName;
-
-                // Tạo thư mục nếu chưa có
-                new File("H:\\TrainTicketBookingSystem\\TrainTicketBookingSystemClient\\PDF\\").mkdirs();
+                String pdfDir = System.getProperty("user.dir") + File.separator + "PDF" + File.separator;
+                new File(pdfDir).mkdirs();
+                String outputPath = pdfDir + fileName;
 
                 iuh.fit.util.TicketPdfExporter.export(ctx, lastTicketIds, outputPath);
                 java.awt.Desktop.getDesktop().open(new java.io.File(outputPath));
