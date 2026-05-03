@@ -43,7 +43,7 @@ public class TicketPdfExporter {
 
     // Thư mục lưu PDF
     private static final String PDF_DIR =
-            "H:\\TrainTicketBookingSystem\\TrainTicketBookingSystemClient\\PDF\\";
+            System.getProperty("user.dir") + File.separator + "PDF" + File.separator;
 
     private static final String[] REGULAR_FONT_CANDIDATES = {
             "/System/Library/Fonts/Supplemental/Arial.ttf",
