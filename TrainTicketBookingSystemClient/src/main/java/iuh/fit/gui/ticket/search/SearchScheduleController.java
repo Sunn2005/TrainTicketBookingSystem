@@ -23,12 +23,16 @@ import model.entity.Station;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import javafx.util.StringConverter;
 
 public class SearchScheduleController {
 
     @FXML private VBox       sellHeaderBox;
+    @FXML private Label      sellHeaderTitle;
+    @FXML private Label      sellHeaderSubtitle;
     @FXML private HBox       resultHeaderBox;
     @FXML private Label      resultHeaderLabel;
     @FXML private ScrollPane trainScrollPane;
@@ -62,7 +66,17 @@ public class SearchScheduleController {
             sellHeaderBox.setVisible(true);
             sellHeaderBox.setManaged(true);
         }
+        if (ctx.isExchangeMode()) {
+            if (sellHeaderTitle != null) {
+                sellHeaderTitle.setText("Đổi Vé");
+            }
+            if (sellHeaderSubtitle != null) {
+                sellHeaderSubtitle.setText("Vui lòng chọn chuyến mới");
+            }
+        }
         departureDatePicker.setValue(LocalDate.now());
+        configureDatePicker(departureDatePicker);
+        configureDatePicker(returnDatePicker);
         tripToggle = new ToggleGroup();
         oneWayRadio.setToggleGroup(tripToggle);
         roundTripRadio.setToggleGroup(tripToggle);
@@ -84,6 +98,23 @@ public class SearchScheduleController {
         } else {
             loadStations();
         }
+    }
+
+    private void configureDatePicker(DatePicker datePicker) {
+        datePicker.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                return date != null ? DATEFMT.format(date) : "";
+            }
+
+            @Override
+            public LocalDate fromString(String value) {
+                return (value == null || value.trim().isEmpty())
+                        ? null
+                        : LocalDate.parse(value.trim(), DATEFMT);
+            }
+        });
+        datePicker.setPromptText("dd/MM/yyyy");
     }
 
     private void configureForReturnSearch() {
@@ -175,6 +206,7 @@ public class SearchScheduleController {
 
         LocalDate retDate = returnDatePicker.getValue();
         boolean isRound = roundTripRadio.isSelected();
+        LocalDate today = LocalDate.now();
 
         if (depId == null || arrId == null || searchDate == null) {
             showError(searchStatusLabel, "Vui lòng chọn đầy đủ thông tin."); return;
@@ -182,8 +214,18 @@ public class SearchScheduleController {
         if (depId.equals(arrId)) {
             showError(searchStatusLabel, "Ga đi và ga đến không được trùng."); return;
         }
+        if (searchDate.isBefore(today)) {
+            showError(searchStatusLabel, "Ngày đi phải từ hôm nay trở đi."); return;
+        }
         if (!isReturnSearch && isRound && retDate == null) {
             showError(searchStatusLabel, "Vui lòng chọn ngày về."); return;
+        }
+        if (!isReturnSearch && isRound && retDate != null && retDate.isBefore(searchDate)) {
+            showError(searchStatusLabel, "Ngày về phải lớn hơn hoặc bằng ngày đi."); return;
+        }
+        if (isReturnSearch && ctx.getDepartureDate() != null
+                && searchDate.isBefore(ctx.getDepartureDate())) {
+            showError(searchStatusLabel, "Ngày về phải lớn hơn hoặc bằng ngày đi."); return;
         }
 
         // Lưu vào context chỉ khi tìm chuyến đi
@@ -208,22 +250,26 @@ public class SearchScheduleController {
         new Thread(() -> {
             try {
                 List<ScheduleInfoResponse> schedules = ticketService.getSchedulesWithAvailableSeats(depId, arrId, searchDate);
+                LocalDateTime now = LocalDateTime.now();
+                List<ScheduleInfoResponse> validSchedules = schedules.stream()
+                        .filter(s -> s.getDepartureTime() == null || !s.getDepartureTime().isBefore(now))
+                        .toList();
 
                 Platform.runLater(() -> {
                     searchButton.setDisable(false);
                     searchButton.setText("Tìm kiếm");
 
-                    if (schedules.isEmpty()) {
+                    if (validSchedules.isEmpty()) {
                         showError(searchStatusLabel, "Không tìm thấy chuyến tàu phù hợp.");
                         return;
                     }
 
                     scheduleSegmentMap.clear();
                     if (isReturnSearch) {
-                        retList = schedules;
+                        retList = validSchedules;
                         retList.forEach(s -> scheduleSegmentMap.put(s.getScheduleId(), "return"));
                     } else {
-                        goList = schedules;
+                        goList = validSchedules;
                         goList.forEach(s -> scheduleSegmentMap.put(s.getScheduleId(), "outbound"));
                     }
 
@@ -403,6 +449,10 @@ public class SearchScheduleController {
     }
 
     private void onSelectTrain(ScheduleInfoResponse s, String segment) {
+        if (s.getDepartureTime() != null && s.getDepartureTime().isBefore(LocalDateTime.now())) {
+            showError(searchStatusLabel, "Chuyến tàu đã khởi hành, không thể bán vé.");
+            return;
+        }
         if ("outbound".equals(segment)) {
             ctx.setOutboundSchedule(s);
             ctx.getOutboundSeats().clear();

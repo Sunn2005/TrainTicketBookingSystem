@@ -12,8 +12,8 @@
         <!-- ══ HEADER ══ -->
         <VBox fx:id="sellHeaderBox" styleClass="sell-page-header" spacing="4">
                 <padding><Insets top="20" right="28" bottom="16" left="28"/></padding>
-                <Label text="Bán Vé" styleClass="cancel-page-title"/>
-                <Label text="Vui lòng nhập thông tin hành trình"
+            <Label fx:id="sellHeaderTitle" text="Bán Vé" styleClass="cancel-page-title"/>
+            <Label fx:id="sellHeaderSubtitle" text="Vui lòng nhập thông tin hành trình"
                              styleClass="cancel-page-subtitle"/>
         </VBox>
 

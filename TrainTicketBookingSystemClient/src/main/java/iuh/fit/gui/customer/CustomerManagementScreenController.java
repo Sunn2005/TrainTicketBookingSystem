@@ -7,13 +7,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-        import model.entity.Customer;
+import model.entity.Customer;
 import model.entity.Ticket;
 import model.entity.enums.CustomerType;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.util.StringConverter;
 
 public class CustomerManagementScreenController {
 
@@ -53,6 +55,9 @@ public class CustomerManagementScreenController {
     private final ObservableList<Customer> customerList =
             FXCollections.observableArrayList();
 
+        private static final DateTimeFormatter DATE_FMT =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     @FXML
     private void initialize() {
         searchTypeCombo.setItems(FXCollections.observableArrayList(
@@ -62,6 +67,8 @@ public class CustomerManagementScreenController {
         ));
         searchTypeCombo.setValue("Mã khách hàng");
 
+        configureDatePicker(fromDatePicker);
+        configureDatePicker(toDatePicker);
         fromDatePicker.setValue(LocalDate.now().minusMonths(1));
         toDatePicker.setValue(LocalDate.now());
 
@@ -83,6 +90,23 @@ public class CustomerManagementScreenController {
                 });
 
         setupTicketTable();
+    }
+
+    private void configureDatePicker(DatePicker datePicker) {
+        datePicker.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                return date != null ? DATE_FMT.format(date) : "";
+            }
+
+            @Override
+            public LocalDate fromString(String value) {
+                return (value == null || value.trim().isEmpty())
+                        ? null
+                        : LocalDate.parse(value.trim(), DATE_FMT);
+            }
+        });
+        datePicker.setPromptText("dd/MM/yyyy");
     }
 
     // =========================================================

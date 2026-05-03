@@ -421,15 +421,14 @@
         private void onPrintTicket() {
             try {
                 String fileName = "Ve_Tau_" + System.currentTimeMillis() + ".pdf";
-                String outputPath = "H:\\TrainTicketBookingSystem\\TrainTicketBookingSystemClient\\PDF\\" + fileName;
-
-                // Tạo thư mục nếu chưa có
-                new File("H:\\TrainTicketBookingSystem\\TrainTicketBookingSystemClient\\PDF\\").mkdirs();
+                File invoiceDir = new File("invoice");
+                invoiceDir.mkdirs();
+                String outputPath = new File(invoiceDir, fileName).getAbsolutePath();
 
                 iuh.fit.util.TicketPdfExporter.export(ctx, lastTicketIds, outputPath);
                 java.awt.Desktop.getDesktop().open(new java.io.File(outputPath));
 
-                statusLabel.setText("✔ Đã xuất vé PDF: " + outputPath);
+                statusLabel.setText("✔ Đã xuất vé PDF: ");
                 statusLabel.setStyle("-fx-text-fill:#16a34a;");
             } catch (Exception e) {
                 e.printStackTrace();

@@ -14,7 +14,9 @@ import javafx.scene.control.*;
 import model.entity.enums.StatisticType;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import javafx.util.StringConverter;
 
 public class RevenueByTimeController {
 
@@ -31,11 +33,21 @@ public class RevenueByTimeController {
 
     private final UserClientService service = new UserClientService();
 
+        private static final DateTimeFormatter DATE_FMT =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     @FXML
     public void initialize() {
 
+        configureDatePicker(fromDate);
+        configureDatePicker(toDate);
+
         colDate.setCellValueFactory(c ->
-                new SimpleStringProperty(c.getValue().getKey().toString())
+            new SimpleStringProperty(
+                c.getValue().getKey() != null
+                    ? DATE_FMT.format(c.getValue().getKey())
+                    : ""
+            )
         );
 
         colRevenue.setCellValueFactory(c ->
@@ -53,6 +65,23 @@ public class RevenueByTimeController {
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
+    }
+
+    private void configureDatePicker(DatePicker datePicker) {
+        datePicker.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                return date != null ? DATE_FMT.format(date) : "";
+            }
+
+            @Override
+            public LocalDate fromString(String value) {
+                return (value == null || value.trim().isEmpty())
+                        ? null
+                        : LocalDate.parse(value.trim(), DATE_FMT);
+            }
+        });
+        datePicker.setPromptText("dd/MM/yyyy");
     }
 
     @FXML
@@ -88,7 +117,7 @@ public class RevenueByTimeController {
         map.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(e ->
-                        series.getData().add(new XYChart.Data<>(e.getKey().toString(), e.getValue()))
+                    series.getData().add(new XYChart.Data<>(DATE_FMT.format(e.getKey()), e.getValue()))
                 );
 
         lineChart.getData().add(series);

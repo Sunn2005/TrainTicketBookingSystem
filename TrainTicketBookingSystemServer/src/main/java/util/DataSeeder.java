@@ -166,6 +166,20 @@ public class DataSeeder {
             em.persist(sch6); em.persist(sch7); em.persist(sch8); em.persist(sch9); em.persist(sch10);
             em.persist(sch11); em.persist(sch12); em.persist(sch13); em.persist(sch14); em.persist(sch15);
 
+            // Sinh thêm schedule tự động cho các ngày tiếp theo trong tháng 5
+            int schIndex = 16;
+            for (int day = 1; day <= 28; day++) {
+                // Sài Gòn -> Hà Nội (mỗi ngày 2 chuyến)
+                Schedule sch01 = new Schedule(String.format("SCH-%03d", schIndex++), tr3, rt1, now.plusDays(day).plusHours(7), now.plusDays(day + 1).plusHours(17), ScheduleStatus.ENABLED);
+                Schedule sch02 = new Schedule(String.format("SCH-%03d", schIndex++), tr4, rt1, now.plusDays(day).plusHours(19), now.plusDays(day + 2).plusHours(5), ScheduleStatus.ENABLED);
+                em.persist(sch01); em.persist(sch02);
+
+                // Hà Nội -> Sài Gòn (mỗi ngày 2 chuyến)
+                Schedule sch03 = new Schedule(String.format("SCH-%03d", schIndex++), tr5, rt2, now.plusDays(day).plusHours(8), now.plusDays(day + 1).plusHours(18), ScheduleStatus.ENABLED);
+                Schedule sch04 = new Schedule(String.format("SCH-%03d", schIndex++), tr1, rt2, now.plusDays(day).plusHours(20), now.plusDays(day + 2).plusHours(6), ScheduleStatus.ENABLED);
+                em.persist(sch03); em.persist(sch04);
+            }
+
             // 10. Ticket
             Ticket tk1 = new Ticket("TICKET-001", u3, c1, sch1, seats.get(0), "0%", 1800000, 1800000, now, TicketStatus.PAID);
             Ticket tk2 = new Ticket("TICKET-002", u4, c2, sch1, seats.get(1), "10%", 1800000, 1620000, now, TicketStatus.PENDING);

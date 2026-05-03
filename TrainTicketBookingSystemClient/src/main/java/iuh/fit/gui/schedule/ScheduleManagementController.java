@@ -25,8 +25,10 @@ import model.entity.Train;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import javafx.util.StringConverter;
 
 public class ScheduleManagementController {
 
@@ -62,13 +64,34 @@ public class ScheduleManagementController {
     // Map stationName -> stationID
     private java.util.Map<String, String> stationNameToIdMap = new java.util.HashMap<>();
 
+        private static final DateTimeFormatter DATE_FMT =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     @FXML
     private void initialize() {
         loadStations();
         setupTable();
         loadSchedules();
 
+        configureDatePicker(travelDatePicker);
         travelDatePicker.setValue(LocalDate.now());
+    }
+
+    private void configureDatePicker(DatePicker datePicker) {
+        datePicker.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                return date != null ? DATE_FMT.format(date) : "";
+            }
+
+            @Override
+            public LocalDate fromString(String value) {
+                return (value == null || value.trim().isEmpty())
+                        ? null
+                        : LocalDate.parse(value.trim(), DATE_FMT);
+            }
+        });
+        datePicker.setPromptText("dd/MM/yyyy");
     }
 
     private void loadStations() {
@@ -342,6 +365,7 @@ public class ScheduleManagementController {
         depTimeLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #5f6f95;");
         depTimeLabel.setPrefWidth(150);
         DatePicker depDate = new DatePicker(LocalDate.now());
+        configureDatePicker(depDate);
         depDate.setStyle("-fx-font-size: 13px; -fx-padding: 9 12 9 12;");
         Spinner<Integer> depHour = new Spinner<>(0, 23, 8);
         depHour.setPrefWidth(70);
@@ -361,6 +385,7 @@ public class ScheduleManagementController {
         arrTimeLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #5f6f95;");
         arrTimeLabel.setPrefWidth(150);
         DatePicker arrDate = new DatePicker(LocalDate.now());
+        configureDatePicker(arrDate);
         arrDate.setStyle("-fx-font-size: 13px; -fx-padding: 9 12 9 12;");
         Spinner<Integer> arrHour = new Spinner<>(0, 23, 12);
         arrHour.setPrefWidth(70);

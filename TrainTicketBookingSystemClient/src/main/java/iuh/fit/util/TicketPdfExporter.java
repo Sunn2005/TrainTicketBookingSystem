@@ -45,28 +45,57 @@ public class TicketPdfExporter {
     private static final String PDF_DIR =
             "H:\\TrainTicketBookingSystem\\TrainTicketBookingSystemClient\\PDF\\";
 
+    private static final String[] REGULAR_FONT_CANDIDATES = {
+            "/System/Library/Fonts/Supplemental/Arial.ttf",
+            "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+            "/Library/Fonts/Arial Unicode.ttf",
+            "/Library/Fonts/Arial.ttf",
+            "C:/Windows/Fonts/arial.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
+    };
+
+    private static final String[] BOLD_FONT_CANDIDATES = {
+            "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+            "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+            "/Library/Fonts/Arial Unicode.ttf",
+            "/Library/Fonts/Arial Bold.ttf",
+            "C:/Windows/Fonts/arialbd.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
+    };
+
     // ── Tạo font mới mỗi lần xuất để tránh lỗi "indirect object belongs to other PDF" ──
     private static PdfFont createRegularFont() {
-        try {
-            return PdfFontFactory.createFont("c:/windows/fonts/arial.ttf",
-                    PdfEncodings.IDENTITY_H);
-        } catch (Exception e) {
-            try {
-                return PdfFontFactory.createFont();
-            } catch (Exception ex) {
-                throw new RuntimeException("Cannot load font", ex);
-            }
-        }
+                PdfFont font = createFontFromCandidates(REGULAR_FONT_CANDIDATES);
+                if (font != null) return font;
+                try {
+                        return PdfFontFactory.createFont();
+                } catch (Exception ex) {
+                        throw new RuntimeException("Cannot load font", ex);
+                }
     }
 
     private static PdfFont createBoldFont() {
-        try {
-            return PdfFontFactory.createFont("c:/windows/fonts/arialbd.ttf",
-                    PdfEncodings.IDENTITY_H);
-        } catch (Exception e) {
-            return createRegularFont();
-        }
+                PdfFont font = createFontFromCandidates(BOLD_FONT_CANDIDATES);
+                return font != null ? font : createRegularFont();
     }
+
+        private static PdfFont createFontFromCandidates(String[] candidates) {
+                for (String path : candidates) {
+                        if (path == null || path.isBlank()) continue;
+                        File f = new File(path);
+                        if (!f.exists()) continue;
+                        try {
+                                return PdfFontFactory.createFont(f.getAbsolutePath(),
+                                                PdfEncodings.IDENTITY_H,
+                                                PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
+                        } catch (Exception ignored) {
+                                // try next candidate
+                        }
+                }
+                return null;
+        }
 
     public static String exportAuto(TicketContext ctx, List<String> ticketIds)
             throws Exception {
@@ -105,7 +134,7 @@ public class TicketPdfExporter {
 
         Cell logoCell = new Cell()
                 .setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setPadding(0);
-        logoCell.add(p("HỆ THỐNG ĐẶT VÉ TÀU", COLOR_PRIMARY, 16, true, fontBold, fontRegular));
+        logoCell.add(p("HỆ THỐNG ĐẶT VÉ TÀU", COLOR_PRIMARY, 14, true, fontBold, fontRegular));
         logoCell.add(p("Train Ticket Booking System", COLOR_TEXT_MUTED, 10, false, fontBold, fontRegular));
 
         Cell dateCell = new Cell()
