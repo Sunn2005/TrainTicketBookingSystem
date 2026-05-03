@@ -8,6 +8,11 @@ module iuh.fit.trainticketbookingsystemclient {
     requires java.naming;
     requires TrainTicketBookingSystemServer;
     requires static lombok;
+    requires java.desktop;
+    requires kernel;
+    requires layout;
+    requires io;
+    requires commons;
 
     opens iuh.fit to javafx.fxml;
     opens iuh.fit.service to javafx.fxml;

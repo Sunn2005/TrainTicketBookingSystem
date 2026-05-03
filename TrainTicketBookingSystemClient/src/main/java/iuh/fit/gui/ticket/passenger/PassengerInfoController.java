@@ -272,6 +272,9 @@ public class PassengerInfoController {
             if (p.getName() == null || p.getName().trim().isEmpty() || !p.getName().matches(FULLNAME_REGEX)) {
                 showError("Hành khách " + (i+1) + ": Họ tên chỉ được chứa chữ cái và khoảng trắng."); return;
             }
+            if (!Character.isUpperCase(p.getName().trim().charAt(0))) {
+                showError("Hành khách " + (i+1) + ": Họ tên phải bắt đầu bằng chữ in hoa."); return;
+            }
             if (p.getCccd() == null || !p.getCccd().matches(CCCD_REGEX)) {
                 showError("Hành khách " + (i+1) + ": CCCD phải là 12 chữ số."); return;
             }

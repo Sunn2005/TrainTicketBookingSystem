@@ -1,6 +1,7 @@
 package model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import model.entity.enums.SeatType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,7 +34,8 @@ public class Seat {
 
     @ManyToOne
     @JoinColumn(name = "carriage_id")
-    @JsonBackReference // CỰC KỲ QUAN TRỌNG: Dòng này sẽ ngắt vòng lặp tại đây
+//    @JsonBackReference // CỰC KỲ QUAN TRỌNG: Dòng này sẽ ngắt vòng lặp tại đây
+    @JsonIgnoreProperties({"seats", "train", "hibernateLazyInitializer"})
     private Carriage carriage;
 
     @Column(name = "seat_number", nullable = false)

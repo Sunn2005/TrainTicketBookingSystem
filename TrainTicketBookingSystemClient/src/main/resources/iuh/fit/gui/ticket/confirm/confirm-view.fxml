@@ -41,13 +41,28 @@
 <!--                &lt;!&ndash; Result &ndash;&gt;-->
                 <VBox fx:id="resultBox" alignment="CENTER" managed="false" spacing="14" visible="false">
                     <VBox alignment="CENTER" spacing="12" styleClass="result-card">
-                        <padding><Insets bottom="30" left="40" right="40" top="30" /></padding>
-                        <Label fx:id="resultIcon" styleClass="result-icon" />
-                        <Label fx:id="resultTitle" styleClass="result-title" />
-                        <Label fx:id="resultMessage" style="-fx-text-alignment:center;" styleClass="result-message" wrapText="true" />
-                        <Label fx:id="resultQr" managed="false" styleClass="result-qr" visible="false" wrapText="true" />
-                        <Separator />
-                        <Button minWidth="180" onAction="#onNewTicket" styleClass="btn-primary" text="＋  Bán vé mới" />
+                        <padding><Insets bottom="30" left="40" right="40" top="30"/></padding>
+                        <Label fx:id="resultIcon" styleClass="result-icon"/>
+                        <Label fx:id="resultTitle" styleClass="result-title"/>
+                        <Label fx:id="resultMessage"
+                               style="-fx-text-alignment:center;"
+                               styleClass="result-message" wrapText="true"/>
+                        <Label fx:id="resultQr" managed="false"
+                               styleClass="result-qr" visible="false" wrapText="true"/>
+                        <Separator/>
+                        <HBox spacing="10" alignment="CENTER">
+                            <!-- Nút in vé - ẩn ban đầu -->
+                            <Button fx:id="printBtn"
+                                    text="🖨  In / Xuất PDF vé"
+                                    styleClass="btn-confirm"
+                                    onAction="#onPrintTicket"
+                                    minWidth="180"
+                                    visible="false" managed="false"/>
+                            <Button minWidth="180"
+                                    onAction="#onNewTicket"
+                                    styleClass="btn-primary"
+                                    text="＋  Bán vé mới"/>
+                        </HBox>
                     </VBox>
                 </VBox>
             </VBox>
