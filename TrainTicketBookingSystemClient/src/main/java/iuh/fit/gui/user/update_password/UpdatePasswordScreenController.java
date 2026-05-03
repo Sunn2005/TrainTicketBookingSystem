@@ -20,8 +20,10 @@ import javafx.scene.layout.VBox;
 import dto.PasswordResetRequestDTO;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import model.entity.User;
 
 public class UpdatePasswordScreenController {
 	@FXML
@@ -90,10 +92,10 @@ public class UpdatePasswordScreenController {
 			ActionResponse response = userService.resetPassword(selectedUser.userId(), newPassword);
 			Platform.runLater(() -> {
 				if (response != null && response.isSuccess()) {
-					showSuccess("Đã cập nhật mật khẩu cho " + selectedUser.userId() + " thành công.");
+					showSuccess("Đã cập nhật mật khẩu cho " + selectedUser.userName() + " thành công.");
 					confirmPasswordField.clear();
 					newPasswordField.clear();
-					showSuccessDialog(selectedUser.userId());
+					showSuccessDialog(selectedUser.userName());
 					loadPendingUsers();
 				} else {
 					String message = response != null ? response.getMessage() : "Không thể cập nhật mật khẩu.";
@@ -106,10 +108,15 @@ public class UpdatePasswordScreenController {
 	private void loadPendingUsers() {
 		new Thread(() -> {
 			List<PasswordResetRequestDTO> requests = userService.getPendingPasswordResets();
+			List<User> users = userService.getAllUsers();
+			Map<String, String> usernameById = users.stream()
+					.filter(Objects::nonNull)
+					.filter(u -> u.getUserID() != null && u.getUserName() != null)
+					.collect(Collectors.toMap(User::getUserID, User::getUserName, (a, b) -> a));
 			List<PendingUser> mappedUsers = requests.stream()
 					.filter(Objects::nonNull)
 					.filter(this::isEmployeeOrManager)
-					.map(this::toPendingUser)
+					.map(req -> toPendingUser(req, usernameById))
 					.collect(Collectors.toList());
 
 			Platform.runLater(() -> {
@@ -133,12 +140,13 @@ public class UpdatePasswordScreenController {
 		return "EMPLOYEE".equals(roleName) || "MANAGER".equals(roleName);
 	}
 
-	private PendingUser toPendingUser(PasswordResetRequestDTO request) {
+	private PendingUser toPendingUser(PasswordResetRequestDTO request, Map<String, String> usernameById) {
 		String userId = request.getUserID() == null ? "" : request.getUserID();
+		String userName = usernameById.getOrDefault(userId, userId);
 		String fullName = request.getFullName() == null ? "" : request.getFullName();
 		String roleName = request.getRole() == null ? "" : request.getRole();
 		String email = request.getEmail() == null ? "" : request.getEmail();
-		return new PendingUser(userId, fullName, roleName, email);
+		return new PendingUser(userId, userName, fullName, roleName, email);
 	}
 
 	private void setupListView() {
@@ -150,7 +158,7 @@ public class UpdatePasswordScreenController {
 				setFormEnabled(false);
 				return;
 			}
-			selectedUserIdLabel.setText(selectedUser.userId());
+			selectedUserIdLabel.setText(selectedUser.userName());
 			selectedFullNameLabel.setText(selectedUser.fullName());
 			selectedRoleLabel.setText(selectedUser.role());
 			selectedEmailLabel.setText(selectedUser.email());
@@ -199,7 +207,7 @@ public class UpdatePasswordScreenController {
 		alert.showAndWait();
 	}
 
-	private record PendingUser(String userId, String fullName, String role, String email) {
+	private record PendingUser(String userId, String userName, String fullName, String role, String email) {
 	}
 
 	private static final class PendingUserCell extends ListCell<PendingUser> {
@@ -212,7 +220,7 @@ public class UpdatePasswordScreenController {
 				return;
 			}
 
-			Label usernameLabel = new Label(item.userId());
+			Label usernameLabel = new Label(item.userName());
 			usernameLabel.getStyleClass().add("user-item-username");
 
 			Label nameLabel = new Label(item.fullName() + " (" + item.role() + ")");

@@ -44,12 +44,12 @@ public class ForgotPasswordScreenController {
 
     @FXML
     private void onSubmit() {
-        String userId = safeTrim(usernameField.getText());
+        String userName = safeTrim(usernameField.getText());
         String fullName = safeTrim(fullNameField.getText());
         String role = roleCombo.getValue() == null ? "" : roleCombo.getValue().trim();
         String email = safeTrim(emailField.getText());
 
-        if (userId.isEmpty()) {
+        if (userName.isEmpty()) {
             showError("Vui lòng nhập User ID.");
             return;
         }
@@ -73,7 +73,7 @@ public class ForgotPasswordScreenController {
         setFormEnabled(false);
         clearStatus();
 
-        PasswordResetRequestDTO request = new PasswordResetRequestDTO(userId, fullName, role, email);
+        PasswordResetRequestDTO request = new PasswordResetRequestDTO(userName, fullName, role, email);
         new Thread(() -> {
             ActionResponse response = userService.requestPasswordReset(request);
             Platform.runLater(() -> {

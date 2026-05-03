@@ -47,7 +47,7 @@ public final class TicketContext {
             PriceClientService pcs = new PriceClientService();
             this.basePrice = pcs.getBasePrice();
         } catch (Exception e) {
-            this.basePrice = new BasePrice(1000.0, 300000.0, 500000.0, 0.9, 0.85, 0.75);
+            this.basePrice = new BasePrice(1000.0, 300000.0, 500000.0, 0.1, 0.15, 0.25);
         }
     }
 
@@ -105,16 +105,25 @@ public final class TicketContext {
         if (customerType == null || basePrice == null) {
             return 1.0;
         }
+        double rate = switch (customerType) {
+            case STUDENT -> basePrice.getStudentDiscount();
+            case CHILD -> basePrice.getChildDiscount();
+            case ELDERLY -> basePrice.getElderlyDiscount();
+            default -> 0.0;
+        };
+        return 1.0 - rate;
+    }
+
+    public double getDiscountRate(CustomerType customerType) {
+        if (customerType == null || basePrice == null) {
+            return 0.0;
+        }
         return switch (customerType) {
             case STUDENT -> basePrice.getStudentDiscount();
             case CHILD -> basePrice.getChildDiscount();
             case ELDERLY -> basePrice.getElderlyDiscount();
-            default -> 1.0;
+            default -> 0.0;
         };
-    }
-
-    public double getDiscountRate(CustomerType customerType) {
-        return discount(customerType);
     }
 
     public String getDepartureStationId() {

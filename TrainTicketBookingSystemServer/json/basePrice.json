@@ -1,8 +1,8 @@
 {
-  "pricePerDistance" : 1000,
-  "softSeatFee": 300000,
-  "softSleeperFee": 500000,
-  "studentDiscount": 0.1,
-  "childDiscount": 0.25,
-  "elderlyDiscount": 0.15
+  "pricePerDistance" : 1000.0,
+  "softSeatFee" : 300000.0,
+  "softSleeperFee" : 500000.0,
+  "studentDiscount" : 0.1,
+  "childDiscount" : 0.25,
+  "elderlyDiscount" : 0.15
 }

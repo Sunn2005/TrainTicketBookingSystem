@@ -155,16 +155,16 @@ public class TicketService {
 
                 switch (cType) {
                     case CHILD:
-                        calculatedFinalPrice = basePriceVal * this.basePrice.getChildDiscount();
-                        computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getChildDiscount()) * 100);
+                        calculatedFinalPrice = basePriceVal * (1 - this.basePrice.getChildDiscount());
+                        computedDiscount = String.format("%.0f%%", this.basePrice.getChildDiscount() * 100);
                         break;
                     case STUDENT:
-                        calculatedFinalPrice = basePriceVal * this.basePrice.getStudentDiscount();
-                        computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getStudentDiscount()) * 100);
+                        calculatedFinalPrice = basePriceVal * (1 - this.basePrice.getStudentDiscount());
+                        computedDiscount = String.format("%.0f%%", this.basePrice.getStudentDiscount() * 100);
                         break;
                     case ELDERLY:
-                        calculatedFinalPrice = basePriceVal * this.basePrice.getElderlyDiscount();
-                        computedDiscount = String.format("%.0f%%", (1 - this.basePrice.getElderlyDiscount()) * 100);
+                        calculatedFinalPrice = basePriceVal * (1 - this.basePrice.getElderlyDiscount());
+                        computedDiscount = String.format("%.0f%%", this.basePrice.getElderlyDiscount() * 100);
                         break;
                     case ADULT:
                     default:

@@ -155,7 +155,7 @@ public class PassengerInfoController {
                 if (TicketContext.getInstance() == null) {
                     return t.name(); // Fallback nếu chưa load được
                 }
-                double discountPercent = (1.0 - TicketContext.getInstance().getDiscountRate(t)) * 100;
+                double discountPercent = (TicketContext.getInstance().getDiscountRate(t)) * 100;
                 return switch (t) {
                     case ADULT   -> "Người lớn";
                     case CHILD   -> String.format("Trẻ em  (-%.0f%%)", discountPercent);
